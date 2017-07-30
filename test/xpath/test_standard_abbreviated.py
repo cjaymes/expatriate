@@ -157,9 +157,10 @@ doc.parse('''<?xml version='1.0' encoding='utf-8'?>
             '[1]',
         ]),
         # 4
-        (doc.root_element[1].xpath('@*'),
-            list(doc.root_element[1].attribute_nodes.values())
-        ),
+        (doc.root_element[1].xpath('@*'), [
+            doc.root_element[1].attribute_nodes['name'],
+            doc.root_element[1].attribute_nodes['type'],
+        ]),
         # 5
         (doc.root_element[1].xpath('para[last()]'), [
             doc.root_element[1][4]
