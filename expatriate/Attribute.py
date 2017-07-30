@@ -1,0 +1,45 @@
+# Copyright 2016 Casey Jaymes
+
+# This file is part of PySCAP.
+#
+# PySCAP is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PySCAP is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PySCAP.  If not, see <http://www.gnu.org/licenses/>.
+
+import logging
+
+from .Node import Node
+from .xpath.Literal import Literal
+
+logger = logging.getLogger(__name__)
+
+class Attribute(Node):
+    def __init__(self, document, document_order, parent, name_namespace, name_local, value):
+        super(Attribute, self).__init__(document, document_order, parent)
+
+        self.name_namespace = name_namespace
+        self.name_local = name_local
+        self.value = value
+
+    def get_type(self):
+        return 'attribute'
+
+    def get_string_value(self):
+        return self.value
+
+    def get_expanded_name(self):
+        return (self.name_namespace, self.name_local)
+
+    def __eq__(self, other):
+        if isinstance(other, Literal):
+            return self.value == other.value
+        return other == self.value
