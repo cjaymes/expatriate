@@ -43,3 +43,10 @@ class Attribute(Node):
         if isinstance(other, Literal):
             return self.value == other.value
         return other == self.value
+
+    def __str__(self):
+        s = self.__class__.__name__ + ' ' + hex(id(self)) + ' '
+        if self.name_namespace is not None:
+            s += self.name_namespace + ':'
+        s += self.name_local + '=' + self.value
+        return s

@@ -63,7 +63,8 @@ class Element(Node):
 
         # create nodes for each of the namespaces
         self.namespace_nodes = {}
-        for prefix, uri in self.namespaces.items():
+        for prefix in self.namespaces.keys():
+            uri = self.namespaces[prefix]
             self.namespace_nodes[prefix] = Namespace(document, document._order_count, self, prefix, uri)
             document._order_count += 1
 
@@ -85,7 +86,8 @@ class Element(Node):
         self.attribute_locals = {}
         self.attribute_namespaces = {}
         self.attribute_nodes = {}
-        for k, v in self.attributes.items():
+        for k in sorted(self.attributes.keys()):
+            v = self.attributes[k]
             if k.startswith('xmlns:'):
                 continue
 
