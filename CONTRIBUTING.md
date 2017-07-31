@@ -1,10 +1,10 @@
 # Introduction
 
-First off, thank you for considering contributing to pyscap. It's people like you that make pyscap such a great tool.
+First off, thank you for considering contributing to expatriate. It's people like you that make expatriate such a great tool.
 
 Following these guidelines helps to communicate that you respect the time of the developers managing and developing this open source project. In return, they should reciprocate that respect in addressing your issue, assessing changes, and helping you finalize your pull requests.
 
-Pyscap is an open source project and we love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code which can be incorporated into pyscap itself.
+Expatriate is an open source project and we love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code which can be incorporated into expatriate itself.
 
 Please, don't use the issue tracker for support questions; please keep it to issues with the code.
 
@@ -12,17 +12,17 @@ Please, don't use the issue tracker for support questions; please keep it to iss
 
 Responsibilities
 * Ensure cross-platform compatibility for every change that's accepted.
-* Ensure that code that goes into core meets all requirements in the [Pull Request Checklist](https://github.com/cjaymes/pyscap/wiki/Pull-Request-Checklist)
+* Ensure that code that goes into core meets all requirements in the [Pull Request Checklist](https://github.com/cjaymes/expatriate/wiki/Pull-Request-Checklist)
 * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 * Don't add any classes to the codebase unless absolutely needed. Err on the side of using functions.
 * Keep feature versions as small as possible, preferably one new feature per version.
-* Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Code of Conduct](https://github.com/cjaymes/pyscap/tree/master/CODE_OF_CONDUCT.md).
+* Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Code of Conduct](https://github.com/cjaymes/expatriate/tree/master/CODE_OF_CONDUCT.md).
 
 ### 1. Where do I go from here?
 
-If you've noticed a bug [search the issue tracker](https://github.com/cjaymes/pyscap/issues)
+If you've noticed a bug [search the issue tracker](https://github.com/cjaymes/expatriate/issues)
 to see if someone else in the community has already created a ticket.
-If not, go ahead and [make one](https://github.com/cjaymes/pyscap/issues/new)!
+If not, go ahead and [make one](https://github.com/cjaymes/expatriate/issues/new)!
 
 ### 2. Fork & create a branch
 
@@ -59,10 +59,10 @@ sh clean.sh
 ### 4. Did you find a bug?
 
 * **Ensure the bug was not already reported** by [searching all
-  issues](https://github.com/cjaymes/pyscap/issues?q=).
+  issues](https://github.com/cjaymes/expatriate/issues?q=).
 
 * If you're unable to find an open issue addressing the problem, [open a new
-  one](https://github.com/cjaymes/pyscap/issues/new).  Be sure to
+  one](https://github.com/cjaymes/expatriate/issues/new).  Be sure to
   include a **title and clear description**, as much relevant information as
   possible, and a **code sample** or an **the failing test case** demonstrating
   the expected behavior that is not occurring.
@@ -79,10 +79,10 @@ Wash and repeat.
 ### 7. Make a Pull Request
 
 At this point, you should switch back to your master branch and make sure it's
-up to date with pyscap's master branch:
+up to date with expatriate's master branch:
 
 ```sh
-git remote add upstream git@github.com:cjaymes/pyscap.git
+git remote add upstream git@github.com:cjaymes/expatriate.git
 git checkout master
 git pull upstream master
 ```
@@ -117,7 +117,7 @@ git push --force-with-lease 325-add-japanese-translations
 
 ### 9. Merging a PR (maintainers only)
 
-A PR should only be merged into master by a maintainer by following the [Pull Request Checklist](https://github.com/cjaymes/pyscap/wiki/Pull-Request-Checklist)
+A PR should only be merged into master by a maintainer by following the [Pull Request Checklist](https://github.com/cjaymes/expatriate/wiki/Pull-Request-Checklist)
 
 Any maintainer is allowed to merge a PR if all of these conditions are
 met.
