@@ -91,3 +91,4 @@ pip-selfcheck.json
 .~lock*
 *.exe
 *.pem
+*.rst
