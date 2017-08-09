@@ -24,69 +24,57 @@ import re
 from setuptools import find_packages
 from setuptools import setup
 
-with open(join(dirname(__file__), 'README.md'), 'r') as f:
-    readme = f.read()
+with open(join(dirname(__file__), 'VERSION.txt'), 'r') as f:
+    VERSION = f.read().strip()
 
-try:
-   import pypandoc
-   with open(join(dirname(__file__), 'README.rst'), 'w') as f:
-       f.write(pypandoc.convert('README.md', 'rst'))
-except (IOError, ImportError):
-   pass
+with open(join(dirname(__file__), 'README.md'), 'r') as f:
+    README = f.read()
 
 with open(join(dirname(__file__), 'CHANGELOG.md'), 'r') as f:
-    changelog = f.read()
+    CHANGELOG = f.read()
 
-try:
-   import pypandoc
-   with open(join(dirname(__file__), 'CHANGELOG.rst'), 'w') as f:
-       f.write(pypandoc.convert('CHANGELOG.md', 'rst'))
-except (IOError, ImportError):
-   pass
+with open(join(dirname(__file__), 'CLASSIFIERS.txt'), 'r') as f:
+    CLASSIFIERS = list(f)
+
+with open(join(dirname(__file__), 'KEYWORDS.txt'), 'r') as f:
+    KEYWORDS = list(f)
 
 with open(join(dirname(__file__), 'requirements.txt'), 'r') as f:
-    install_requires = list(f)
+    REQUIREMENTS = list(f)
 
-setup(name='Expatriate',
-    version='0.1',
+# convert the md files to rst and copy to long_description
+try:
+   import pypandoc
+
+   long_description = ''
+   with open(join(dirname(__file__), 'README.rst'), 'w') as f:
+       s = pypandoc.convert('README.md', 'rst')
+       f.write(s)
+       long_description += s
+
+   with open(join(dirname(__file__), 'CHANGELOG.rst'), 'w') as f:
+       s = pypandoc.convert('CHANGELOG.md', 'rst')
+       f.write(s)
+       long_description += s
+
+except (IOError, ImportError):
+   long_description = ''
+
+
+setup(name='expatriate',
+    version=VERSION,
     license='LGPL',
     description='Library wrapping expat for parsing and generating XML',
-    long_description='%s\n%s' % (
-        re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', readme),
-        re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', changelog),
-    ),
+    long_description=long_description,
     author='Casey Jaymes',
     author_email='cjaymes@gmail.com',
     url='https://github.com/cjaymes/expatriate',
     packages=find_packages('src'),
-    classifiers=[
-        # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'Development Status :: 3 - Alpha',
-
-        'Environment :: Other Environment',
-
-        'Intended Audience :: Developers',
-
-        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
-
-        'Operating System :: OS Independent',
-
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Text Processing :: Markup :: XML',
-    ],
-    keywords=[
-        'XML',
-    ],
-    #python_requires='>=3.5',
-    install_requires=install_requires,
+    package_dir={'': 'src'},
+    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=CLASSIFIERS,
+    keywords=KEYWORDS,
+    install_requires=REQUIREMENTS,
     tests_require=[
         'pytest',
     ],

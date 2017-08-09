@@ -1,9 +1,26 @@
 language: python
 
+sudo: false
+
 python:
-    - "3.5"
-    - "3.6"
+    - 3.5
+    - 3.6
 
-install: "pip install -r requirements.txt"
+cache: pip
 
-script: python -m pytest -vv
+before_install:
+    - python --version
+    - uname -a
+    - lsb_release -a
+
+install:
+    - pip install pytest
+    - pip install -r requirements.txt
+    - python3 setup.py install
+    - virtualenv --version
+    - easy_install --version
+    - pip --version
+    - pytest --version
+
+script:
+    - pytest -vv
