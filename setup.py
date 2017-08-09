@@ -58,7 +58,7 @@ setup(name='Expatriate',
     author='Casey Jaymes',
     author_email='cjaymes@gmail.com',
     url='https://github.com/cjaymes/expatriate',
-    packages=find_packages(),
+    packages=find_packages('src'),
     classifiers=[
         # https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 3 - Alpha',
