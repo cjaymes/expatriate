@@ -3,7 +3,6 @@ expatriate
 
 XML parsing and generation library on top of expat.
 
-Requires Python 3.5 or greater. See the requirements.txt file for
-addition required packages that can be installed using:
+Install using:
 
-    pip install -r requirements.txt
+    pip install expatriate

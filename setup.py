@@ -27,10 +27,10 @@ from setuptools import setup
 with open(join(dirname(__file__), 'VERSION.txt'), 'r') as f:
     VERSION = f.read().strip()
 
-with open(join(dirname(__file__), 'README.md'), 'r') as f:
+with open(join(dirname(__file__), 'README.rst'), 'r') as f:
     README = f.read()
 
-with open(join(dirname(__file__), 'CHANGELOG.md'), 'r') as f:
+with open(join(dirname(__file__), 'CHANGELOG.rst'), 'r') as f:
     CHANGELOG = f.read()
 
 with open(join(dirname(__file__), 'CLASSIFIERS.txt'), 'r') as f:
@@ -42,24 +42,7 @@ with open(join(dirname(__file__), 'KEYWORDS.txt'), 'r') as f:
 with open(join(dirname(__file__), 'requirements.txt'), 'r') as f:
     REQUIREMENTS = list(f)
 
-# convert the md files to rst and copy to long_description
-try:
-   import pypandoc
-
-   long_description = ''
-   with open(join(dirname(__file__), 'README.rst'), 'w') as f:
-       s = pypandoc.convert('README.md', 'rst')
-       f.write(s)
-       long_description += s
-
-   with open(join(dirname(__file__), 'CHANGELOG.rst'), 'w') as f:
-       s = pypandoc.convert('CHANGELOG.md', 'rst')
-       f.write(s)
-       long_description += s
-
-except (IOError, ImportError):
-   long_description = ''
-
+long_description = README + '\n' + CHANGELOG
 
 setup(name='expatriate',
     version=VERSION,

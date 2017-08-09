@@ -71,13 +71,13 @@ Now you should be able to run the test suite using:
 
 .. code:: sh
 
-    python -m pytest -v
+    pytest -vv
 
 If the tests are failing, you might want to clean your environment:
 
 .. code:: sh
 
-    sh clean.sh
+    find tests -name '*.pyc' -delete
 
 4. Did you find a bug?
 ~~~~~~~~~~~~~~~~~~~~~~
