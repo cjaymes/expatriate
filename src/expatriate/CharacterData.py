@@ -41,3 +41,11 @@ class CharacterData(Node):
 
     def get_type(self):
         return 'text'
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return self.data == other
+        elif isinstance(other, int) or isinstance(other, float):
+            return self.data == str(other)
+        else:
+            return self == other

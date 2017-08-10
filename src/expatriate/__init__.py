@@ -26,6 +26,7 @@ from .xpath import SyntaxException
 
 __all__ = [
     'CharacterData',
+    'Comment',
     'Document',
     'Element',
     'ProcessingInstruction',

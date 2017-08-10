@@ -17,6 +17,7 @@
 
 import logging
 
+from .ChildBearing import ChildBearing
 from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
@@ -29,15 +30,13 @@ class DuplicateNamespaceException(Exception):
 class UnknownNamespaceException(Exception):
     pass
 
-class Element(Node):
+class Element(ChildBearing):
     def __init__(self, document, document_order, parent, name, attributes):
         super(Element, self).__init__(document, document_order, parent)
 
         self.name = name
 
         self.attributes = attributes
-
-        self.children = []
 
         if isinstance(self.parent, Element):
             self.namespaces = self.parent.namespaces.copy()
@@ -137,32 +136,6 @@ class Element(Node):
 
     def get_expanded_name(self):
         return (self.name_namespace, self.name_local)
-
-    def __len__(self):
-        return len(self.children)
-
-    def __getitem__(self, key):
-        if not isinstance(key, int) and not isinstance(key, slice):
-            raise TypeError('Key values must be of int type or slice')
-
-        return self.children[key]
-
-    def __setitem__(self, key, value):
-        if not isinstance(key, int):
-            raise TypeError('Key values must be of int type')
-        if not isinstance(value, Node):
-            raise TypeError('Values must be of Node type')
-
-        self.children[key] = value
-
-    def __delitem__(self, key):
-        if not isinstance(key, int):
-            raise TypeError('Key values must be of int type')
-
-        del self.children[key]
-
-    def __iter__(self):
-        return iter(self.children)
 
     def __str__(self):
         s = self.__class__.__name__ + ' ' + hex(id(self)) + ' ' + self.name

@@ -20,6 +20,7 @@ import re
 import xml.parsers.expat
 
 from .CharacterData import CharacterData
+from .ChildBearing import ChildBearing
 from .Comment import Comment
 from .Element import Element
 from .Node import Node
@@ -27,7 +28,7 @@ from .ProcessingInstruction import ProcessingInstruction
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-class Document(Node):
+class Document(ChildBearing):
     @staticmethod
     def ordered_first(nodeset):
         if len(nodeset) == 0:
@@ -60,7 +61,6 @@ class Document(Node):
         self.standalone = None
 
         self.root_element = None
-        self.children = []
 
         self._parser = xml.parsers.expat.ParserCreate(encoding=encoding)
         self._skip_whitespace = skip_whitespace
@@ -270,29 +270,3 @@ class Document(Node):
 
     def get_string_value(self):
         return self.root_element.get_string_value()
-
-    def __len__(self):
-        return len(self.children)
-
-    def __getitem__(self, key):
-        if not isinstance(key, int) and not isinstance(key, slice):
-            raise TypeError('Key values must be of int type or slice')
-
-        return self.children[key]
-
-    def __setitem__(self, key, value):
-        if not isinstance(key, int):
-            raise TypeError('Key values must be of int type')
-        if not isinstance(value, Node):
-            raise TypeError('Values must be of Node type')
-
-        self.children[key] = value
-
-    def __delitem__(self, key):
-        if not isinstance(key, int):
-            raise TypeError('Key values must be of int type')
-
-        del self.children[key]
-
-    def __iter__(self):
-        return iter(self.children)
