@@ -28,6 +28,9 @@ class Namespace(Node):
         self.prefix = prefix
         self.uri = uri
 
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+
     def get_type(self):
         return 'namespace'
 

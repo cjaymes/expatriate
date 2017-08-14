@@ -40,7 +40,8 @@ class Element(ChildBearing):
     def __init__(self, name, attributes=None, document=None, document_order=-1, parent=None):
         super(Element, self).__init__(document=document, document_order=document_order, parent=parent)
 
-        self.name = name
+        # bypass __setattr__ since we'll be parsing .name later
+        object.__setattr__(self, 'name', name)
 
         if attributes is None:
             self.attributes = {}

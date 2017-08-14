@@ -42,13 +42,40 @@ class Node(object):
 
     def _parse_name(self):
         if ':' in self.name:
-            self.prefix, colon, self.local_name = self.name.partition(':')
+            prefix, colon, local_name = self.name.partition(':')
 
-            self.namespace = self.resolve_prefix(self.prefix)
+            namespace = self.resolve_prefix(prefix)
         else:
-            self.prefix = None
-            self.namespace = self.resolve_prefix(self.prefix)
-            self.local_name = self.name
+            prefix = None
+            namespace = self.resolve_prefix(prefix)
+            local_name = self.name
+
+        # using object.__setattr__ for __setattr__ safety
+        object.__setattr__(self, 'prefix', prefix)
+        object.__setattr__(self, 'namespace', namespace)
+        object.__setattr__(self, 'local_name', local_name)
+
+    def __setattr__(self, name, value):
+        if name == 'name':
+            object.__setattr__(self, name, value)
+            self._parse_name()
+        elif name == 'prefix':
+            object.__setattr__(self, name, value)
+            object.__setattr__(self, 'namespace', self.resolve_prefix(prefix))
+            if self.prefix is not None:
+                object.__setattr__(self, 'name', self.prefix + ':' + self.local_name)
+        elif name == 'namespace':
+            object.__setattr__(self, name, value)
+            if self.namespace is not None:
+                object.__setattr__(self, 'prefix', self.namespace_prefix(self.namespace))
+            if self.prefix is not None:
+                object.__setattr__(self, 'name', prefix + ':' + self.local_name)
+        elif name == 'local_name':
+            object.__setattr__(self, name, value)
+            if self.prefix is not None:
+                object.__setattr__(self, 'name', prefix + ':' + self.local_name)
+        else:
+            object.__setattr__(self, name, value)
 
     def _tokenize(self, expr):
         tokens = []

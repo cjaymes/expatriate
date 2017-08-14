@@ -26,7 +26,7 @@ class Attribute(Node):
     def __init__(self, name, value, document=None, document_order=-1, parent=None):
         super(Attribute, self).__init__(document=document, document_order=document_order, parent=parent)
 
-        self.name = name
+        object.__setattr__(self, 'name', name)
         self._parse_name()
         self.value = value
 
