@@ -26,9 +26,9 @@ class NCNameNodeTest(NodeTest):
         self.name = name
 
     def evaluate(self, context_node, context_position, context_size, variables):
-        if not hasattr(context_node, 'name_local'):
+        if not hasattr(context_node, 'local_name'):
             return False
-        return context_node.name_local == self.name
+        return context_node.local_name == self.name
 
     def __str__(self):
         return 'NCNameNodeTest ' + hex(id(self)) + ' ' + self.name + ': [' + ','.join([str(x) for x in self.children]) + ']'

@@ -24,87 +24,99 @@ from .Namespace import Namespace
 
 logger = logging.getLogger(__name__)
 
-class DuplicateNamespaceException(Exception):
+class NamespaceRedefineException(Exception):
+    pass
+
+class PrefixRedefineException(Exception):
     pass
 
 class UnknownNamespaceException(Exception):
     pass
 
+class UnknownPrefixException(Exception):
+    pass
+
 class Element(ChildBearing):
-    def __init__(self, name, attributes, document=None, document_order=-1, parent=None):
+    def __init__(self, name, attributes=None, document=None, document_order=-1, parent=None):
         super(Element, self).__init__(document=document, document_order=document_order, parent=parent)
 
         self.name = name
 
-        self.attributes = attributes
+        if attributes is None:
+            self.attributes = {}
+        else:
+            self.attributes = attributes
 
         if isinstance(self.parent, Element):
-            self.namespaces = self.parent.namespaces.copy()
+            self._namespace_uris = self.parent._namespace_uris.copy()
+            self._namespace_prefixes = self.parent._namespace_prefixes.copy()
         else:
-            # Document
-            self.namespaces = {'xml': 'http://www.w3.org/XML/1998/namespace'}
+            # parent is-a Document
+            self._namespace_uris = {
+                'xml': 'http://www.w3.org/XML/1998/namespace',
+            }
+            self._namespace_prefixes = {
+                'http://www.w3.org/XML/1998/namespace': 'xml',
+            }
 
         # check for a default namespace
         if 'xmlns' in self.attributes:
-            if self.attributes['xmlns'] == '' and None in self.namespaces:
-                del self.namespaces[None]
+            if self.attributes['xmlns'] == '':
+                if None in self._namespace_uris:
+                    del self._namespace_uris[None]
             else:
-                self.namespaces[None] = self.attributes['xmlns']
+                self._namespace_uris[None] = self.attributes['xmlns']
+                self._namespace_prefixes[self.attributes['xmlns']] = None
 
         # check for prefix namespaces
         for k, v in self.attributes.items():
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
-                if prefix in self.namespaces:
-                    raise DuplicateNamespaceException('Prefix ' + prefix + ' has already been used but is being redefined')
-                self.namespaces[prefix] = v
-                logger.debug('Added prefix ' + prefix + ' for ' + v)
+                if prefix in self._namespace_uris.keys():
+                    raise PrefixRedefineException('Prefix ' + prefix + ' has already been used but is being redefined')
+                self._namespace_uris[prefix] = v
+                self._namespace_prefixes[v] = prefix
+                logger.debug('Added prefix ' + prefix + ' for uri ' + v)
+
+        self._parse_name()
 
         # create nodes for each of the namespaces
         self.namespace_nodes = {}
-        for prefix in self.namespaces.keys():
-            uri = self.namespaces[prefix]
-            self.namespace_nodes[prefix] = Namespace(prefix, uri, parent=self)
-            if document is not None:
-                document.attach(self.namespace_nodes[prefix])
+        for prefix in self._namespace_uris.keys():
+            uri = self._namespace_uris[prefix]
+            n = Namespace(prefix, uri)
+            self.attach(n)
+            self.namespace_nodes[prefix] = n
 
-        # parse the namespace & local part of the element name
-        if ':' in name:
-            n = name.partition(':')
-            if n[0] not in self.namespaces:
-                raise UnknownNamespaceException('Unable to map element name prefix ' + n[0] + ' to namespace')
-            self.name_namespace = self.namespaces[n[0]]
-            self.name_local = n[2]
-        else:
-            if None in self.namespaces:
-                self.name_namespace = self.namespaces[None]
-            else:
-                self.name_namespace = None
-            self.name_local = name
-
-        # check attributes for prefix
-        self.attribute_locals = {}
-        self.attribute_namespaces = {}
+        # create nodes for each of the attributes
         self.attribute_nodes = {}
         for k in sorted(self.attributes.keys()):
-            v = self.attributes[k]
-            if k.startswith('xmlns:'):
-                continue
-
-            # parse the namespace & local part from each attribute
             if ':' in k:
-                n = k.partition(':')
-                if n[0] not in self.namespaces:
-                    raise UnknownNamespaceException('Unable to map attribute prefix ' + n[0] + ' to namespace')
-                self.attribute_namespaces[k] = self.namespaces[n[0]]
-                self.attribute_locals[k] = n[2]
-            else:
-                self.attribute_namespaces[k] = None
-                self.attribute_locals[k] = k
+                prefix, colon, local_name = k.partition(':')
+                # check prefix
+                self.resolve_prefix(prefix)
+            v = self.attributes[k]
+            n = Attribute(k, v, parent=self)
+            self.attach(n)
+            self.attribute_nodes[k] = n
 
-            self.attribute_nodes[k] = Attribute(self.attribute_namespaces[k], self.attribute_locals[k], v, parent=self)
-            if document is not None:
-                document.attach(self.namespace_nodes[prefix])
+    def resolve_prefix(self, prefix):
+        if prefix == 'xmlns':
+            return 'http://www.w3.org/2000/xmlns/'
+        elif prefix in self._namespace_uris:
+            return self._namespace_uris[prefix]
+        elif prefix is None:
+            return None
+        else:
+            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
+
+    def namespace_prefix(self, namespace_uri):
+        if namespace_uri == 'http://www.w3.org/2000/xmlns/':
+            return 'xmlns'
+        elif namespace_uri in self._namespace_prefixes:
+            return self._namespace_prefixes[namespace_uri]
+        else:
+            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))
 
     def escape_attribute(self, text):
         return self.escape(text).replace('"', '&quot;')
@@ -137,7 +149,7 @@ class Element(ChildBearing):
         return s
 
     def get_expanded_name(self):
-        return (self.name_namespace, self.name_local)
+        return (self.namespace, self.local_name)
 
     def __str__(self):
         s = self.__class__.__name__ + ' ' + hex(id(self)) + ' ' + self.name

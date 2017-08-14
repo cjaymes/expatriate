@@ -236,42 +236,8 @@ class Document(ChildBearing):
     def _not_standalone_handler(self, data):
         logger.debug('_not_standalone_handler data: ' + str(data))
 
-    # def _start_doctype_decl_handler(self, doctypeName, systemId, publicId, has_internal_subset):
-    #     logger.debug('_start_doctype_decl_handler doctypeName: ' + str(doctypeName) + ' systemId: ' + str(systemId) + ' publicId: ' + str(publicId) + ' has_internal_subset: ' + str(has_internal_subset))
-    #
-    # def _end_doctype_decl_handler(self):
-    #     logger.debug('_end_doctype_decl_handler')
-    #
-    # def _element_decl_handler(self, name, model):
-    #     logger.debug('_element_decl_handler doctypeName: ' + str(name) + ' model: ' + str(model))
-    #
-    # def _attlist_decl_handler(self, elname, attname, type_, default, required):
-    #     logger.debug('_attlist_decl_handler elname: ' + str(elname) + ' attname: ' + str(attname) + ' type_: ' + str(type_) + ' default: ' + str(default) + ' required: ' + str(required))
-    #
-    # def _entity_decl_handler(self, entityName, is_parameter_entity, value, base, systemId, publicId, notationName):
-    #     logger.debug('_entity_decl_handler entityName: ' + str(entityName) + ' is_parameter_entity: ' + str(is_parameter_entity) + ' value: ' + str(value) + ' base: ' + str(base) + ' systemId: ' + str(systemId) + ' publicId: ' + str(publicId) + ' notationName: ' + str(notationName))
-    #
-    # def _notation_decl_handler(self, notationName, base, systemId, publicId):
-    #     logger.debug('_notation_decl_handler notationName: ' + str(notationName) + ' base: ' + str(base) + ' systemId: ' + str(systemId) + ' publicId: ' + str(publicId))
-    #
-    # def _external_entity_ref_handler(self, context, base, systemId, publicId):
-    #     logger.debug('_external_entity_ref_handler context: ' + str(context) + ' base: ' + str(base) + ' systemId: ' + str(systemId) + ' publicId: ' + str(publicId))
-
-    # def _start_namespace_handler(self, prefix, uri):
-    #     logger.debug('_start_namespace_handler prefix: ' + str(prefix) + ' uri: ' + str(uri))
-    #     self.namespaces[prefix] = url
-    #
-    # def _end_namespace_handler(self, prefix):
-    #     logger.debug('_end_namespace_handler prefix: ' + str(prefix))
-    #     self._stack[-1].namespaces[prefix] = self.namespaces[prefix]
-
     def get_type(self):
         return 'root'
 
     def get_string_value(self):
         return self.root_element.get_string_value()
-
-    def attach(self, node):
-        node._document = self
-        node._document_order = self._order_count
-        self._order_count += 1

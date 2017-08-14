@@ -19,8 +19,10 @@ from .CharacterData import CharacterData
 from .Comment import Comment
 from .Document import Document
 from .Element import Element
-from .Element import DuplicateNamespaceException
+from .Element import PrefixRedefineException
+from .Element import NamespaceRedefineException
 from .Element import UnknownNamespaceException
+from .Element import UnknownPrefixException
 from .ProcessingInstruction import ProcessingInstruction
 from .xpath import SyntaxException
 
@@ -30,7 +32,9 @@ __all__ = [
     'Document',
     'Element',
     'ProcessingInstruction',
-    'DuplicateNamespaceException',
+    'PrefixRedefineException',
+    'NamespaceRedefineException',
     'UnknownNamespaceException',
+    'UnknownPrefixException',
     'SyntaxException',
 ]

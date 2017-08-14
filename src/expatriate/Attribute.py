@@ -23,11 +23,11 @@ from .xpath.Literal import Literal
 logger = logging.getLogger(__name__)
 
 class Attribute(Node):
-    def __init__(self, name_namespace, name_local, value, document=None, document_order=-1, parent=None):
+    def __init__(self, name, value, document=None, document_order=-1, parent=None):
         super(Attribute, self).__init__(document=document, document_order=document_order, parent=parent)
 
-        self.name_namespace = name_namespace
-        self.name_local = name_local
+        self.name = name
+        self._parse_name()
         self.value = value
 
     def get_type(self):
@@ -37,7 +37,7 @@ class Attribute(Node):
         return self.value
 
     def get_expanded_name(self):
-        return (self.name_namespace, self.name_local)
+        return (self.namespace, self.local_name)
 
     def __eq__(self, other):
         if isinstance(other, Literal):
@@ -46,7 +46,7 @@ class Attribute(Node):
 
     def __str__(self):
         s = self.__class__.__name__ + ' ' + hex(id(self)) + ' '
-        if self.name_namespace is not None:
-            s += self.name_namespace + ':'
-        s += self.name_local + '=' + self.value
+        if self.namespace is not None:
+            s += self.namespace + ':'
+        s += self.local_name + '=' + self.value
         return s

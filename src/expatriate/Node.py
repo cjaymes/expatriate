@@ -28,6 +28,28 @@ class Node(object):
         self._document_order = document_order
         self.parent = parent
 
+    def resolve_prefix(self, prefix):
+        if self.parent is not None:
+            return self.parent.resolve_prefix(prefix)
+        else:
+            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
+
+    def namespace_prefix(self, namespace_uri):
+        if self.parent is not None:
+            return self.parent.namespace_prefix(namespace_uri)
+        else:
+            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))
+
+    def _parse_name(self):
+        if ':' in self.name:
+            self.prefix, colon, self.local_name = self.name.partition(':')
+
+            self.namespace = self.resolve_prefix(self.prefix)
+        else:
+            self.prefix = None
+            self.namespace = self.resolve_prefix(self.prefix)
+            self.local_name = self.name
+
     def _tokenize(self, expr):
         tokens = []
 

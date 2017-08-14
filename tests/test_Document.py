@@ -36,7 +36,7 @@ def test_xmlns_default_def():
     assert len(doc.root_element.attributes) == 1
     assert 'xmlns' in doc.root_element.attributes
     assert doc.root_element.attributes['xmlns'] == 'http://jaymes.biz/test'
-    assert len(doc.root_element.namespaces) == 2
+    assert len(doc.root_element.namespace_nodes) == 2
 
 def test_xmlns_prefix_def():
     doc = Document()
@@ -46,7 +46,7 @@ def test_xmlns_prefix_def():
     assert len(doc.root_element.attributes) == 1
     assert 'xmlns:test2' in doc.root_element.attributes
     assert doc.root_element.attributes['xmlns:test2'] == 'http://jaymes.biz/test2'
-    assert len(doc.root_element.namespaces) == 2
+    assert len(doc.root_element.namespace_nodes) == 2
 
 def test_xmlns_prefix_element():
     doc = Document()
@@ -56,7 +56,7 @@ def test_xmlns_prefix_element():
     assert len(doc.root_element.attributes) == 1
     assert 'xmlns:test2' in doc.root_element.attributes
     assert doc.root_element.attributes['xmlns:test2'] == 'http://jaymes.biz/test2'
-    assert len(doc.root_element.namespaces) == 2
+    assert len(doc.root_element.namespace_nodes) == 2
 
 def test_xmlns_prefix_attribute():
     doc = Document()
@@ -65,27 +65,27 @@ def test_xmlns_prefix_attribute():
     assert len(doc.root_element.attributes) == 1
     assert 'xmlns:test2' in doc.root_element.attributes
     assert doc.root_element.attributes['xmlns:test2'] == 'http://jaymes.biz/test2'
-    assert len(doc.root_element.namespaces) == 2
+    assert len(doc.root_element.namespace_nodes) == 2
 
     assert len(doc.root_element.children) == 1
     assert len(doc.root_element.children[0].attributes) == 1
-    assert len(doc.root_element.children[0].namespaces) == 2
+    assert len(doc.root_element.children[0].namespace_nodes) == 2
     assert 'test2:attribute' in doc.root_element.children[0].attributes
     assert doc.root_element.children[0].attributes['test2:attribute'] == 'test'
 
 def test_xmlns_prefix_element_unknown():
     doc = Document()
-    with pytest.raises(UnknownNamespaceException):
+    with pytest.raises(UnknownPrefixException):
         doc.parse('''<Document><test:Element/></Document>''')
 
 def test_xmlns_prefix_attribute_unknown():
     doc = Document()
-    with pytest.raises(UnknownNamespaceException):
+    with pytest.raises(UnknownPrefixException):
         doc.parse('''<Document><Element test:attribute="test"/></Document>''')
 
-def test_xmlns_prefix_duplicate():
+def test_xmlns_prefix_redefine():
     doc = Document()
-    with pytest.raises(DuplicateNamespaceException):
+    with pytest.raises(PrefixRedefineException):
         doc.parse('''<Document xmlns:test="http://jaymes.biz/test"><Element xmlns:test="http://jaymes.biz/test2"/></Document>''')
 
 def test_not_skip_whitespace():
@@ -160,14 +160,14 @@ def test_encoding_utf8():
 def test_namespaces():
     doc = Document()
     doc.parse('''<Document xmlns="http://jaymes.biz/" xmlns:test="http://jaymes.biz/test"><test2:Element xmlns:test2="http://jaymes.biz/test2"/></Document>''')
-    assert len(doc.root_element.namespaces) == 3
-    assert 'xml' in doc.root_element.namespaces
-    assert None in doc.root_element.namespaces
-    assert 'test' in doc.root_element.namespaces
+    assert len(doc.root_element.namespace_nodes) == 3
+    assert 'xml' in doc.root_element.namespace_nodes
+    assert None in doc.root_element.namespace_nodes
+    assert 'test' in doc.root_element.namespace_nodes
 
     assert len(doc.root_element.children) == 1
-    assert len(doc.root_element.children[0].namespaces) == 4
-    assert 'test2' in doc.root_element.children[0].namespaces
+    assert len(doc.root_element.children[0].namespace_nodes) == 4
+    assert 'test2' in doc.root_element.children[0].namespace_nodes
 
 def test_whitespace_preservation():
     doc = Document()

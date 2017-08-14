@@ -25,6 +25,54 @@ class ChildBearing(Node):
         super(ChildBearing, self).__init__(document=document, document_order=document_order, parent=parent)
         self.children = []
 
+    def spawn_character_data(self, data):
+        from .CharacterData import CharacterData
+        n = CharacterData(data, parent=self)
+
+        self.children.append(n)
+        self.attach(n)
+
+        return n
+
+    def spawn_comment(self, data):
+        from .Comment import Comment
+        n = Comment(data, parent=self)
+
+        self.children.append(n)
+        self.attach(n)
+
+        return n
+
+    def spawn_element(self, name, attributes=None):
+        from .Element import Element
+        n = Element(name, attributes, parent=self)
+
+        self.children.append(n)
+        self.attach(n)
+
+        return n
+
+    def spawn_processing_instruction(self, target, data):
+        from .ProcessingInstruction import ProcessingInstruction
+        n = ProcessingInstruction(target, data, parent=self)
+
+        self.children.append(n)
+        self.attach(n)
+
+        return n
+
+    def attach(self, node):
+        node._parent = self
+        if self._document is not None:
+            node._document = self._document
+            node._document_order = self._document._order_count
+            self._document._order_count += 1
+
+    def detach(self, node):
+        node._parent = None
+        node._document = None
+        node._document_order = -1
+
     def __len__(self):
         return len(self.children)
 
@@ -66,69 +114,49 @@ class ChildBearing(Node):
             raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
         self.children.append(n)
-        if self._document is not None:
-            self._document.attach(n)
+        self.attach(n)
 
-    def spawn_character_data(self, data):
+    def count(self):
+        return self.children.count()
+
+    def index(self, x):
+        return self.children.index(x)
+
+    def extend(self, iterable):
+        for c in iterable:
+            self.append(c)
+
+    def insert(self, i, x):
         from .CharacterData import CharacterData
-        n = CharacterData(data, parent=self)
 
-        self.children.append(n)
-        if self._document is not None:
-            self._document.attach(n)
+        if isinstance(x, str):
+            # wrap in CharaterData
+            n = CharacterData(x, parent=self)
+        elif isinstance(x, int) or isinstance(x, float):
+            # convert to str & wrap in CharaterData
+            n = CharacterData(str(x), parent=self)
+        elif isinstance(x, Node):
+            n = x
+        else:
+            raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
+        self.children.insert(i, n)
+        self.attach(n)
+
+    def pop(self, i=-1):
+        n = self.children.pop(i)
+        self.detach(n)
         return n
 
-    def spawn_comment(self, data):
-        from .Comment import Comment
-        n = Comment(data, parent=self)
+    def remove(self, x):
+        n = self.children[self.children.index(x)]
+        self.detach(n)
+        self.children.remove(x)
 
-        self.children.append(n)
-        if self._document is not None:
-            self._document.attach(n)
+    def reverse(self):
+        return self.children.reverse()
 
-        return n
+    def sort(self, key=None, reverse=False):
+        return self.children.sort(key=key, reverse=reverse)
 
-    def spawn_element(self, name, attributes=None):
-        from .Element import Element
-        n = Element(name, attributes, parent=self)
-
-        self.children.append(n)
-        if self._document is not None:
-            self._document.attach(n)
-
-        return n
-
-    def spawn_processing_instruction(self, target, data):
-        from .ProcessingInstruction import ProcessingInstruction
-        n = ProcessingInstruction(target, data, parent=self)
-
-        self.children.append(n)
-        if self._document is not None:
-            self._document.attach(n)
-
-        return n
-
-    def count(self, *args, **kwargs):
-        return self.children.count(*args, **kwargs)
-
-    def index(self, *args, **kwargs):
-        return self.children.index(*args, **kwargs)
-
-    def extend(self, *args, **kwargs):
-        return self.children.extend(*args, **kwargs)
-
-    def insert(self, *args, **kwargs):
-        return self.children.insert(*args, **kwargs)
-
-    def pop(self, *args, **kwargs):
-        return self.children.pop(*args, **kwargs)
-
-    def remove(self, *args, **kwargs):
-        return self.children.remove(*args, **kwargs)
-
-    def reverse(self, *args, **kwargs):
-        return self.children.reverse(*args, **kwargs)
-
-    def sort(self, *args, **kwargs):
-        return self.children.sort(*args, **kwargs)
+    # TODO copy()
