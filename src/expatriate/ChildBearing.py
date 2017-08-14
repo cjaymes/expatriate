@@ -21,8 +21,8 @@ from .Node import Node
 
 logger = logging.getLogger(__name__)
 class ChildBearing(Node):
-    def __init__(self, document, document_order, parent):
-        super(ChildBearing, self).__init__(document, document_order, parent)
+    def __init__(self, document=None, document_order=-1, parent=None):
+        super(ChildBearing, self).__init__(document=document, document_order=document_order, parent=parent)
         self.children = []
 
     def __len__(self):
@@ -56,35 +56,57 @@ class ChildBearing(Node):
 
         if isinstance(x, str):
             # wrap in CharaterData
-            cd = CharacterData(self._document, -1, self, x)
-            self.children.append(cd)
+            n = CharacterData(x, parent=self)
         elif isinstance(x, int) or isinstance(x, float):
             # convert to str & wrap in CharaterData
-            cd = CharacterData(self._document, -1, self, str(x))
-            self.children.append(cd)
+            n = CharacterData(str(x), parent=self)
         elif isinstance(x, Node):
-            self.children.append(x)
+            n = x
         else:
             raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
+        self.children.append(n)
+        if self._document is not None:
+            self._document.attach(n)
+
     def spawn_character_data(self, data):
         from .CharacterData import CharacterData
-        n = CharacterData(self._document, -1, self, data)
+        n = CharacterData(data, parent=self)
+
+        self.children.append(n)
+        if self._document is not None:
+            self._document.attach(n)
+
         return n
 
     def spawn_comment(self, data):
         from .Comment import Comment
-        n = Comment(self._document, -1, self, data)
+        n = Comment(data, parent=self)
+
+        self.children.append(n)
+        if self._document is not None:
+            self._document.attach(n)
+
         return n
 
-    def spawn_element(self, name, attributes):
+    def spawn_element(self, name, attributes=None):
         from .Element import Element
-        n = Element(self._document, -1, self, name, attributes)
+        n = Element(name, attributes, parent=self)
+
+        self.children.append(n)
+        if self._document is not None:
+            self._document.attach(n)
+
         return n
 
     def spawn_processing_instruction(self, target, data):
         from .ProcessingInstruction import ProcessingInstruction
-        n = ProcessingInstruction(self._document, -1, self, target, data)
+        n = ProcessingInstruction(target, data, parent=self)
+
+        self.children.append(n)
+        if self._document is not None:
+            self._document.attach(n)
+
         return n
 
     def count(self, *args, **kwargs):

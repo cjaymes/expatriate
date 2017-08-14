@@ -23,7 +23,7 @@ from .xpath import *
 
 logger = logging.getLogger(__name__)
 class Node(object):
-    def __init__(self, document, document_order, parent):
+    def __init__(self, document=None, document_order=-1, parent=None):
         self._document = document
         self._document_order = document_order
         self.parent = parent
@@ -96,6 +96,9 @@ class Node(object):
     def xpath(self, expr, version=1.0, variables={}, add_functions={}):
         if version != 1.0:
             raise NotImplementedError('Only XPath 1.0 has been implemented')
+
+        if self._document is None:
+            raise ValueError("Can't resolve xpath expression on Node not attached to a document")
 
         logger.debug('********************************************')
         logger.debug('Tokenizing xpath expression: ' + str(expr))

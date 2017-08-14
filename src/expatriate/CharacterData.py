@@ -22,8 +22,8 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class CharacterData(Node):
-    def __init__(self, document, document_order, parent, data, cdata_block=False):
-        super(CharacterData, self).__init__(document, document_order, parent)
+    def __init__(self, data, cdata_block=False, document=None, document_order=-1, parent=None):
+        super(CharacterData, self).__init__(document=document, document_order=document_order, parent=parent)
 
         self.data = data
         self.cdata_block = cdata_block

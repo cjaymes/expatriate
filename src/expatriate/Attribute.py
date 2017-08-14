@@ -23,8 +23,8 @@ from .xpath.Literal import Literal
 logger = logging.getLogger(__name__)
 
 class Attribute(Node):
-    def __init__(self, document, document_order, parent, name_namespace, name_local, value):
-        super(Attribute, self).__init__(document, document_order, parent)
+    def __init__(self, name_namespace, name_local, value, document=None, document_order=-1, parent=None):
+        super(Attribute, self).__init__(document=document, document_order=document_order, parent=parent)
 
         self.name_namespace = name_namespace
         self.name_local = name_local

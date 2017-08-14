@@ -55,7 +55,7 @@ class Document(ChildBearing):
         return sorted(nodeset, key=lambda x: x._document_order, reverse=reverse)
 
     def __init__(self, encoding=None, skip_whitespace=True):
-        super(Document, self).__init__(self, -1, None)
+        super(Document, self).__init__(document=self)
         self.version = None
         self.encoding = encoding
         self.standalone = None
@@ -159,11 +159,11 @@ class Document(ChildBearing):
             self._in_space_preserve = True
 
         if len(self._stack) == 0:
-            el = Element(self, self._order_count, self, name, attributes)
+            el = Element(name, attributes, document=self, document_order=self._order_count, parent=self)
             self.root_element = el
             self.children.append(el)
         else:
-            el = Element(self, self._order_count, self._stack[-1], name, attributes)
+            el = Element(name, attributes, document=self, document_order=self._order_count, parent=self._stack[-1])
             self._stack[-1].children.append(el)
         self._order_count += 1
 
@@ -186,10 +186,10 @@ class Document(ChildBearing):
         logger.debug('_processing_instruction_handler target: ' + str(target) + ' data: ' + str(data))
 
         if len(self._stack) == 0:
-            pi = ProcessingInstruction(self, self._order_count, self, target, data)
+            pi = ProcessingInstruction(target, data, document=self, document_order=self._order_count, parent=self)
             self.children.append(pi)
         else:
-            pi = ProcessingInstruction(self, self._order_count, self._stack[-1], target, data)
+            pi = ProcessingInstruction(target, data, document=self, document_order=self._order_count, parent=self._stack[-1])
             self._stack[-1].children.append(pi)
         self._order_count += 1
 
@@ -204,10 +204,10 @@ class Document(ChildBearing):
                 return
 
         if len(self._stack) == 0:
-            char_data = CharacterData(self, self._order_count, self, data, cdata_block=self._in_cdata)
+            char_data = CharacterData(data, cdata_block=self._in_cdata, document=self, document_order=self._order_count, parent=self)
             self.children.append(char_data)
         else:
-            char_data = CharacterData(self, self._order_count, self._stack[-1], data, cdata_block=self._in_cdata)
+            char_data = CharacterData(data, cdata_block=self._in_cdata, document=self, document_order=self._order_count, parent=self._stack[-1])
             self._stack[-1].children.append(char_data)
         self._order_count += 1
 
@@ -215,10 +215,10 @@ class Document(ChildBearing):
         logger.debug('_comment_handler data: ' + str(data))
 
         if len(self._stack) == 0:
-            c = Comment(self, self._order_count, data)
+            c = Comment(data, document=self, document_order=self._order_count, parent=self)
             self.children.append(c)
         else:
-            c = Comment(self, self._order_count, self._stack[-1], data)
+            c = Comment(data, document=self, document_order=self._order_count, parent=self._stack[-1])
             self._stack[-1].children.append(c)
         self._order_count += 1
 
@@ -270,3 +270,8 @@ class Document(ChildBearing):
 
     def get_string_value(self):
         return self.root_element.get_string_value()
+
+    def attach(self, node):
+        node._document = self
+        node._document_order = self._order_count
+        self._order_count += 1

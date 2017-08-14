@@ -31,8 +31,8 @@ class UnknownNamespaceException(Exception):
     pass
 
 class Element(ChildBearing):
-    def __init__(self, document, document_order, parent, name, attributes):
-        super(Element, self).__init__(document, document_order, parent)
+    def __init__(self, name, attributes, document=None, document_order=-1, parent=None):
+        super(Element, self).__init__(document=document, document_order=document_order, parent=parent)
 
         self.name = name
 
@@ -64,8 +64,9 @@ class Element(ChildBearing):
         self.namespace_nodes = {}
         for prefix in self.namespaces.keys():
             uri = self.namespaces[prefix]
-            self.namespace_nodes[prefix] = Namespace(document, document._order_count, self, prefix, uri)
-            document._order_count += 1
+            self.namespace_nodes[prefix] = Namespace(prefix, uri, parent=self)
+            if document is not None:
+                document.attach(self.namespace_nodes[prefix])
 
         # parse the namespace & local part of the element name
         if ':' in name:
@@ -101,8 +102,9 @@ class Element(ChildBearing):
                 self.attribute_namespaces[k] = None
                 self.attribute_locals[k] = k
 
-            self.attribute_nodes[k] = Attribute(document, document._order_count, self, self.attribute_namespaces[k], self.attribute_locals[k], v)
-            document._order_count += 1
+            self.attribute_nodes[k] = Attribute(self.attribute_namespaces[k], self.attribute_locals[k], v, parent=self)
+            if document is not None:
+                document.attach(self.namespace_nodes[prefix])
 
     def escape_attribute(self, text):
         return self.escape(text).replace('"', '&quot;')
