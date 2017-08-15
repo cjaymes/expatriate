@@ -19,11 +19,13 @@ import logging
 
 from .Node import Node
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
 
 class Namespace(Node):
-    def __init__(self, prefix, uri, document=None, document_order=-1, parent=None):
-        super(Namespace, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, prefix, uri, parent=None):
+        super(Namespace, self).__init__(parent=parent)
 
         self.prefix = prefix
         self.uri = uri
@@ -39,3 +41,11 @@ class Namespace(Node):
 
     def get_expanded_name(self):
         return (None, self.prefix)
+
+    def get_document_order(self):
+        if self._parent is None:
+            raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
+
+        do = self._parent.get_document_order()
+        ordered_ns = [self._parent.namespace_nodes[k] for k in self._parent.namespace_nodes.keys()]
+        return do + ordered_ns.index(self)

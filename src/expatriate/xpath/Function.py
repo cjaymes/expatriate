@@ -141,6 +141,8 @@ class Function(object):
             raise XPathSyntaxException('string() expects 1 argument or none')
 
         if isinstance(a, list): # node-set
+            if len(a) == 0:
+                return ''
             from ..Document import Document
             first_node = Document.ordered_first(a)
             return first_node.get_string_value()

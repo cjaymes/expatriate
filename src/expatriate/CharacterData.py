@@ -22,8 +22,8 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class CharacterData(Node):
-    def __init__(self, data, cdata_block=False, document=None, document_order=-1, parent=None):
-        super(CharacterData, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, data, cdata_block=False, parent=None):
+        super(CharacterData, self).__init__(parent=parent)
 
         self.data = data
         self.cdata_block = cdata_block
@@ -48,4 +48,4 @@ class CharacterData(Node):
         elif isinstance(other, int) or isinstance(other, float):
             return self.data == str(other)
         else:
-            return self == other
+            return object.__eq__(self, other)

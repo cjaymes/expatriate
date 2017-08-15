@@ -26,6 +26,8 @@ from .Element import Element
 from .Node import Node
 from .ProcessingInstruction import ProcessingInstruction
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -33,10 +35,10 @@ class Document(ChildBearing):
     @staticmethod
     def ordered_first(nodeset):
         if len(nodeset) == 0:
-            return None
+            raise ValueError('Cannot determine the first node of an empty nodeset')
         first = nodeset[0]
         for n in nodeset[1:]:
-            if n._document_order < first._document_order:
+            if n.get_document_order() < first.get_document_order():
                 first = n
         return first
 
@@ -53,10 +55,12 @@ class Document(ChildBearing):
     def order_sort(nodeset, reverse=False):
         if not Document.is_nodeset(nodeset):
             raise TypeError('Cannot sort by document order without a nodeset')
-        return sorted(nodeset, key=lambda x: x._document_order, reverse=reverse)
+        for n in nodeset:
+            logger.info(str(n) + ' document order: ' + str(n.get_document_order()))
+        return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
 
     def __init__(self, encoding=None, skip_whitespace=True):
-        super(Document, self).__init__(document=self)
+        super(Document, self).__init__()
         self.version = None
         self.encoding = encoding
         self.standalone = None
@@ -68,8 +72,6 @@ class Document(ChildBearing):
         self._in_space_preserve = False
         self._in_cdata = False
         self._stack = []
-        self._order_count = 0
-        self._order_dirty = False
 
         self._parser.XmlDeclHandler = self._xml_decl_handler
         self._parser.StartElementHandler = self._start_element_handler
@@ -137,13 +139,12 @@ class Document(ChildBearing):
             self._in_space_preserve = True
 
         if len(self._stack) == 0:
-            el = Element(name, attributes, document=self, document_order=self._order_count, parent=self)
+            el = Element(name, attributes, parent=self)
             self.root_element = el
             self.children.append(el)
         else:
-            el = Element(name, attributes, document=self, document_order=self._order_count, parent=self._stack[-1])
+            el = Element(name, attributes, parent=self._stack[-1])
             self._stack[-1].children.append(el)
-        self._order_count += 1
 
         self._stack.append(el)
 
@@ -161,12 +162,11 @@ class Document(ChildBearing):
         logger.debug('_processing_instruction_handler target: ' + str(target) + ' data: ' + str(data))
 
         if len(self._stack) == 0:
-            pi = ProcessingInstruction(target, data, document=self, document_order=self._order_count, parent=self)
+            pi = ProcessingInstruction(target, data, parent=self)
             self.children.append(pi)
         else:
-            pi = ProcessingInstruction(target, data, document=self, document_order=self._order_count, parent=self._stack[-1])
+            pi = ProcessingInstruction(target, data, parent=self._stack[-1])
             self._stack[-1].children.append(pi)
-        self._order_count += 1
 
     def _character_data_handler(self, data):
         logger.debug('_character_data_handler data: ' + str(data.encode('UTF-8')))
@@ -179,23 +179,21 @@ class Document(ChildBearing):
                 return
 
         if len(self._stack) == 0:
-            char_data = CharacterData(data, cdata_block=self._in_cdata, document=self, document_order=self._order_count, parent=self)
+            char_data = CharacterData(data, cdata_block=self._in_cdata, parent=self)
             self.children.append(char_data)
         else:
-            char_data = CharacterData(data, cdata_block=self._in_cdata, document=self, document_order=self._order_count, parent=self._stack[-1])
+            char_data = CharacterData(data, cdata_block=self._in_cdata, parent=self._stack[-1])
             self._stack[-1].children.append(char_data)
-        self._order_count += 1
 
     def _comment_handler(self, data):
         logger.debug('_comment_handler data: ' + str(data))
 
         if len(self._stack) == 0:
-            c = Comment(data, document=self, document_order=self._order_count, parent=self)
+            c = Comment(data, parent=self)
             self.children.append(c)
         else:
-            c = Comment(data, document=self, document_order=self._order_count, parent=self._stack[-1])
+            c = Comment(data, parent=self._stack[-1])
             self._stack[-1].children.append(c)
-        self._order_count += 1
 
     def _start_cdata_section_handler(self):
         logger.debug('_start_cdata_section_handler')
@@ -216,3 +214,6 @@ class Document(ChildBearing):
 
     def get_string_value(self):
         return self.root_element.get_string_value()
+
+    def get_document_order(self):
+        return 0

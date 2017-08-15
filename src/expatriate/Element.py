@@ -27,8 +27,8 @@ from .exceptions import *
 logger = logging.getLogger(__name__)
 
 class Element(ChildBearing):
-    def __init__(self, name, attributes=None, document=None, document_order=-1, parent=None):
-        super(Element, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, name, attributes=None, parent=None):
+        super(Element, self).__init__(parent=parent)
 
         # bypass __setattr__ since we'll be parsing .name later
         object.__setattr__(self, 'name', name)
@@ -75,8 +75,7 @@ class Element(ChildBearing):
         self.namespace_nodes = {}
         for prefix in self._namespace_uris.keys():
             uri = self._namespace_uris[prefix]
-            n = Namespace(prefix, uri)
-            self.attach(n)
+            n = Namespace(prefix, uri, parent=self)
             self.namespace_nodes[prefix] = n
 
         # create nodes for each of the attributes
@@ -88,7 +87,6 @@ class Element(ChildBearing):
                 self.resolve_prefix(prefix)
             v = attributes[k]
             n = Attribute(k, v, parent=self)
-            self.attach(n)
             self.attribute_nodes[k] = n
 
     def resolve_prefix(self, prefix):
@@ -163,3 +161,9 @@ class Element(ChildBearing):
                     logger.debug(str(self) + ' id ' + str(v) + ' does not match id: ' + str(id_))
 
         return super(Element, self).find_by_id(id_)
+
+    def get_node_count(self):
+        do = 1 + len(self.namespace_nodes) + len(self.attribute_nodes)
+        for c in self.children:
+            do += c.get_node_count()
+        return do

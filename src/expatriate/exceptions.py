@@ -21,6 +21,9 @@ class NamespaceRedefineException(Exception):
 class PrefixRedefineException(Exception):
     pass
 
+class UnattachedElementException(Exception):
+    pass
+
 class UnknownNamespaceException(Exception):
     pass
 
@@ -33,6 +36,7 @@ class XPathSyntaxException(Exception):
 __all__ = [
     'PrefixRedefineException',
     'NamespaceRedefineException',
+    'UnattachedElementException',
     'UnknownNamespaceException',
     'UnknownPrefixException',
     'XPathSyntaxException',

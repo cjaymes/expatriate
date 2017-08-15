@@ -22,8 +22,8 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class Comment(Node):
-    def __init__(self, data, document=None, document_order=-1, parent=None):
-        super(Comment, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, data, parent=None):
+        super(Comment, self).__init__(parent=parent)
 
         self.data = data
 

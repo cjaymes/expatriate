@@ -19,14 +19,13 @@ import logging
 import math
 import re
 
+from .exceptions import *
 from .xpath import *
 
 logger = logging.getLogger(__name__)
 
 class Node(object):
-    def __init__(self, document=None, document_order=-1, parent=None):
-        self._document = document
-        self._document_order = document_order
+    def __init__(self, parent=None):
         self._parent = parent
 
     def resolve_prefix(self, prefix):
@@ -174,7 +173,7 @@ class Node(object):
         if version != 1.0:
             raise NotImplementedError('Only XPath 1.0 has been implemented')
 
-        if self._document is None:
+        if self.get_document() is None:
             raise ValueError("Can't resolve xpath expression on Node not attached to a document")
 
         logger.debug('********************************************')
@@ -453,3 +452,27 @@ class Node(object):
 
     def find_by_id(self, id_):
         return None
+
+    def get_node_count(self):
+        return 1
+
+    def get_document_order(self):
+        if self._parent is None:
+            raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
+
+        do = self._parent.get_document_order()
+        try:
+            do += len(self._parent.namespace_nodes)
+        except AttributeError:
+            pass
+        try:
+            do += len(self._parent.attribute_nodes)
+        except AttributeError:
+            pass
+
+        for c in self._parent.children:
+            if c == self:
+                return do
+            do += c.get_node_count()
+
+        raise ValueError('Unable to find node ' + str(self) + ' in ' + str(self._parent) + ' children')

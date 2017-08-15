@@ -20,11 +20,13 @@ import logging
 from .Node import Node
 from .xpath.Literal import Literal
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
 
 class Attribute(Node):
-    def __init__(self, name, value, document=None, document_order=-1, parent=None):
-        super(Attribute, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, name, value, parent=None):
+        super(Attribute, self).__init__(parent=parent)
 
         object.__setattr__(self, 'name', name)
         self._parse_name()
@@ -42,7 +44,11 @@ class Attribute(Node):
     def __eq__(self, other):
         if isinstance(other, Literal):
             return self.value == other.value
-        return other == self.value
+        elif isinstance(other, str):
+            return self.value == other
+        elif isinstance(other, int) or isinstance(other, float):
+            return self.value == str(other)
+        return object.__eq__(self, other)
 
     def __str__(self):
         s = self.__class__.__name__ + ' ' + hex(id(self)) + ' '
@@ -50,3 +56,12 @@ class Attribute(Node):
             s += self.namespace + ':'
         s += self.local_name + '=' + self.value
         return s
+
+    def get_document_order(self):
+        if self._parent is None:
+            raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
+
+        do = self._parent.get_document_order()
+        do += len(self._parent.namespace_nodes)
+        ordered_attr = [self._parent.attribute_nodes[k] for k in self._parent.attribute_nodes.keys()]
+        return do + ordered_attr.index(self)

@@ -19,11 +19,13 @@ import logging
 
 from .Node import Node
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
 
 class ChildBearing(Node):
-    def __init__(self, document=None, document_order=-1, parent=None):
-        super(ChildBearing, self).__init__(document=document, document_order=document_order, parent=parent)
+    def __init__(self, parent=None):
+        super(ChildBearing, self).__init__(parent=parent)
         self.children = []
 
     def spawn_character_data(self, data):
@@ -31,7 +33,6 @@ class ChildBearing(Node):
         n = CharacterData(data, parent=self)
 
         self.children.append(n)
-        self.attach(n)
 
         return n
 
@@ -40,7 +41,6 @@ class ChildBearing(Node):
         n = Comment(data, parent=self)
 
         self.children.append(n)
-        self.attach(n)
 
         return n
 
@@ -49,7 +49,6 @@ class ChildBearing(Node):
         n = Element(name, attributes, parent=self)
 
         self.children.append(n)
-        self.attach(n)
 
         return n
 
@@ -58,23 +57,8 @@ class ChildBearing(Node):
         n = ProcessingInstruction(target, data, parent=self)
 
         self.children.append(n)
-        self.attach(n)
 
         return n
-
-    def attach(self, node):
-        node._parent = self
-        if self._document is not None:
-            node._document = self._document
-            node._document_order = self._document._order_count
-            self._document._order_count += 1
-        node.attached()
-
-    def detach(self, node):
-        node._parent = None
-        node._document = None
-        node._document_order = -1
-        node.detached()
 
     def __len__(self):
         return len(self.children)
@@ -118,7 +102,6 @@ class ChildBearing(Node):
             raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
         self.children.append(n)
-        self.attach(n)
 
     def count(self):
         return self.children.count()
@@ -145,7 +128,6 @@ class ChildBearing(Node):
             raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
         self.children.insert(i, n)
-        self.attach(n)
 
     def pop(self, i=-1):
         n = self.children.pop(i)
@@ -154,7 +136,6 @@ class ChildBearing(Node):
 
     def remove(self, x):
         n = self.children[self.children.index(x)]
-        self.detach(n)
         self.children.remove(x)
 
     def reverse(self):
