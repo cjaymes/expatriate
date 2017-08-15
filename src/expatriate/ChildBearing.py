@@ -68,11 +68,13 @@ class ChildBearing(Node):
             node._document = self._document
             node._document_order = self._document._order_count
             self._document._order_count += 1
+        node.attached()
 
     def detach(self, node):
         node._parent = None
         node._document = None
         node._document_order = -1
+        node.detached()
 
     def __len__(self):
         return len(self.children)
@@ -111,6 +113,7 @@ class ChildBearing(Node):
             n = CharacterData(str(x), parent=self)
         elif isinstance(x, Node):
             n = x
+            n._parent = self
         else:
             raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
 
@@ -161,3 +164,12 @@ class ChildBearing(Node):
         return self.children.sort(key=key, reverse=reverse)
 
     # TODO copy()
+
+    def find_by_id(self, id_):
+        logger.debug(str(self) + ' checking children for id: ' + str(id_))
+        for c in self.children:
+            el = c.find_by_id(id_)
+            if el is not None:
+                return el
+
+        return super(ChildBearing, self).find_by_id(id_)

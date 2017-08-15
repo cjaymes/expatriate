@@ -27,17 +27,17 @@ class Node(object):
     def __init__(self, document=None, document_order=-1, parent=None):
         self._document = document
         self._document_order = document_order
-        self.parent = parent
+        self._parent = parent
 
     def resolve_prefix(self, prefix):
-        if self.parent is not None:
-            return self.parent.resolve_prefix(prefix)
+        if self._parent is not None:
+            return self._parent.resolve_prefix(prefix)
         else:
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
     def namespace_prefix(self, namespace_uri):
-        if self.parent is not None:
-            return self.parent.namespace_prefix(namespace_uri)
+        if self._parent is not None:
+            return self._parent.namespace_prefix(namespace_uri)
         else:
             raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))
 
@@ -304,7 +304,7 @@ class Node(object):
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
             elif token == '/':
                 if i == 0:
-                    s = RootStep(self._document)
+                    s = RootStep(self.get_document())
                 else:
                     while(len(stack) > 0 and not isinstance(stack[-1], Step)):
                         i = stack.pop()
@@ -420,6 +420,14 @@ class Node(object):
         # just for pytest output
         return self.__str__()
 
+    def get_document(self):
+        from .Document import Document
+
+        n = self
+        while(n is not None and not isinstance(n, Document)):
+            n = n._parent
+        return n
+
     def get_type(self):
         raise NotImplementedError('get_type has not been implemented in class ' + self.__class__.__name__)
 
@@ -436,3 +444,12 @@ class Node(object):
         text = text.replace('"', '&quot;')
         text = text.replace("'", '&apos;')
         return text
+
+    def attached(self):
+        pass
+
+    def detached(self):
+        pass
+
+    def find_by_id(self, id_):
+        return None

@@ -68,7 +68,6 @@ class Document(ChildBearing):
         self._in_space_preserve = False
         self._in_cdata = False
         self._stack = []
-        self._element_index = {}
         self._order_count = 0
         self._order_dirty = False
 
@@ -145,9 +144,6 @@ class Document(ChildBearing):
             el = Element(name, attributes, document=self, document_order=self._order_count, parent=self._stack[-1])
             self._stack[-1].children.append(el)
         self._order_count += 1
-
-        if 'id' in attributes:
-            self._element_index[attributes['id']] = el
 
         self._stack.append(el)
 

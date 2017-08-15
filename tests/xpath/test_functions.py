@@ -32,7 +32,7 @@ doc.parse('''<?xml version='1.0' encoding='utf-8'?>
     <para name="element2"/>
     <para name="element3">
         <para name="subel1" xml:lang="en">
-            <para name="kal-el">
+            <para name="kal-el" id="id_test">
                 Superman's dad
             </para>
             <para name="kal-el" xml:lang="de">
@@ -65,7 +65,7 @@ def test_count():
     assert doc.xpath('count(child::*)') == 1
 
 def test_id():
-    assert doc.xpath('id(child::*)') == 'text nodeSuperman\'s dadSupermanns Vater'
+    assert doc.xpath('id("id_test")') == doc.root_element[2][0][0]
 
 @pytest.mark.parametrize(
     "test, result",

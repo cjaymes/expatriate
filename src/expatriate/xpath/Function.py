@@ -56,13 +56,21 @@ class Function(object):
                 logger.debug('Using ' + str(s) + ' as string-value of ' + str(n))
                 ids.extend(re.split(r'[\x20\x09\x0D\x0A]+', s))
         else:
-            ids = re.split(r'[\x20\x09\x0D\x0A]+', f_string((args[0],), context_node, context_position, context_size, variables))
+            ids = re.split(r'[\x20\x09\x0D\x0A]+', Function.f_string((args[0],), context_node, context_position, context_size, variables))
 
+        doc = context_node.get_document()
         ns = []
         for i in ids:
-            if i in context_node._document._element_index:
-                ns.append(context_node._document._element_index[i])
-        return s
+            try:
+                ns.append(doc.find_by_id(i))
+            except KeyError:
+                logger.debug('Could not find element with id: ' + str(i))
+                pass
+
+        if len(ns) == 1:
+            return ns[0]
+        else:
+            return ns
 
     def f_local_name(args, context_node, context_position, context_size, variables):
         if len(args) == 0:
@@ -290,9 +298,9 @@ class Function(object):
 
         n = context_node
         while(not hasattr(n, 'attributes') or 'xml:lang' not in n.attributes):
-            if n.parent is None:
+            if n._parent is None:
                 return False
-            n = n.parent
+            n = n._parent
         attr = n.attributes['xml:lang'].lower()
 
         if attr.startswith(a):

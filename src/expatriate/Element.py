@@ -38,9 +38,9 @@ class Element(ChildBearing):
         else:
             self.attributes = attributes
 
-        if isinstance(self.parent, Element):
-            self._namespace_uris = self.parent._namespace_uris.copy()
-            self._namespace_prefixes = self.parent._namespace_prefixes.copy()
+        if isinstance(self._parent, Element):
+            self._namespace_uris = self._parent._namespace_uris.copy()
+            self._namespace_prefixes = self._parent._namespace_prefixes.copy()
         else:
             # parent is-a Document
             self._namespace_uris = {
@@ -149,3 +149,17 @@ class Element(ChildBearing):
         if 'name' in self.attributes:
             s += ' name=' + self.attributes['name']
         return s
+
+    def find_by_id(self, id_):
+        logger.debug(str(self) + ' checking attributes for id: ' + str(id_))
+        for k, v in self.attributes.items():
+            k = k.lower()
+            if k.endswith(':id') or k == 'id':
+                logger.debug(str(self) + ' found id: ' + str(v))
+                if v == id_:
+                    logger.debug(str(self) + ' matches id: ' + str(id_))
+                    return self
+                else:
+                    logger.debug(str(self) + ' id ' + str(v) + ' does not match id: ' + str(id_))
+
+        return super(Element, self).find_by_id(id_)

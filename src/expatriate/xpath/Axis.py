@@ -24,9 +24,9 @@ logger = logging.getLogger(__name__)
 class Axis(object):
     def a_ancestor(node):
         ns = []
-        while(node.parent is not None):
-            ns.append(node.parent)
-            node = node.parent
+        while(node._parent is not None):
+            ns.append(node._parent)
+            node = node._parent
         return ns
 
     def a_ancestor_or_self(node):
@@ -71,8 +71,8 @@ class Axis(object):
             return []
 
     def a_parent(node):
-        if node.parent is not None:
-            return [node.parent]
+        if node._parent is not None:
+            return [node._parent]
         else:
             return []
 
@@ -81,13 +81,13 @@ class Axis(object):
         from ..Namespace import Namespace
         if isinstance(node, Attribute) \
         or isinstance(node, Namespace) \
-        or node.parent is None:
+        or node._parent is None:
             return []
 
         ns = []
         # figure out our index then go through children > our index
-        node_i = node.parent.children.index(node) + 1
-        for n in node.parent.children[node_i:]:
+        node_i = node._parent.children.index(node) + 1
+        for n in node._parent.children[node_i:]:
             ns.append(n)
         return ns
 
@@ -101,7 +101,7 @@ class Axis(object):
         ns = []
         while node is not None:
             ns.extend(Axis.a_following_sibling(node))
-            node = node.parent
+            node = node._parent
         return ns
 
     def a_preceding_sibling(node):
@@ -109,13 +109,13 @@ class Axis(object):
         from ..Namespace import Namespace
         if isinstance(node, Attribute) \
         or isinstance(node, Namespace) \
-        or node.parent is None:
+        or node._parent is None:
             return []
 
         ns = []
         # figure out our index then go through children < our index
-        node_i = node.parent.children.index(node)
-        for n in reversed(node.parent.children[:node_i]):
+        node_i = node._parent.children.index(node)
+        for n in reversed(node._parent.children[:node_i]):
             ns.append(n)
         return ns
 
@@ -130,10 +130,10 @@ class Axis(object):
         while node is not None:
             logger.debug('Extending nodeset with ' + str(node) + ' preceding siblings')
             ns.extend(Axis.a_preceding_sibling(node))
-            if node.parent is not None:
-                logger.debug('Appending parent of ' + str(node) + ': ' + str(node.parent))
-                ns.append(node.parent)
-            node = node.parent
+            if node._parent is not None:
+                logger.debug('Appending parent of ' + str(node) + ': ' + str(node._parent))
+                ns.append(node._parent)
+            node = node._parent
         return ns
 
     AXES = {
