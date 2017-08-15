@@ -137,7 +137,7 @@ def test_concat(expr, result):
     )
 )
 def test_concat_err(expr, result):
-    with pytest.raises(SyntaxException):
+    with pytest.raises(XPathSyntaxException):
         doc.xpath(expr)
 
 @pytest.mark.parametrize(
@@ -195,7 +195,7 @@ def test_string_length(expr, result):
     assert doc.xpath(expr) == result
 
 def test_string_length_fail():
-    with pytest.raises(SyntaxException):
+    with pytest.raises(XPathSyntaxException):
         doc.xpath('string-length(3)')
 
 @pytest.mark.parametrize(
@@ -307,7 +307,7 @@ def test_floor(expr, result):
     assert doc.xpath(expr) == result
 
 def test_sum():
-    with pytest.raises(SyntaxException):
+    with pytest.raises(XPathSyntaxException):
         doc.xpath('sum(child::*)')
 
 # TODO real sum test

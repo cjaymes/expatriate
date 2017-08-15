@@ -22,6 +22,7 @@ import re
 from .xpath import *
 
 logger = logging.getLogger(__name__)
+
 class Node(object):
     def __init__(self, document=None, document_order=-1, parent=None):
         self._document = document

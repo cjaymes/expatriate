@@ -19,7 +19,7 @@ import logging
 import math
 
 from .Function import Function
-from ..xpath import SyntaxException
+from ..exceptions import XPathSyntaxException
 
 logger = logging.getLogger(__name__)
 class Operator(object):
@@ -61,7 +61,7 @@ class Operator(object):
         if self.op == 'negate':
             left = self.children[0].evaluate(context_node, context_position, context_size, variables)
             if isinstance(left, list):
-                raise SyntaxException('Got negate operator with a nodeset')
+                raise XPathSyntaxException('Got negate operator with a nodeset')
             elif isinstance(left, str):
                 left = Functions.f_number(left)
             elif isinstance(left, bool):
@@ -69,7 +69,7 @@ class Operator(object):
             elif isinstance(left, int) or isinstance(left, float):
                 pass
             else:
-                raise SyntaxException('Unknown operand: ' + str(left))
+                raise XPathSyntaxException('Unknown operand: ' + str(left))
 
             logger.debug('Negating ' + str(left))
             return Operator.OPERATORS['negate'](left)
@@ -113,7 +113,7 @@ class Operator(object):
                     logger.debug('Operator ' + str(left) + self.op + str(right))
                     return Operator.OPERATORS[self.op](left, right)
                 else:
-                    raise SyntaxException('Unknown right hand operand: ' + str(right))
+                    raise XPathSyntaxException('Unknown right hand operand: ' + str(right))
             elif isinstance(right, list):
                 if isinstance(left, int) or isinstance(left, float):
                     for x in right:
@@ -134,7 +134,7 @@ class Operator(object):
                     logger.debug('Operator ' + str(left) + self.op + str(right))
                     return Operator.OPERATORS[self.op](left, right)
                 else:
-                    raise SyntaxException('Unknown left hand operand: ' + str(left))
+                    raise XPathSyntaxException('Unknown left hand operand: ' + str(left))
             else:
                 if isinstance(left, bool) or isinstance(right, bool):
                     left = Function.f_boolean((left,), context_node, context_position, context_size, variables)

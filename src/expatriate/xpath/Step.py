@@ -18,6 +18,7 @@
 import logging
 
 from .Axis import Axis
+from ..exceptions import XPathSyntaxException
 
 logger = logging.getLogger(__name__)
 class Step(object):
@@ -47,7 +48,7 @@ class Step(object):
             logger.debug(str(self) + ' nodeset: [' + ','.join([str(x) for x in ns]) + ']')
             return ns
         else:
-            raise SyntaxException('Steps require between 1 and 2 children')
+            raise XPathSyntaxException('Steps require between 1 and 2 children')
 
     def __str__(self):
         return 'Step ' + hex(id(self)) + ': [' + ','.join([str(x) for x in self.children]) + ']'

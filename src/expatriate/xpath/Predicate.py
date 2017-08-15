@@ -18,6 +18,7 @@
 import logging
 
 from .Function import Function
+from ..exceptions import XPathSyntaxException
 
 logger = logging.getLogger(__name__)
 class Predicate(object):
@@ -26,7 +27,7 @@ class Predicate(object):
 
     def evaluate(self, context_node, context_position, context_size, variables):
         if len(self.children) != 1:
-            raise SyntaxException('Predicate can only have 1 expression')
+            raise XPathSyntaxException('Predicate can only have 1 expression')
 
         v = self.children[0].evaluate(context_node, context_position, context_size, variables)
 

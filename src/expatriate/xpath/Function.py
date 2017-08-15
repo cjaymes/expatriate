@@ -19,39 +19,39 @@ import logging
 import math
 import re
 
-from ..xpath import SyntaxException
+from ..exceptions import XPathSyntaxException
 
 logger = logging.getLogger(__name__)
 class Function(object):
     # Node Set Functions
     def f_last(args, context_node, context_position, context_size, variables):
         if len(args) != 0:
-            raise SyntaxException('last() expects 0 arguments')
+            raise XPathSyntaxException('last() expects 0 arguments')
 
         return context_size
 
     def f_position(args, context_node, context_position, context_size, variables):
         if len(args) != 0:
-            raise SyntaxException('position() expects 0 arguments')
+            raise XPathSyntaxException('position() expects 0 arguments')
 
         return context_position
 
     def f_count(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('count() expects 1 argument')
+            raise XPathSyntaxException('count() expects 1 argument')
 
         return len(args[0])
 
     def f_id(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('id() expects 1 argument')
+            raise XPathSyntaxException('id() expects 1 argument')
 
         from ..Node import Node
         ids = []
         if isinstance(args[0], list): # node list
             for n in args[0]:
                 if not isinstance(n, Node):
-                    raise SyntaxException('Cannot determine the string value of ' + str(n))
+                    raise XPathSyntaxException('Cannot determine the string value of ' + str(n))
                 s = n.get_string_value()
                 logger.debug('Using ' + str(s) + ' as string-value of ' + str(n))
                 ids.extend(re.split(r'[\x20\x09\x0D\x0A]+', s))
@@ -70,7 +70,7 @@ class Function(object):
         elif len(args) == 1:
             a = args[0]
         else:
-            raise SyntaxException('local-name() expects 1 argument or none')
+            raise XPathSyntaxException('local-name() expects 1 argument or none')
 
         if len(a) <= 0:
             return ''
@@ -89,7 +89,7 @@ class Function(object):
         elif len(args) == 1:
             a = args[0]
         else:
-            raise SyntaxException('namespace-uri() expects 1 argument or none')
+            raise XPathSyntaxException('namespace-uri() expects 1 argument or none')
 
         if len(a) <= 0:
             return ''
@@ -108,7 +108,7 @@ class Function(object):
         elif len(args) == 1:
             a = args[0]
         else:
-            raise SyntaxException('name() expects 1 argument or none')
+            raise XPathSyntaxException('name() expects 1 argument or none')
 
         if len(a) <= 0:
             return ''
@@ -130,7 +130,7 @@ class Function(object):
         elif len(args) == 1:
             a = args[0]
         else:
-            raise SyntaxException('string() expects 1 argument or none')
+            raise XPathSyntaxException('string() expects 1 argument or none')
 
         if isinstance(a, list): # node-set
             from ..Document import Document
@@ -156,7 +156,7 @@ class Function(object):
 
     def f_concat(args, context_node, context_position, context_size, variables):
         if len(args) < 2:
-            raise SyntaxException('concat() expects at least 2 arguments')
+            raise XPathSyntaxException('concat() expects at least 2 arguments')
 
         r = ''
         for a in args:
@@ -165,31 +165,31 @@ class Function(object):
 
     def f_starts_with(args, context_node, context_position, context_size, variables):
         if len(args) != 2:
-            raise SyntaxException('starts-with() expects 2 arguments')
+            raise XPathSyntaxException('starts-with() expects 2 arguments')
 
         return args[0].startswith(args[1])
 
     def f_contains(args, context_node, context_position, context_size, variables):
         if len(args) != 2:
-            raise SyntaxException('contains() expects 2 arguments')
+            raise XPathSyntaxException('contains() expects 2 arguments')
 
         return args[1] in args[0]
 
     def f_substring_before(args, context_node, context_position, context_size, variables):
         if len(args) != 2:
-            raise SyntaxException('substring-before() expects 2 arguments')
+            raise XPathSyntaxException('substring-before() expects 2 arguments')
 
         return args[0].partition(args[1])[0]
 
     def f_substring_after(args, context_node, context_position, context_size, variables):
         if len(args) != 2:
-            raise SyntaxException('substring-after() expects 2 arguments')
+            raise XPathSyntaxException('substring-after() expects 2 arguments')
 
         return args[0].partition(args[1])[2]
 
     def f_substring(args, context_node, context_position, context_size, variables):
         if len(args) not in (2,3):
-            raise SyntaxException('substring() expects 2 or 3 arguments')
+            raise XPathSyntaxException('substring() expects 2 or 3 arguments')
 
         if args[1] == -math.inf:
             return ''
@@ -215,9 +215,9 @@ class Function(object):
 
     def f_string_length(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('string-length() expects 1 argument')
+            raise XPathSyntaxException('string-length() expects 1 argument')
         if not isinstance(args[0], str):
-            raise SyntaxException('string-length() expects a string argument')
+            raise XPathSyntaxException('string-length() expects a string argument')
 
         return len(args[0])
 
@@ -227,14 +227,14 @@ class Function(object):
         elif len(args) == 1:
             a = args[0]
         else:
-            raise SyntaxException('normalize-space() expects 1 argument or none')
+            raise XPathSyntaxException('normalize-space() expects 1 argument or none')
 
         a = a.strip('\x20\x09\x0D\x0A')
         return re.sub(r'[\x20\x09\x0D\x0A]+', ' ', a)
 
     def f_translate(args, context_node, context_position, context_size, variables):
         if len(args) != 3:
-            raise SyntaxException('translate() expects 3 arguments')
+            raise XPathSyntaxException('translate() expects 3 arguments')
 
         s = args[0]
         from_ = args[1]
@@ -250,7 +250,7 @@ class Function(object):
 
     def f_boolean(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('boolean() expects 1 argument')
+            raise XPathSyntaxException('boolean() expects 1 argument')
 
         if isinstance(args[0], int) or isinstance(args[0], float):
             if args[0] != 0 and not math.isnan(args[0]):
@@ -266,25 +266,25 @@ class Function(object):
 
     def f_not(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('not() expects 1 argument')
+            raise XPathSyntaxException('not() expects 1 argument')
 
         return not args[0]
 
     def f_true(args, context_node, context_position, context_size, variables):
         if len(args) != 0:
-            raise SyntaxException('true() accepts no arguments')
+            raise XPathSyntaxException('true() accepts no arguments')
 
         return True
 
     def f_false(args, context_node, context_position, context_size, variables):
         if len(args) != 0:
-            raise SyntaxException('false() accepts no arguments')
+            raise XPathSyntaxException('false() accepts no arguments')
 
         return False
 
     def f_lang(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('lang() expects 1 argument')
+            raise XPathSyntaxException('lang() expects 1 argument')
 
         a = args[0].lower()
 
@@ -304,7 +304,7 @@ class Function(object):
 
     def f_number(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('number() expects 1 argument')
+            raise XPathSyntaxException('number() expects 1 argument')
 
         try:
             if isinstance(args[0], str):
@@ -328,11 +328,11 @@ class Function(object):
             else:
                 return int(args[0])
         except ValueError:
-            raise SyntaxException('Invalid syntax for a number')
+            raise XPathSyntaxException('Invalid syntax for a number')
 
     def f_sum(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('sum() expects 1 argument')
+            raise XPathSyntaxException('sum() expects 1 argument')
 
         r = 0
         for n in args[0]:
@@ -343,19 +343,19 @@ class Function(object):
 
     def f_floor(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('floor() expects 1 argument')
+            raise XPathSyntaxException('floor() expects 1 argument')
 
         return math.floor(args[0])
 
     def f_ceiling(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('ceiling() expects 1 argument')
+            raise XPathSyntaxException('ceiling() expects 1 argument')
 
         return math.ceil(args[0])
 
     def f_round(args, context_node, context_position, context_size, variables):
         if len(args) != 1:
-            raise SyntaxException('round() expects 1 argument')
+            raise XPathSyntaxException('round() expects 1 argument')
 
         if math.isnan(args[0]):
             return math.nan

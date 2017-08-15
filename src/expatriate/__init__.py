@@ -19,12 +19,10 @@ from .CharacterData import CharacterData
 from .Comment import Comment
 from .Document import Document
 from .Element import Element
-from .Element import PrefixRedefineException
-from .Element import NamespaceRedefineException
-from .Element import UnknownNamespaceException
-from .Element import UnknownPrefixException
 from .ProcessingInstruction import ProcessingInstruction
-from .xpath import SyntaxException
+
+from .exceptions import *
+from .exceptions import __all__ as all_exceptions
 
 __all__ = [
     'CharacterData',
@@ -32,9 +30,5 @@ __all__ = [
     'Document',
     'Element',
     'ProcessingInstruction',
-    'PrefixRedefineException',
-    'NamespaceRedefineException',
-    'UnknownNamespaceException',
-    'UnknownPrefixException',
-    'SyntaxException',
 ]
+__all__.extend(all_exceptions)

@@ -28,6 +28,7 @@ from .ProcessingInstruction import ProcessingInstruction
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 class Document(ChildBearing):
     @staticmethod
     def ordered_first(nodeset):
@@ -69,39 +70,17 @@ class Document(ChildBearing):
         self._stack = []
         self._element_index = {}
         self._order_count = 0
+        self._order_dirty = False
 
         self._parser.XmlDeclHandler = self._xml_decl_handler
-
-        # we ignore dtds
-        # self._parser.StartDoctypeDeclHandler = self._start_doctype_decl_handler
-        # self._parser.EndDoctypeDeclHandler = self._end_doctype_decl_handler
-        # self._parser.ElementDeclHandler = self._element_decl_handler
-        # self._parser.AttlistDeclHandler = self._attlist_decl_handler
-        #
-        # self._parser.EntityDeclHandler = self._entity_decl_handler
-        #
-        # self._parser.NotationDeclHandler = self._notation_decl_handler
-        #
-        # self._parser.ExternalEntityRefHandler = self._external_entity_ref_handler
-
-        # we do our own namespace processing
-        # self._parser.StartNamespaceDeclHandler = self._start_namespace_handler
-        # self._parser.EndNamespaceDeclHandler = self._end_namespace_handler
-
         self._parser.StartElementHandler = self._start_element_handler
         self._parser.EndElementHandler = self._end_element_handler
-
         self._parser.ProcessingInstructionHandler = self._processing_instruction_handler
-
         self._parser.CharacterDataHandler = self._character_data_handler
-
         self._parser.CommentHandler = self._comment_handler
-
         self._parser.StartCdataSectionHandler = self._start_cdata_section_handler
         self._parser.EndCdataSectionHandler = self._end_cdata_section_handler
-
         self._parser.DefaultHandlerExpand = self._default_handler_expand
-
         self._parser.NotStandaloneHandler = self._not_standalone_handler
 
     def parse(self, data, isfinal=True):

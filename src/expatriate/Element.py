@@ -22,19 +22,9 @@ from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
-
-class NamespaceRedefineException(Exception):
-    pass
-
-class PrefixRedefineException(Exception):
-    pass
-
-class UnknownNamespaceException(Exception):
-    pass
-
-class UnknownPrefixException(Exception):
-    pass
 
 class Element(ChildBearing):
     def __init__(self, name, attributes=None, document=None, document_order=-1, parent=None):

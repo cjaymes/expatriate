@@ -20,6 +20,7 @@ import logging
 from .Node import Node
 
 logger = logging.getLogger(__name__)
+
 class ChildBearing(Node):
     def __init__(self, document=None, document_order=-1, parent=None):
         super(ChildBearing, self).__init__(document=document, document_order=document_order, parent=parent)

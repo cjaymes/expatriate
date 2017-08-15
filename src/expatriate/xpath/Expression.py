@@ -19,7 +19,7 @@ import logging
 import re
 
 from .Operator import Operator
-from ..xpath import SyntaxException
+from ..exceptions import XPathSyntaxException
 
 logger = logging.getLogger(__name__)
 class Expression(object):
@@ -29,7 +29,7 @@ class Expression(object):
     def evaluate(self, context_node, context_position, context_size, variables):
         logger.debug('Evaluating ' + str(self))
         if len(self.children) > 1:
-            raise SyntaxException('Expression has more than 1 child')
+            raise XPathSyntaxException('Expression has more than 1 child')
 
         v = self.children[0].evaluate(context_node, context_position, context_size, variables)
         logger.debug('Child ' + str(self.children[0]) + ' evaluated to ' + str(v))

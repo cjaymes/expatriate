@@ -18,7 +18,6 @@
 import logging
 
 from .Step import Step
-from ..xpath import SyntaxException
 
 logger = logging.getLogger(__name__)
 class RootStep(Step):

@@ -15,32 +15,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from .AnyNodeTest import AnyNodeTest
-from .Axis import Axis
-from .Expression import Expression
-from .Function import Function
-from .Literal import Literal
-from .NCNameNodeTest import NCNameNodeTest
-from .NodeTest import NodeTest
-from .Operator import Operator
-from .Predicate import Predicate
-from .QNameNodeTest import QNameNodeTest
-from .RootStep import RootStep
-from .Step import Step
-from .TypeNodeTest import TypeNodeTest
+class NamespaceRedefineException(Exception):
+    pass
+
+class PrefixRedefineException(Exception):
+    pass
+
+class UnknownNamespaceException(Exception):
+    pass
+
+class UnknownPrefixException(Exception):
+    pass
+
+class XPathSyntaxException(Exception):
+    pass
 
 __all__ = [
-    'AnyNodeTest',
-    'Axis',
-    'Expression',
-    'Function',
-    'Literal',
-    'NCNameNodeTest',
-    'NodeTest',
-    'Operator',
-    'Predicate',
-    'QNameNodeTest',
-    'RootStep',
-    'Step',
-    'TypeNodeTest',
+    'PrefixRedefineException',
+    'NamespaceRedefineException',
+    'UnknownNamespaceException',
+    'UnknownPrefixException',
+    'XPathSyntaxException',
 ]
