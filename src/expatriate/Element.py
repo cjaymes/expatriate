@@ -51,16 +51,16 @@ class Element(ChildBearing):
             }
 
         # check for a default namespace
-        if 'xmlns' in self.attributes:
-            if self.attributes['xmlns'] == '':
+        if 'xmlns' in attributes:
+            if attributes['xmlns'] == '':
                 if None in self._namespace_uris:
                     del self._namespace_uris[None]
             else:
-                self._namespace_uris[None] = self.attributes['xmlns']
-                self._namespace_prefixes[self.attributes['xmlns']] = None
+                self._namespace_uris[None] = attributes['xmlns']
+                self._namespace_prefixes[attributes['xmlns']] = None
 
         # check for prefix namespaces
-        for k, v in self.attributes.items():
+        for k, v in attributes.items():
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
                 if prefix in self._namespace_uris.keys():

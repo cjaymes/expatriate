@@ -40,9 +40,9 @@ class Step(object):
             logger.debug('Context nodes from ' + str(self.children[0]) + ': [' + ','.join([str(x) for x in context_nodes]) + ']')
 
             ns = []
-            for i in range(len(context_nodes)):
-                logger.debug('Evaluating ' + str(self.children[1]) + ' with context ' + str(context_nodes[i]))
-                ns.extend(self.children[1].evaluate(context_nodes[i], i+1, len(context_nodes), variables))
+            for i, cn in enumerate(context_nodes):
+                logger.debug('Evaluating ' + str(self.children[1]) + ' with context ' + str(cn))
+                ns.extend(self.children[1].evaluate(cn, i+1, len(context_nodes), variables))
 
             ns = Document.order_sort(ns)
             logger.debug(str(self) + ' nodeset: [' + ','.join([str(x) for x in ns]) + ']')

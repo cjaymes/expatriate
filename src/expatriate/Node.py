@@ -85,30 +85,30 @@ class Node(object):
         braces = 0
 
         t = ''
-        for i in range(len(expr)):
+        for i, char in enumerate(expr):
             if len(t) > 0:
                 if t[0] in '\'"':
                     # string literal
-                    t += expr[i]
-                    if expr[i] == t[0] and t[-1] != '\\':
+                    t += char
+                    if char == t[0] and t[-1] != '\\':
                         tokens.append(t)
                         t = ''
                 elif t == '-':
                     tokens.append(t)
-                    t = expr[i]
-                elif t == '.' and expr[i] != '.':
+                    t = char
+                elif t == '.' and char != '.':
                     tokens.extend(['self', '::', 'node', '(', ')'])
-                    t = expr[i]
-                elif re.fullmatch(r'[0-9][0-9.]*', t) and (expr[i].isdigit() or expr[i] == '.'):
-                    t += expr[i]
-                elif t[0] == '$' and expr[i].isalpha():
-                    t += expr[i]
+                    t = char
+                elif re.fullmatch(r'[0-9][0-9.]*', t) and (char.isdigit() or char == '.'):
+                    t += char
+                elif t[0] == '$' and char.isalpha():
+                    t += char
                 elif t.isspace():
                     # skip space
-                    t = expr[i]
+                    t = char
                 elif t in ':/.!<>':
-                    if t + expr[i] in ['::', '//', '..', '!=', '<=', '>=']:
-                        t += expr[i]
+                    if t + char in ['::', '//', '..', '!=', '<=', '>=']:
+                        t += char
                         if t == '//':
                             tokens.extend(['/', 'descendant-or-self', '::', 'node', '(', ')', '/'])
                         elif t == '..':
@@ -118,52 +118,49 @@ class Node(object):
                         t = ''
                     else:
                         tokens.append(t)
-                        t = expr[i]
+                        t = char
                 elif t == '@':
                     tokens.extend(['attribute', '::'])
-                    t = expr[i]
+                    t = char
                 elif t == '(':
                     tokens.append(t)
-                    t = expr[i]
+                    t = char
                     parens += 1
                 elif t == ')':
                     tokens.append(t)
-                    t = expr[i]
+                    t = char
                     parens -= 1
                 elif t == '[':
                     tokens.append(t)
-                    t = expr[i]
+                    t = char
                     braces += 1
                 elif t == ']':
                     tokens.append(t)
-                    t = expr[i]
+                    t = char
                     braces -= 1
                 elif t in ',\'"*|+=':
                     tokens.append(t)
-                    t = expr[i]
-                elif expr[i].isalnum() or expr[i] == '-':
-                    t += expr[i]
+                    t = char
+                elif char.isalnum() or char == '-':
+                    t += char
                 else:
                     tokens.append(t)
-                    t = expr[i]
+                    t = char
             else:
-                if expr[i].isspace():
+                if char.isspace():
                     continue
-                t += expr[i]
+                t += char
 
         # append final token if there is one
         if t == '.':
             tokens.extend(['self', '::', 'node', '(', ')'])
-            t = expr[i]
         elif t.isspace():
             pass
         elif t == ')':
             tokens.append(t)
-            t = expr[i]
             parens -= 1
         elif t == ']':
             tokens.append(t)
-            t = expr[i]
             braces -= 1
         elif t != '':
             tokens.append(t)
@@ -190,14 +187,12 @@ class Node(object):
         functions.update(add_functions)
 
         stack = []
-        for i in range(len(tokens)):
-            token = tokens[i]
-
-            if tokens[i] == '(':
+        for i, token in enumerate(tokens):
+            if token == '(':
                 e = Expression()
                 logger.debug('Starting sub expression ' + str(e))
                 stack.append(e)
-            elif tokens[i] == ')':
+            elif token == ')':
                 if len(stack) <= 1:
                     continue
 
@@ -211,14 +206,14 @@ class Node(object):
                     logger.debug('Adding ' + str(e) + ' to ' + str(stack[-1]))
                     stack[-1].children.append(e)
                 # else just let it on the stack
-            elif tokens[i] == '[':
+            elif token == '[':
                 p = Predicate()
                 stack.append(p)
                 logger.debug('Starting predicate ' + str(p))
                 e = Expression()
                 stack.append(e)
                 logger.debug('Starting sub expression ' + str(e))
-            elif tokens[i] == ']':
+            elif token == ']':
                 logger.debug('End of ' + str(stack[-1]))
                 if i > 0 and tokens[i-1] == '[':
                     # don't add empty predicate
@@ -235,18 +230,18 @@ class Node(object):
                         raise SyntaxException('Expecting Axis on stack before predicate')
                     logger.debug('Adding ' + str(p) + ' to ' + str(stack[-1]))
                     stack[-1].children.append(p)
-            elif tokens[i]  == '::':
+            elif token  == '::':
                 # already processed axis
                 pass
-            elif tokens[i] == ':':
+            elif token == ':':
                 # already processed QNameNodeTest
                 pass
-            elif tokens[i] == '*':
+            elif token == '*':
                 if i > 0 and tokens[i-1] not in [
                     '::', '(', '[', ',', 'and', 'or', 'mod', 'div',
                     '*', '/', '//', '|', '+', '-', '=', '!=', '<', '<=',
                     '>', '>=']:
-                    o = Operator(tokens[i])
+                    o = Operator(token)
                     o.children.append(stack.pop())
                     stack.append(o)
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
@@ -259,7 +254,7 @@ class Node(object):
                     nt = AnyNodeTest(stack[-1].get_principal_node_type())
                     stack[-1].children.append(nt)
                     logger.debug('Adding ' + str(nt) + ' to children of ' + str(stack[-1]))
-            elif tokens[i] == ',':
+            elif token == ',':
                 try:
                     while(not isinstance(stack[-1], Function)):
                         i = stack.pop()
@@ -272,15 +267,15 @@ class Node(object):
                 e = Expression()
                 stack.append(e)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i][0] in '\'"':
-                l = Literal(tokens[i][1:-1])
+            elif token[0] in '\'"':
+                l = Literal(token[1:-1])
                 stack.append(l)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif re.fullmatch(r'[0-9.]+', tokens[i]):
-                if '.' in tokens[i]:
-                    l = Literal(float(tokens[i]))
+            elif re.fullmatch(r'[0-9.]+', token):
+                if '.' in token:
+                    l = Literal(float(token))
                 else:
-                    l = Literal(int(tokens[i]))
+                    l = Literal(int(token))
 
                 if len(stack) > 0 and isinstance(stack[-1], Operator):
                     op = stack.pop()
@@ -290,7 +285,7 @@ class Node(object):
                 else:
                     stack.append(l)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i] == '-' and ( \
+            elif token == '-' and ( \
                 len(stack) == 0 \
                 or isinstance(stack[-1], Operator) \
                 or (i > 0 and tokens[i-1] in ('(', ',', '[')) \
@@ -298,16 +293,16 @@ class Node(object):
                 o = Operator('negate')
                 stack.append(o)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i] in Operator.OPERATORS and i > 0 and tokens[-1] not in [
+            elif token in Operator.OPERATORS and i > 0 and tokens[-1] not in [
                 '::', '(', '[', ',', 'and', 'or', 'mod', 'div',
                 '*', '/', '//', '|', '+', '-', '=', '!=', '<', '<=',
                 '>', '>=',
             ]:
-                o = Operator(tokens[i])
+                o = Operator(token)
                 o.children.append(stack.pop())
                 stack.append(o)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i] == '/':
+            elif token == '/':
                 if i == 0:
                     s = RootStep(self._document)
                 else:
@@ -327,53 +322,53 @@ class Node(object):
                     s = Step()
                 stack.append(s)
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i] == 'Infinity':
+            elif token == 'Infinity':
                 stack.append(Literal(math.inf))
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif tokens[i] == 'NaN':
+            elif token == 'NaN':
                 stack.append(Literal(math.nan))
                 logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-            elif re.fullmatch(r'[a-zA-Z0-9_-]+', tokens[i]):
+            elif re.fullmatch(r'[a-zA-Z0-9_-]+', token):
                 if len(stack) > 0 and isinstance(stack[-1], Axis):
-                    if tokens[i] in TypeNodeTest.NODE_TYPES:
-                        stack[-1].children.append(TypeNodeTest(tokens[i]))
+                    if token in TypeNodeTest.NODE_TYPES:
+                        stack[-1].children.append(TypeNodeTest(token))
                         logger.debug('Added ' + str(stack[-1].children[-1]) + ' to children of ' + str(stack[-1]))
                     elif len(tokens) > i+1 and tokens[i+1] == ':':
-                        stack.append(QNameNodeTest(tokens[i]))
+                        stack.append(QNameNodeTest(token))
                         logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
                     else:
-                        stack[-1].children.append(NCNameNodeTest(tokens[i]))
+                        stack[-1].children.append(NCNameNodeTest(token))
                         logger.debug('Added ' + str(stack[-1].children[-1]) + ' to children of ' + str(stack[-1]))
                 elif len(tokens) > i+1 and tokens[i+1] == '::':
-                    if tokens[i] not in Axis.AXES:
-                        raise XPathSyntaxException('Unknown axis: ' + str(tokens[i]))
-                    a = Axis(tokens[i])
+                    if token not in Axis.AXES:
+                        raise XPathSyntaxException('Unknown axis: ' + str(token))
+                    a = Axis(token)
                     stack.append(a)
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
                 elif len(tokens) > i+1 and tokens[i+1] == '(':
-                    if tokens[i] in Function.FUNCTIONS:
-                        f = Function(tokens[i], Function.FUNCTIONS[tokens[i]])
+                    if token in Function.FUNCTIONS:
+                        f = Function(token, Function.FUNCTIONS[token])
                         stack.append(f)
                         logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                    elif tokens[i] in TypeNodeTest.NODE_TYPES:
+                    elif token in TypeNodeTest.NODE_TYPES:
                         if len(stack) == 0 or not isinstance(stack[-1], Axis):
                             stack.append(Axis('child'))
                             logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                        nt = TypeNodeTest(tokens[i])
+                        nt = TypeNodeTest(token)
                         stack[-1].children.append(nt)
                         logger.debug('Added ' + str(nt) + ' to children of ' + str(stack[-1]))
                     else:
-                        raise XPathSyntaxException('Unknown function or node type test: ' + str(tokens[i]))
-                elif tokens[i] == 'true':
+                        raise XPathSyntaxException('Unknown function or node type test: ' + str(token))
+                elif token == 'true':
                     stack.append(Literal(True))
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                elif tokens[i] == 'false':
+                elif token == 'false':
                     stack.append(Literal(False))
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                elif tokens[i] in Operator.OPERATORS and i > 0 and tokens[-1] not in [
+                elif token in Operator.OPERATORS and i > 0 and tokens[-1] not in [
                     '::', '(', '[', ',', 'and', 'or', 'mod', 'div', '*', '/',
                     '//', '|', '+', '-', '=', '!=', '<', '<=', '>', '>=']:
-                    o = Operator(tokens[i])
+                    o = Operator(token)
                     o.children.append(stack.pop())
                     stack.append(o)
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
@@ -382,7 +377,7 @@ class Node(object):
                     if len(stack) == 0 or not isinstance(stack[-1], Axis):
                         stack.append(Axis('child'))
                         logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                    nt = QNameNodeTest(tokens[i])
+                    nt = QNameNodeTest(token)
                     stack.append(nt)
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
                 elif i > 0 and tokens[i-1] == ':':
@@ -390,7 +385,7 @@ class Node(object):
                     if len(stack) == 0 or not isinstance(stack[-1], QNameNodeTest):
                         raise SyntaxException('Expecting QNameNodeTest on stack; got second half of QName')
                     nt = stack.pop()
-                    nt.name += ':' + tokens[i]
+                    nt.name += ':' + token
                     if len(stack) == 0 or not isinstance(stack[-1], Axis):
                         raise SyntaxException('Expecting Axis on stack; finished QNameNodeTest')
                     stack[-1].children.append(nt)
@@ -400,11 +395,11 @@ class Node(object):
                     if len(stack) == 0 or not isinstance(stack[-1], Axis):
                         stack.append(Axis('child'))
                         logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                    nt = NCNameNodeTest(tokens[i])
+                    nt = NCNameNodeTest(token)
                     stack[-1].children.append(nt)
                     logger.debug('Added ' + str(nt) + ' to children of ' + str(stack[-1]))
             else:
-                raise XPathSyntaxException('Unknown token: ' + str(tokens[i]))
+                raise XPathSyntaxException('Unknown token: ' + str(token))
 
         while(len(stack) > 1):
             i = stack.pop()

@@ -86,9 +86,9 @@ class Axis(object):
 
         ns = []
         # figure out our index then go through children > our index
-        node_i = node.parent.children.index(node)
-        for i in range(node_i + 1, len(node.parent.children)):
-            ns.append(node.parent.children[i])
+        node_i = node.parent.children.index(node) + 1
+        for n in node.parent.children[node_i:]:
+            ns.append(n)
         return ns
 
     def a_following(node):
@@ -115,9 +115,8 @@ class Axis(object):
         ns = []
         # figure out our index then go through children < our index
         node_i = node.parent.children.index(node)
-        for i in range(node_i - 1, -1, -1):
-            logger.debug('Appending sibling ' + str(i) + ' of ' + str(node))
-            ns.append(node.parent.children[i])
+        for n in reversed(node.parent.children[:node_i]):
+            ns.append(n)
         return ns
 
     def a_preceding(node):
@@ -193,11 +192,11 @@ class Axis(object):
         from ..Document import Document
         if len(self.children) <= 0:
             raise ValueError('Axis missing NodeTest')
-        for i in range(len(self.children)):
-            if i == 0 and not isinstance(self.children[i], NodeTest):
+        for i, child in enumerate(self.children):
+            if i == 0 and not isinstance(child, NodeTest):
                 raise ValueError('Axis missing NodeTest')
-            elif i > 0 and not isinstance(self.children[i], Predicate):
-                raise ValueError('Axis children past the first must be predicates: ' + str(self.children[i]))
+            elif i > 0 and not isinstance(child, Predicate):
+                raise ValueError('Axis children past the first must be predicates: ' + str(child))
 
         nodeset = Axis.AXES[self.name](context_node)
         if len(nodeset) == 0:
@@ -206,11 +205,11 @@ class Axis(object):
         logger.debug('Initial nodeset: [' + ','.join([str(x) for x in nodeset]) + ']')
         for c in self.children:
             ns = []
-            for i in range(len(nodeset)):
+            for i, n in enumerate(nodeset):
                 # logger.debug('Testing ' + str(nodeset[i]) + ' against ' + str(c))
-                if c.evaluate(nodeset[i], i+1, len(nodeset), variables):
+                if c.evaluate(n, i+1, len(nodeset), variables):
                     # logger.debug(str(nodeset[i]) + ' passed ' + str(c))
-                    ns.append(nodeset[i])
+                    ns.append(n)
                 # else:
                 #     logger.debug(str(nodeset[i]) + ' failed ' + str(c))
             nodeset = ns

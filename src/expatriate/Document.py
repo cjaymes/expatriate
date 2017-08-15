@@ -34,11 +34,11 @@ class Document(ChildBearing):
     def ordered_first(nodeset):
         if len(nodeset) == 0:
             return None
-        n = nodeset[0]
-        for i in range(1, len(nodeset)):
-            if nodeset[i]._document_order < n._document_order:
-                n = nodeset[i]
-        return n
+        first = nodeset[0]
+        for n in nodeset[1:]:
+            if n._document_order < first._document_order:
+                first = n
+        return first
 
     @staticmethod
     def is_nodeset(nodeset):
