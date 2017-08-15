@@ -81,6 +81,9 @@ class Node(object):
     def _tokenize(self, expr):
         tokens = []
 
+        parens = 0
+        braces = 0
+
         t = ''
         for i in range(len(expr)):
             if len(t) > 0:
@@ -116,11 +119,27 @@ class Node(object):
                     else:
                         tokens.append(t)
                         t = expr[i]
-                elif t in '()[]@,\'"*|+=':
-                    if t == '@':
-                        tokens.extend(['attribute', '::'])
-                    else:
-                        tokens.append(t)
+                elif t == '@':
+                    tokens.extend(['attribute', '::'])
+                    t = expr[i]
+                elif t == '(':
+                    tokens.append(t)
+                    t = expr[i]
+                    parens += 1
+                elif t == ')':
+                    tokens.append(t)
+                    t = expr[i]
+                    parens -= 1
+                elif t == '[':
+                    tokens.append(t)
+                    t = expr[i]
+                    braces += 1
+                elif t == ']':
+                    tokens.append(t)
+                    t = expr[i]
+                    braces -= 1
+                elif t in ',\'"*|+=':
+                    tokens.append(t)
                     t = expr[i]
                 elif expr[i].isalnum() or expr[i] == '-':
                     t += expr[i]
@@ -138,8 +157,19 @@ class Node(object):
             t = expr[i]
         elif t.isspace():
             pass
+        elif t == ')':
+            tokens.append(t)
+            t = expr[i]
+            parens -= 1
+        elif t == ']':
+            tokens.append(t)
+            t = expr[i]
+            braces -= 1
         elif t != '':
             tokens.append(t)
+
+        if parens != 0 or braces != 0:
+            raise XPathSyntaxException('Paren or brace expression not closed')
 
         return tokens
 
@@ -314,21 +344,26 @@ class Node(object):
                     else:
                         stack[-1].children.append(NCNameNodeTest(tokens[i]))
                         logger.debug('Added ' + str(stack[-1].children[-1]) + ' to children of ' + str(stack[-1]))
-                elif len(tokens) > i+1 and tokens[i+1] == '::' and tokens[i] in Axis.AXES:
+                elif len(tokens) > i+1 and tokens[i+1] == '::':
+                    if tokens[i] not in Axis.AXES:
+                        raise XPathSyntaxException('Unknown axis: ' + str(tokens[i]))
                     a = Axis(tokens[i])
                     stack.append(a)
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                elif len(tokens) > i+1 and tokens[i+1] == '(' and tokens[i] in Function.FUNCTIONS:
-                    f = Function(tokens[i], Function.FUNCTIONS[tokens[i]])
-                    stack.append(f)
-                    logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                elif len(tokens) > i+1 and tokens[i+1] == '(' and tokens[i] in TypeNodeTest.NODE_TYPES:
-                    if len(stack) == 0 or not isinstance(stack[-1], Axis):
-                        stack.append(Axis('child'))
+                elif len(tokens) > i+1 and tokens[i+1] == '(':
+                    if tokens[i] in Function.FUNCTIONS:
+                        f = Function(tokens[i], Function.FUNCTIONS[tokens[i]])
+                        stack.append(f)
                         logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
-                    nt = TypeNodeTest(tokens[i])
-                    stack[-1].children.append(nt)
-                    logger.debug('Added ' + str(nt) + ' to children of ' + str(stack[-1]))
+                    elif tokens[i] in TypeNodeTest.NODE_TYPES:
+                        if len(stack) == 0 or not isinstance(stack[-1], Axis):
+                            stack.append(Axis('child'))
+                            logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
+                        nt = TypeNodeTest(tokens[i])
+                        stack[-1].children.append(nt)
+                        logger.debug('Added ' + str(nt) + ' to children of ' + str(stack[-1]))
+                    else:
+                        raise XPathSyntaxException('Unknown function or node type test: ' + str(tokens[i]))
                 elif tokens[i] == 'true':
                     stack.append(Literal(True))
                     logger.debug('Pushed ' + str(stack[-1]) + ' on stack')
@@ -369,7 +404,7 @@ class Node(object):
                     stack[-1].children.append(nt)
                     logger.debug('Added ' + str(nt) + ' to children of ' + str(stack[-1]))
             else:
-                raise SyntaxException('Unknown token: ' + str(tokens[i]))
+                raise XPathSyntaxException('Unknown token: ' + str(tokens[i]))
 
         while(len(stack) > 1):
             i = stack.pop()

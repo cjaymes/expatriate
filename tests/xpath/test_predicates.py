@@ -48,3 +48,7 @@ def test_boolean():
 
 def test_sub_expr():
     assert doc.root_element.xpath('child::*[position()-1=1]') == [doc.root_element[1]]
+
+def test_unclosed():
+    with pytest.raises(XPathSyntaxException):
+        doc.root_element.xpath('child::*[position()-1=1')

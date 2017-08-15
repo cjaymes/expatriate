@@ -47,3 +47,7 @@ def test_left_association():
 )
 def test_whitespace(test, result):
     assert test == result
+
+def test_unclosed():
+    with pytest.raises(XPathSyntaxException):
+        doc.xpath('(2')

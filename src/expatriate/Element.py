@@ -81,12 +81,12 @@ class Element(ChildBearing):
 
         # create nodes for each of the attributes
         self.attribute_nodes = {}
-        for k in sorted(self.attributes.keys()):
+        for k in sorted(attributes.keys()):
             if ':' in k:
                 prefix, colon, local_name = k.partition(':')
                 # check prefix
                 self.resolve_prefix(prefix)
-            v = self.attributes[k]
+            v = attributes[k]
             n = Attribute(k, v, parent=self)
             self.attach(n)
             self.attribute_nodes[k] = n

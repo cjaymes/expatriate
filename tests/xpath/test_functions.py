@@ -331,3 +331,7 @@ def test_ceiling(expr, result):
 )
 def test_round(expr, result):
     assert doc.xpath(expr) == result
+
+def test_unknown():
+    with pytest.raises(XPathSyntaxException):
+        doc.root_element.xpath('unknown()')

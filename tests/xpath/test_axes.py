@@ -127,4 +127,10 @@ def test_namespace():
 def test_self():
     assert doc.root_element.xpath('self::*') == [doc.root_element]
 
-# NOTE: The ancestor, descendant, following, preceding and self axes partition a document (ignoring attribute and namespace nodes): they do not overlap and together they contain all the nodes in the document.
+def test_unknown():
+    with pytest.raises(XPathSyntaxException):
+        doc.root_element.xpath('unknown::*')
+
+# NOTE: The ancestor, descendant, following, preceding and self axes partition a
+# document (ignoring attribute and namespace nodes): they do not overlap and
+# together they contain all the nodes in the document.

@@ -29,6 +29,8 @@ from .RootStep import RootStep
 from .Step import Step
 from .TypeNodeTest import TypeNodeTest
 
+from ..exceptions import XPathSyntaxException
+
 __all__ = [
     'AnyNodeTest',
     'Axis',
@@ -43,4 +45,6 @@ __all__ = [
     'RootStep',
     'Step',
     'TypeNodeTest',
+
+    'XPathSyntaxException',
 ]
