@@ -138,12 +138,18 @@ class Document(ChildBearing):
         if 'xml:space' in attributes and attributes['xml:space'] == 'preserve':
             self._in_space_preserve = True
 
+        if ':' in name:
+            prefix, colon, local_name = name.partition(':')
+        else:
+            prefix = None
+            local_name = name
+
         if len(self._stack) == 0:
-            el = Element(name, attributes, parent=self)
+            el = Element(local_name, attributes, parent=self, prefix=prefix)
             self.root_element = el
             self.children.append(el)
         else:
-            el = Element(name, attributes, parent=self._stack[-1])
+            el = Element(local_name, attributes, parent=self._stack[-1], prefix=prefix)
             self._stack[-1].children.append(el)
 
         self._stack.append(el)
@@ -217,3 +223,19 @@ class Document(ChildBearing):
 
     def get_document_order(self):
         return 0
+
+    def resolve_prefix(self, prefix):
+        if prefix == 'xmlns':
+            return 'http://www.w3.org/2000/xmlns/'
+        elif prefix == 'xml':
+            return 'http://www.w3.org/XML/1998/namespace'
+        else:
+            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
+
+    def namespace_prefix(self, namespace_uri):
+        if namespace_uri == 'http://www.w3.org/2000/xmlns/':
+            return 'xmlns'
+        elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':
+            return 'xml'
+        else:
+            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))

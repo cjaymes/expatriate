@@ -25,12 +25,57 @@ from .exceptions import *
 logger = logging.getLogger(__name__)
 
 class Attribute(Node):
-    def __init__(self, name, value, parent=None):
+    def __init__(self, local_name, value, parent=None, prefix=None, namespace=None):
         super(Attribute, self).__init__(parent=parent)
 
-        object.__setattr__(self, 'name', name)
-        self._parse_name()
+        self._prefix = prefix
+        self._local_name = local_name
+        self._namespace = namespace
+
         self.value = value
+
+    @property
+    def name(self):
+        if self._prefix is None:
+            return self._local_name
+        else:
+            return self._prefix + ':' + self._local_name
+
+    @name.setter
+    def name(self, name):
+        if ':' in name:
+            self._prefix, colon, self._name = name.partition(':')
+        else:
+            self._prefix = None
+            self._name = name
+
+        self._namespace = self.resolve_prefix(self._prefix)
+
+    @property
+    def local_name(self):
+        return self._local_name
+
+    @local_name.setter
+    def local_name(self, local_name):
+        self._local_name = local_name
+
+    @property
+    def prefix(self):
+        return self._prefix
+
+    @prefix.setter
+    def prefix(self, prefix):
+        self._prefix = prefix
+        self._namespace = self.resolve_prefix(self._prefix)
+
+    @property
+    def namespace(self):
+        return self._namespace
+
+    @namespace.setter
+    def namespace(self, namespace):
+        self._namespace = namespace
+        self._prefix = self.namespace_prefix(namespace)
 
     def get_type(self):
         return 'attribute'

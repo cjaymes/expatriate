@@ -28,6 +28,14 @@ class Node(object):
     def __init__(self, parent=None):
         self._parent = parent
 
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+
     def resolve_prefix(self, prefix):
         if self._parent is not None:
             return self._parent.resolve_prefix(prefix)
@@ -39,43 +47,6 @@ class Node(object):
             return self._parent.namespace_prefix(namespace_uri)
         else:
             raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))
-
-    def _parse_name(self):
-        if ':' in self.name:
-            prefix, colon, local_name = self.name.partition(':')
-
-            namespace = self.resolve_prefix(prefix)
-        else:
-            prefix = None
-            namespace = self.resolve_prefix(prefix)
-            local_name = self.name
-
-        # using object.__setattr__ for __setattr__ safety
-        object.__setattr__(self, 'prefix', prefix)
-        object.__setattr__(self, 'namespace', namespace)
-        object.__setattr__(self, 'local_name', local_name)
-
-    def __setattr__(self, name, value):
-        if name == 'name':
-            object.__setattr__(self, name, value)
-            self._parse_name()
-        elif name == 'prefix':
-            object.__setattr__(self, name, value)
-            object.__setattr__(self, 'namespace', self.resolve_prefix(prefix))
-            if self.prefix is not None:
-                object.__setattr__(self, 'name', self.prefix + ':' + self.local_name)
-        elif name == 'namespace':
-            object.__setattr__(self, name, value)
-            if self.namespace is not None:
-                object.__setattr__(self, 'prefix', self.namespace_prefix(self.namespace))
-            if self.prefix is not None:
-                object.__setattr__(self, 'name', prefix + ':' + self.local_name)
-        elif name == 'local_name':
-            object.__setattr__(self, name, value)
-            if self.prefix is not None:
-                object.__setattr__(self, 'name', prefix + ':' + self.local_name)
-        else:
-            object.__setattr__(self, name, value)
 
     def _tokenize(self, expr):
         tokens = []

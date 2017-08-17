@@ -21,28 +21,107 @@ from .ChildBearing import ChildBearing
 from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
+from .NotifyingDict import NotifyingDict
+from .Watcher import Watcher
 
 from .exceptions import *
 
 logger = logging.getLogger(__name__)
 
-class Element(ChildBearing):
-    def __init__(self, name, attributes=None, parent=None):
+class Element(ChildBearing, Watcher):
+    def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super(Element, self).__init__(parent=parent)
 
-        # bypass __setattr__ since we'll be parsing .name later
-        object.__setattr__(self, 'name', name)
-
         if attributes is None:
-            self.attributes = {}
+            self._attributes = NotifyingDict({})
         else:
-            self.attributes = attributes
+            self._attributes = NotifyingDict(attributes)
 
+        self._prefix = prefix
+        self._local_name = local_name
+        self._namespace = namespace
+        self._init_namespaces()
+
+        # create nodes for each of the attributes
+        self.attribute_nodes = {}
+        for k, v in attributes.items():
+            if ':' in k:
+                prefix, colon, local_name = k.partition(':')
+                # check prefix
+                namespace = self.resolve_prefix(prefix)
+            else:
+                local_name = k
+                prefix = None
+                namespace = None
+            n = Attribute(local_name, v, parent=self, prefix=prefix, namespace=namespace)
+            self.attribute_nodes[k] = n
+
+    # redefine parent property
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+        self._init_namespaces()
+
+    @property
+    def attributes(self):
+        return self._attributes
+
+    @property
+    def name(self):
+        if self._prefix is None:
+            return self._local_name
+        else:
+            return self._prefix + ':' + self._local_name
+
+    @name.setter
+    def name(self, name):
+        if ':' in name:
+            self._prefix, colon, self._name = name.partition(':')
+        else:
+            self._prefix = None
+            self._name = name
+
+        if self._parent is not None:
+            self._namespace = self.resolve_prefix(self._prefix)
+
+    @property
+    def local_name(self):
+        return self._local_name
+
+    @local_name.setter
+    def local_name(self, local_name):
+        self._local_name = local_name
+
+    @property
+    def prefix(self):
+        return self._prefix
+
+    @prefix.setter
+    def prefix(self, prefix):
+        self._prefix = prefix
+        if self._parent is not None:
+            self._namespace = self.resolve_prefix(self._prefix)
+
+    @property
+    def namespace(self):
+        return self._namespace
+
+    @namespace.setter
+    def namespace(self, namespace):
+        self._namespace = namespace
+        if self._parent is not None:
+            self._prefix = self.namespace_prefix(namespace)
+
+    def _init_namespaces(self):
         if isinstance(self._parent, Element):
             self._namespace_uris = self._parent._namespace_uris.copy()
             self._namespace_prefixes = self._parent._namespace_prefixes.copy()
         else:
-            # parent is-a Document
+            # parent is-a Document or None
             self._namespace_uris = {
                 'xml': 'http://www.w3.org/XML/1998/namespace',
             }
@@ -50,17 +129,8 @@ class Element(ChildBearing):
                 'http://www.w3.org/XML/1998/namespace': 'xml',
             }
 
-        # check for a default namespace
-        if 'xmlns' in attributes:
-            if attributes['xmlns'] == '':
-                if None in self._namespace_uris:
-                    del self._namespace_uris[None]
-            else:
-                self._namespace_uris[None] = attributes['xmlns']
-                self._namespace_prefixes[attributes['xmlns']] = None
-
         # check for prefix namespaces
-        for k, v in attributes.items():
+        for k, v in self._attributes.items():
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
                 if prefix in self._namespace_uris.keys():
@@ -69,7 +139,13 @@ class Element(ChildBearing):
                 self._namespace_prefixes[v] = prefix
                 logger.debug('Added prefix ' + prefix + ' for uri ' + v)
 
-        self._parse_name()
+        # now that we've parsed the namespace attributes, we can figure out the prefix
+        if self._prefix is None and self._namespace is None:
+            pass
+        elif self._prefix is None and self._parent is not None:
+            self._prefix = self.namespace_prefix(self._namespace)
+        elif self._namespace is None and self._parent is not None:
+            self._namespace = self.resolve_prefix(self._prefix)
 
         # create nodes for each of the namespaces
         self.namespace_nodes = {}
@@ -77,17 +153,6 @@ class Element(ChildBearing):
             uri = self._namespace_uris[prefix]
             n = Namespace(prefix, uri, parent=self)
             self.namespace_nodes[prefix] = n
-
-        # create nodes for each of the attributes
-        self.attribute_nodes = {}
-        for k in sorted(attributes.keys()):
-            if ':' in k:
-                prefix, colon, local_name = k.partition(':')
-                # check prefix
-                self.resolve_prefix(prefix)
-            v = attributes[k]
-            n = Attribute(k, v, parent=self)
-            self.attribute_nodes[k] = n
 
     def resolve_prefix(self, prefix):
         if prefix == 'xmlns':
@@ -113,7 +178,7 @@ class Element(ChildBearing):
     def produce(self):
         s = '<' + self.name
         for k, v in self.attributes.items():
-            s += ' ' + k + '="' + self.escape_attribute(v) + '"'
+            s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'
         if len(self.children) == 0:
             s += '/>'
         else:
