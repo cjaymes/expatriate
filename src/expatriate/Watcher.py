@@ -15,32 +15,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-class NamespaceRedefineException(Exception):
-    pass
+import logging
 
-class PrefixRedefineException(Exception):
-    pass
+logger = logging.getLogger(__name__)
 
-class UnattachedElementException(Exception):
-    pass
+class Watcher(object):
+    def added(self, notifier, addition):
+        ''' Override changed method to receive notification from a Notifier '''
+        pass
 
-class UnknownNamespaceException(Exception):
-    pass
+    def updated(self, notifier, updates):
+        ''' Override changed method to receive notification from a Notifier '''
+        pass
 
-class UnknownPrefixException(Exception):
-    pass
-
-class XPathSyntaxException(Exception):
-    pass
-
-class ListenerException(Exception):
-    pass
-
-__all__ = [
-    'PrefixRedefineException',
-    'NamespaceRedefineException',
-    'UnattachedElementException',
-    'UnknownNamespaceException',
-    'UnknownPrefixException',
-    'XPathSyntaxException',
-]
+    def deleted(self, notifier, deletion):
+        ''' Override changed method to receive notification from a Notifier '''
+        pass

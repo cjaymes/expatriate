@@ -19,7 +19,10 @@ from .CharacterData import CharacterData
 from .Comment import Comment
 from .Document import Document
 from .Element import Element
+from .Notifier import Notifier
+from .NotifyingDict import NotifyingDict
 from .ProcessingInstruction import ProcessingInstruction
+from .Watcher import Watcher
 
 from .exceptions import *
 from .exceptions import __all__ as all_exceptions
@@ -29,6 +32,9 @@ __all__ = [
     'Comment',
     'Document',
     'Element',
+    'Notifier',
+    'NotifyingDict',
     'ProcessingInstruction',
+    'Watcher',
 ]
 __all__.extend(all_exceptions)
