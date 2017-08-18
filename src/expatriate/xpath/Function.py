@@ -105,10 +105,10 @@ class Function(object):
         from ..Document import Document
         first_node = Document.ordered_first(a)
 
-        if not hasattr(first_node, 'get_expanded_name'):
+        if not hasattr(first_node, 'namespace'):
             return ''
         else:
-            return first_node.get_expanded_name()[0]
+            return first_node.namespace
 
     def f_name(args, context_node, context_position, context_size, variables):
         if len(args) == 0:
