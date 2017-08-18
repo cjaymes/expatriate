@@ -36,7 +36,7 @@ class Axis(object):
 
     def a_attribute(node):
         if hasattr(node, 'attribute_nodes'):
-            return list(node.attribute_nodes.values())
+            return [node.attribute_nodes[x] for x in sorted(node.attribute_nodes.keys())]
         else:
             return []
 

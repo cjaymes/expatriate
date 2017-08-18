@@ -85,21 +85,24 @@ def test_update_dict():
     nd['test1'] = 'test1'
     nd['test2'] = 'test2'
     nd.update({'test': 'test', 'test1': 'test3'})
-    assert wf.changes[-1] == ('updated', ['test', 'test1'])
+    assert wf.changes[-1][0] == 'updated'
+    assert sorted(wf.changes[-1][1]) == ['test', 'test1'])
 
 def test_update_iterator():
     nd.clear()
     nd['test1'] = 'test1'
     nd['test2'] = 'test2'
     nd.update((('test', 'test'), ('test1', 'test3')))
-    assert wf.changes[-1] == ('updated', ['test', 'test1'])
+    assert wf.changes[-1][0] == 'updated'
+    assert sorted(wf.changes[-1][1]) == ['test', 'test1'])
 
 def test_update_kwargs():
     nd.clear()
     nd['test1'] = 'test1'
     nd['test2'] = 'test2'
     nd.update(test='test', test1='test3')
-    assert wf.changes[-1] == ('updated', ['test', 'test1'])
+    assert wf.changes[-1][0] == 'updated'
+    assert sorted(wf.changes[-1][1]) == ['test', 'test1'])
 
 def test_setdefault():
     nd.clear()
