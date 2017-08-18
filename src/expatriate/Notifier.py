@@ -24,9 +24,7 @@ logger = logging.getLogger(__name__)
 class Notifier(object):
     ''' class for a generic data structure that notifies a list of watchers when changes occur to the data contents '''
 
-    def __init__(self, *args, **kwargs):
-        super(Notifier, self).__init__(*args, **kwargs)
-
+    def __init__(self):
         self._watchers = []
 
     def notify(self, watcher):
