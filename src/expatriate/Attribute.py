@@ -108,5 +108,5 @@ class Attribute(Node):
 
         do = self._parent.get_document_order()
         do += len(self._parent.namespace_nodes)
-        ordered_attr = [self._parent.attribute_nodes[k] for k in self._parent.attribute_nodes.keys()]
+        ordered_attr = [self._parent.attribute_nodes[k] for k in sorted(self._parent.attribute_nodes.keys())]
         return do + ordered_attr.index(self)
