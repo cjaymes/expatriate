@@ -49,7 +49,7 @@ class Attribute(Node):
             self._prefix = None
             self._name = name
 
-        self._namespace = self.resolve_prefix(self._prefix)
+        self._namespace = self.prefix_to_namespace(self._prefix)
 
     @property
     def local_name(self):
@@ -66,7 +66,7 @@ class Attribute(Node):
     @prefix.setter
     def prefix(self, prefix):
         self._prefix = prefix
-        self._namespace = self.resolve_prefix(self._prefix)
+        self._namespace = self.prefix_to_namespace(self._prefix)
 
     @property
     def namespace(self):
@@ -75,7 +75,7 @@ class Attribute(Node):
     @namespace.setter
     def namespace(self, namespace):
         self._namespace = namespace
-        self._prefix = self.namespace_prefix(namespace)
+        self._prefix = self.namespace_to_prefix(namespace)
 
     def get_type(self):
         return 'attribute'

@@ -224,7 +224,7 @@ class Document(ChildBearing):
     def get_document_order(self):
         return 0
 
-    def resolve_prefix(self, prefix):
+    def prefix_to_namespace(self, prefix):
         if prefix == 'xmlns':
             return 'http://www.w3.org/2000/xmlns/'
         elif prefix == 'xml':
@@ -232,7 +232,7 @@ class Document(ChildBearing):
         else:
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
-    def namespace_prefix(self, namespace_uri):
+    def namespace_to_prefix(self, namespace_uri):
         if namespace_uri == 'http://www.w3.org/2000/xmlns/':
             return 'xmlns'
         elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':

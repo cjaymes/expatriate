@@ -36,15 +36,15 @@ class Node(object):
     def parent(self, parent):
         self._parent = parent
 
-    def resolve_prefix(self, prefix):
+    def prefix_to_namespace(self, prefix):
         if self._parent is not None:
-            return self._parent.resolve_prefix(prefix)
+            return self._parent.prefix_to_namespace(prefix)
         else:
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
-    def namespace_prefix(self, namespace_uri):
+    def namespace_to_prefix(self, namespace_uri):
         if self._parent is not None:
-            return self._parent.namespace_prefix(namespace_uri)
+            return self._parent.namespace_to_prefix(namespace_uri)
         else:
             raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))
 

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class NotifyingDict(dict, Notifier):
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
-        Notifier.__init__(self, *args, **kwargs)
+        Notifier.__init__(self)
 
     def __setitem__(self, key, value):
         if key not in self:
