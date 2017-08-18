@@ -34,13 +34,13 @@ with open(join(dirname(__file__), 'CHANGELOG.rst'), 'r') as f:
     CHANGELOG = f.read()
 
 with open(join(dirname(__file__), 'CLASSIFIERS.txt'), 'r') as f:
-    CLASSIFIERS = f.readlines()
+    CLASSIFIERS = [line.strip() for line in f]
 
 with open(join(dirname(__file__), 'KEYWORDS.txt'), 'r') as f:
-    KEYWORDS = ' '.join(f.readlines())
+    KEYWORDS = ' '.join([line.strip() for line in f])
 
 with open(join(dirname(__file__), 'requirements.txt'), 'r') as f:
-    REQUIREMENTS = f.readlines()
+    REQUIREMENTS = [line.strip() for line in f]
 
 long_description = README + '\n' + CHANGELOG
 
