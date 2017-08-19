@@ -21,21 +21,22 @@ from .ChildBearing import ChildBearing
 from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
-from .NotifyingDict import NotifyingDict
-from .Watcher import Watcher
 
 from .exceptions import *
 
+from publishsubscribe import PublishingDict
+from publishsubscribe import Subscriber
+
 logger = logging.getLogger(__name__)
 
-class Element(ChildBearing, Watcher):
+class Element(ChildBearing, Subscriber):
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super(Element, self).__init__(parent=parent)
 
         if attributes is None:
-            self._attributes = NotifyingDict({})
+            self._attributes = PublishingDict({})
         else:
-            self._attributes = NotifyingDict(attributes)
+            self._attributes = PublishingDict(attributes)
 
         self._prefix = prefix
         self._namespace = namespace
@@ -104,21 +105,21 @@ class Element(ChildBearing, Watcher):
         if self._parent is not None:
             self._prefix = self.namespace_to_prefix(namespace)
 
-    def added(self, notifier, addition):
+    def data_added(self, publisher, addition):
         logger.debug('Added attributes: ' + str(addition))
         self._init_attributes()
         for k in addition:
             if k.startswith('xmlns'):
                 self._init_namespaces()
 
-    def updated(self, notifier, updates):
+    def data_updated(self, publisher, updates):
         logger.debug('Updated attributes: ' + str(updates))
         self._init_attributes()
         for k in updates:
             if k.startswith('xmlns'):
                 self._init_namespaces()
 
-    def deleted(self, notifier, deletion):
+    def data_deleted(self, publisher, deletion):
         logger.debug('Deleted attributes: ' + str(deletion))
         self._init_attributes()
         for k in deletion:

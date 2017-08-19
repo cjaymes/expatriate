@@ -15,26 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+from .Attribute import Attribute
 from .CharacterData import CharacterData
 from .Comment import Comment
 from .Document import Document
 from .Element import Element
-from .Notifier import Notifier
-from .NotifyingDict import NotifyingDict
-from .ProcessingInstruction import ProcessingInstruction
-from .Watcher import Watcher
-
 from .exceptions import *
-from .exceptions import __all__ as all_exceptions
-
-__all__ = [
-    'CharacterData',
-    'Comment',
-    'Document',
-    'Element',
-    'Notifier',
-    'NotifyingDict',
-    'ProcessingInstruction',
-    'Watcher',
-]
-__all__.extend(all_exceptions)
+from .Namespace import Namespace
+from .ProcessingInstruction import ProcessingInstruction
