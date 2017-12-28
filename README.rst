@@ -4,6 +4,19 @@ expatriate
 
 XML parsing and generation library on top of expat.
 
-Install using:
+Install (system-wide):
 
     pip install expatriate
+
+Install (using venv):
+
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    python3 setup.py install
+
+Tests:
+
+    pip install pytest
+    pytest
