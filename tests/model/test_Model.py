@@ -161,7 +161,7 @@ def test_load_root_model():
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
-    with pytest.raises(TagMappingException):
+    with pytest.raises(ElementMappingException):
         test_xml = '<test:Derp xmlns:test="http://jaymes.biz/test" />'
         doc = expatriate.Document()
         doc.parse(test_xml)
@@ -182,7 +182,7 @@ def test_load_root_model():
 #         Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/derp" />'))
 #     with pytest.raises(UnregisteredNamespaceException):
 #         Model.load(None, ET.fromstring('<EnclosedFixture />'))
-#     with pytest.raises(TagMappingException):
+#     with pytest.raises(ElementMappingException):
 #         Model.load(root, ET.fromstring('<Derp />'))
 
 def test_load_attribute_required():

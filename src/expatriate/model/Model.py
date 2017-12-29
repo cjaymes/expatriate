@@ -161,7 +161,7 @@ class Model(object):
                     break
 
             if module_name is None:
-                raise TagMappingException(parent.__class__.__name__
+                raise ElementMappingException(parent.__class__.__name__
                     + ' does not define mapping for '
                     + str(el) + ' element; does not match any of '
                     + str([fq_name, el.local_name, ns_any, ('*', '*')]))
@@ -186,7 +186,7 @@ class Model(object):
             inst = class_(el_def=el_def)
         else:
             inst = class_()
-        inst._from_xml(parent, el)
+        inst.from_xml(parent, el)
 
         return inst
 
@@ -198,10 +198,10 @@ class Model(object):
         pkg_mod = importlib.import_module(model_package)
 
         if not hasattr(pkg_mod, 'ELEMENT_MAP'):
-            raise TagMappingException(pkg_mod.__name__
+            raise ElementMappingException(pkg_mod.__name__
                 + ' does not define ELEMENT_MAP; cannot load ' + el)
         if (el.namespace, el.local_name) not in pkg_mod.ELEMENT_MAP:
-            raise TagMappingException(pkg_mod.__name__
+            raise ElementMappingException(pkg_mod.__name__
                 + ' does not define mapping for ' + el.namespace + ', '
                 + el.local_name + ' element')
 
@@ -243,12 +243,12 @@ class Model(object):
         return namespace
 
     @classmethod
-    def _get_model_attribute_defs(cls):
+    def _get_attribute_mappers(cls):
         '''
         get all the attribute definitions for a model class
         '''
 
-        at_defs = {}
+        at_maps = {}
 
         for cls_ in reversed(cls.__mro__):
             if issubclass(cls_, Model):
@@ -256,15 +256,15 @@ class Model(object):
                     logger.debug('Adding attribute defs from superclass '
                         + cls_.__name__ + ': '
                         + str(cls_._model_attribute_defs[cls_.__name__]))
-                    at_defs.update(cls_._model_attribute_defs[cls_.__name__].copy())
+                    at_maps.update(cls_._model_attribute_defs[cls_.__name__].copy())
                 except KeyError:
                     logger.debug('Class ' + cls_.__name__ + ' does not define attributes')
 
-        logger.debug('Attribute defs for ' + cls.__name__ + str(at_defs))
-        return at_defs
+        logger.debug('Attribute defs for ' + cls.__name__ + str(at_maps))
+        return at_maps
 
     @classmethod
-    def _get_model_attribute_def(cls, namespace, local_name):
+    def _get_attribute_mapper(cls, namespace, local_name):
         '''
         get a specific attribute definition for a model class
         '''
@@ -301,7 +301,7 @@ class Model(object):
         cls._model_attribute_defs[cls.__name__][namespace, local_name] = kwargs
 
     @classmethod
-    def _get_model_element_defs(cls):
+    def _get_element_mappers(cls):
         '''
         get all the element definitions for a model class
         '''
@@ -323,7 +323,7 @@ class Model(object):
         return el_defs
 
     @classmethod
-    def _get_model_element_def(cls, namespace, local_name):
+    def _get_element_mapper(cls, namespace, local_name):
         '''
         get a specific element definition for a model class
         '''
@@ -375,9 +375,9 @@ class Model(object):
 
         el_lookup = {}
 
-        for el_def in cls._get_model_element_defs():
+        for el_def in cls._get_element_mappers():
             if not isinstance(el_def, dict):
-                raise TagMappingException('Class ' + cls.__name__
+                raise ElementMappingException('Class ' + cls.__name__
                     + ' has an invalid element definition: ' + str(el_def))
 
             if 'namespace' not in el_def and el_def['local_name'] == '*':
@@ -407,7 +407,7 @@ class Model(object):
         cls._model_content_defs[cls.__name__].append(kwargs)
 
     @classmethod
-    def _get_model_content_defs(cls):
+    def _get_content_mappers(cls):
         '''
         get the model content definitions
         '''
@@ -424,6 +424,7 @@ class Model(object):
 
         self._references = {}
 
+        #TODO replace with content mapping
         self._value_enum = None
         self._value_pattern = None
         if el_def is not None:
@@ -448,22 +449,12 @@ class Model(object):
         self._element_counts = {}
 
         # initialize attribute values
-        for at_def in self._get_model_attribute_defs().values():
-            if 'into' in at_def:
-                attr_name = at_def['into']
-            else:
-                attr_name = at_def['local_name'].replace('-', '_')
-
-            if 'default' in at_def:
-                default_value = at_def['default']
-                setattr(self, attr_name, default_value)
-                logger.debug('Default of attribute ' + attr_name + ' = ' + str(default_value))
-            else:
-                setattr(self, attr_name, None)
+        for at_map in self._get_attribute_mappers().values():
+            at_map._assign_default_value(self)
 
         # initialize elements; if subclass defined the corresponding attribute,
         # we don't re-define
-        for el_def in self._get_model_element_defs().values():
+        for el_def in self._get_element_mappers().values():
             if el_def['local_name'].endswith('*'):
                 if 'into' not in el_def:
                     name = '_elements'
@@ -664,15 +655,18 @@ class Model(object):
                 except:
                     pass
 
-        raise ReferenceException('Could not find reference ' + ref + ' within ' + str(self))
+        raise ReferenceException('Could not find reference ' + ref
+            + ' within ' + str(self))
 
-    def _from_xml(self, parent, el):
+    def from_xml(self, parent, el):
         '''
         create model instance from xml element *el*
         '''
         self._parent = parent
 
-        logger.debug('Parsing ' + str(el) + ' element into ' + self.__class__.__module__ + '.' + self.__class__.__name__ + ' class')
+        logger.debug('Parsing ' + str(el) + ' element into '
+            + self.__class__.__module__ + '.' + self.__class__.__name__
+            + ' class')
 
         self.local_name = el.local_name
 
@@ -682,7 +676,7 @@ class Model(object):
         else:
             self.namespace = el.namespace
 
-        for (namespace, local_name), at_def in self._get_model_attribute_defs().items():
+        for (namespace, local_name), at_def in self._get_attribute_mappers().items():
             # check that required attributes are defined
             if (
                 'required' in at_def
@@ -707,7 +701,7 @@ class Model(object):
             self._parse_element(sub_el)
 
         # check the element restrictions
-        for (namespace, local_name), el_def in self._get_model_element_defs().items():
+        for (namespace, local_name), el_def in self._get_element_mappers().items():
             if namespace is None and local_name == '*':
                 el_spec = ('*', '*')
             elif namespace is not None:
@@ -764,13 +758,13 @@ class Model(object):
             ns_any = (namespace, '*')
             fq_key = (namespace, local_name)
 
-        at_defs = self._get_model_element_defs()
+        at_maps = self._get_element_mappers()
 
         for key in [fq_key, (None, local_name), ns_any, ('*', '*')]:
-            if key not in at_defs:
+            if key not in at_maps:
                 continue
 
-            at_def = at_defs[key]
+            at_def = at_maps[key]
 
             if 'enum' in at_def and value not in at_def['enum']:
                 raise EnumerationException(name + ' attribute must be one of '
@@ -1007,10 +1001,10 @@ class Model(object):
         logger.debug(str(self) + ' to xml')
         el = expatriate.Element(self.local_name, namespace=self.namespace)
 
-        for (namespace, local_name), at_def in self._get_model_attribute_defs().items():
+        for (namespace, local_name), at_def in self._get_attribute_mappers().items():
             value = self._produce_attribute(el, namespace, local_name, at_def)
 
-        for (namespace, local_name), el_def in self._get_model_element_defs().items():
+        for (namespace, local_name), el_def in self._get_element_mappers().items():
             if el_def['local_name'].endswith('*'):
                 if 'into' in el_def:
                     lst = getattr(self, el_def['into'])

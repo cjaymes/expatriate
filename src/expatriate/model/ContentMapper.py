@@ -15,5 +15,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-class AttributeDefinition:
-    pass
+class ContentMapper:
+    def __init__(**kwargs):
+        '''
+            **kwargs**
+
+            enum
+                Enumeration the attribute's value must be from
+            pattern
+                Pattern which the value of the attribute must match.
+            type
+                Type against which a value must validate
+
+            min
+                The minimum value of the attribute. Can be numeric or None (the
+                default).
+            max
+                The maximum value of the attribute. Can be numeric or None (the
+                default).
+        '''
+        self._kwargs = kwargs

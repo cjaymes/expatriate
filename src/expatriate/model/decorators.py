@@ -22,9 +22,9 @@ import os
 import sys
 import types
 
-from .AttributeDefinition import AttributeDefinition
-from .ContentDefinition import ContentDefinition
-from .ElementDefinition import ElementDefinition
+from .AttributeMapper import AttributeMapper
+from .ContentMapper import ContentMapper
+from .ElementMapper import ElementMapper
 
 logger = logging.getLogger(__name__)
 
@@ -71,15 +71,7 @@ def attribute(*args, **kwargs):
     '''
     def wrapper(cls):
         functools.update_wrapper(wrapper, cls)
-        if 'local_name' not in kwargs:
-            raise DecoratorException('Attributes need at least local_name defined')
-
-        if 'namespace' in kwargs:
-            namespace = kwargs['namespace']
-        else:
-            namespace = None
-
-        cls._set_model_attribute_def(namespace, kwargs['local_name'], kwargs)
+        cls._add_attribute_mapper(AttributeMapper(**kwargs))
 
         return cls
     return wrapper
@@ -142,15 +134,7 @@ def element(*args, **kwargs):
     '''
     def wrapper(cls):
         functools.update_wrapper(wrapper, cls)
-        if 'local_name' not in kwargs:
-            raise DecoratorException('Attributes need at least local_name defined')
-
-        if 'namespace' in kwargs:
-            namespace = kwargs['namespace']
-        else:
-            namespace = None
-
-        cls._set_model_element_def(namespace, kwargs['local_name'], kwargs)
+        cls._add_element_mapper(ElementMapper(**kwargs))
 
         return cls
     return wrapper
@@ -177,7 +161,7 @@ def content(*args, **kwargs):
     '''
     def wrapper(cls):
         functools.update_wrapper(wrapper, cls)
-        cls._add_model_content_def(kwargs)
+        cls._add_content_mapper(ContentMapper(**kwargs))
 
         return cls
     return wrapper
