@@ -49,6 +49,9 @@ logger = logging.getLogger(__name__)
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='schemaLocation', type='AnyUriType', into='_xsi_schemaLocation')
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='noNamespaceSchemaLocation', type='AnyUriType', into='_xsi_noNamespaceSchemaLocation')
 class Model(object):
+    ANY_NAMESPACE = '*'
+    ANY_LOCAL_NAME = '*'
+
     __namespace_to_package = {
         'http://www.w3.org/XML/1998/namespace': 'expatriate.model.xml',
         'http://www.w3.org/2001/XMLSchema': 'expatriate.model.xs',
@@ -62,10 +65,160 @@ class Model(object):
         'expatriate.model.xs.i': 'http://www.w3.org/2001/XMLSchema-instance',
     }
 
-    _model_attribute_defs = {}
-    _model_element_defs = {}
-    _model_element_orders = {}
-    _model_content_defs = {}
+    _attribute_mappers = {}
+    _element_mappers = {}
+    _element_mapper_order = {}
+    _content_mappers = {}
+
+    @staticmethod
+    def _map_element_to_module_name(model_package, el):
+        '''
+        discover the model package and model name corresponding to an element
+        '''
+        pkg_mod = importlib.import_module(model_package)
+
+        if not hasattr(pkg_mod, 'ELEMENT_MAP'):
+            raise ElementMappingException(pkg_mod.__name__
+                + ' does not define ELEMENT_MAP; cannot load ' + el)
+        if (el.namespace, el.local_name) not in pkg_mod.ELEMENT_MAP:
+            raise ElementMappingException(pkg_mod.__name__
+                + ' does not define mapping for ' + el.namespace + ', '
+                + el.local_name + ' element')
+
+        return pkg_mod.__name__, pkg_mod.ELEMENT_MAP[el.namespace, el.local_name]
+
+    @classmethod
+    def _get_model_namespace(cls):
+        '''
+        determine a model's namespace from a class
+        '''
+        namespace = None
+
+        # determine from package
+        if namespace is None:
+            namespace = Model.package_to_namespace(cls.class_from_module())
+
+        return namespace
+
+    @classmethod
+    def _get_attribute_mappers(cls):
+        '''
+        get all the attribute definitions for a model class
+        '''
+
+        mappers = {}
+
+        for cls_ in reversed(cls.__mro__):
+            if issubclass(cls_, Model):
+                try:
+                    logger.debug('Adding attribute mappers from superclass '
+                        + cls_.__name__)
+                    mappers.update(cls_._attribute_mappers[cls_.__name__])
+                except KeyError:
+                    logger.debug('Class ' + cls_.__name__
+                        + ' does not define attributes')
+
+        return mappers
+
+    @classmethod
+    def _add_attribute_mapper(cls, mapper):
+        '''
+        set the model attribute definition for an attribute
+        '''
+
+        if cls.__name__ not in cls._attribute_mappers:
+            cls._attribute_mappers[cls.__name__] = {}
+
+        logger.debug('Setting ' + str(cls) + ' ' + str(mapper.get_namespace())
+            + ', ' + mapper.get_local_name()
+            + ' attribute def to ' + str(mapper))
+        cls._attribute_mappers[cls.__name__][mapper.get_namespace(), mapper.get_local_name()] = mapper
+
+    @classmethod
+    def _get_element_mappers(cls):
+        '''
+        get all the element definitions for a model class
+        '''
+
+        mappers = {}
+
+        for cls_ in reversed(cls.__mro__):
+            if issubclass(cls_, Model):
+                try:
+                    logger.debug('Adding element mappers from superclass '
+                        + cls_.__name__)
+                except KeyError:
+                    logger.debug('Class ' + cls_.__name__
+                        + ' does not define elements')
+
+        return mappers
+
+    @classmethod
+    def _add_element_mapper(cls, mapper):
+        '''
+        set the model element definition for an element
+        '''
+
+        if cls.__name__ not in cls._element_mappers:
+            cls._element_mappers[cls.__name__] = {}
+
+        logger.debug('Setting ' + str(cls) + ' ' + str(mapper.get_namespace())
+            + ', ' + mapper.get_local_name()
+            + ' element def to ' + str(mapper))
+        cls._element_mappers[cls.__name__][mapper.get_namespace(), mapper.get_local_name()] = mapper
+
+        # now set the order that this element was defined
+        if cls.__name__ not in cls._element_mapper_order:
+            cls._element_mapper_order[cls.__name__] = []
+
+        # have to insert at the front because decorators are applied in reverse
+        # order
+        cls._element_mapper_order[cls.__name__].insert(0, (mapper.get_namespace(), mapper.get_local_name()))
+
+    @classmethod
+    def _get_element_lookup(cls):
+        '''
+        get the element lookup dict for a class
+        '''
+
+        el_lookup = {}
+
+        for mapper in cls._get_element_mappers():
+            if mapper.get_namespace() is None and mapper.get_local_name() == Model.ANY_LOCAL_NAME:
+                logger.debug('Adding element lookup for ' + str(Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME))
+                el_lookup[Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME] = mapper
+            elif mapper.get_namespace() is None:
+                # try using element's namespace
+                namespace = cls._get_model_namespace()
+                logger.debug('Adding element lookup for ' + str(namespace, mapper.get_local_name()))
+                el_lookup[namespace, mapper.get_local_name()] = mapper
+            else:
+                logger.debug('Adding element lookup for ' + str(mapper.get_namespace(), mapper.get_local_name()))
+                el_lookup[mapper.get_namespace(), mapper.get_local_name()] = mapper
+
+        return el_lookup
+
+    @classmethod
+    def _add_model_content_def(cls, kwargs):
+        '''
+        add a model content definition for the class
+        '''
+
+        logger.debug('Setting ' + str(cls) + ' content def to ' + str(kwargs))
+        cls.__content_mappers = kwargs
+        if cls.__name__ not in cls._content_mappers:
+            cls._content_mappers[cls.__name__] = []
+
+        logger.debug('Adding ' + str(cls) + ' content def: ' + str(kwargs))
+        cls._content_mappers[cls.__name__].append(kwargs)
+
+    @classmethod
+    def _get_content_mappers(cls):
+        '''
+        get the model content definitions
+        '''
+
+        return cls._content_mappers[cls.__name__]
 
     @staticmethod
     def register_namespace(model_package, namespace):
@@ -115,8 +268,12 @@ class Model(object):
 
         return Model.__namespace_to_package[namespace]
 
+    @classmethod
+    def class_from_module(cls):
+        return cls.__module__.rpartition('.')[0]
+
     @staticmethod
-    def load(parent, el, el_def=None):
+    def load(parent, el):
         '''
         load a Model given an expatriate Element
         '''
@@ -134,25 +291,30 @@ class Model(object):
         else:
             if el.namespace is None:
                 model_package = parent.class_from_module()
-                ns_any = parent.namespace, '*'
+                ns_any = parent.namespace, Model.ANY_LOCAL_NAME
                 fq_name = parent.namespace, el.local_name
             else:
                 model_package = Model.namespace_to_package(el.namespace)
-                ns_any = el.namespace, '*'
+                ns_any = el.namespace, Model.ANY_LOCAL_NAME
                 fq_name = el.namespace, el.local_name
 
-            element_lookup = Model._get_model_element_lookup(parent.__class__)
+            element_lookup = Model._get_element_lookup(parent.__class__)
 
             logger.debug('Checking ' + parent.__class__.__name__
                 + ' for element ' + str(el))
             module_name = None
-            for name in [fq_name, ('*', el.local_name), ns_any, ('*', '*')]:
+            for name in [
+                fq_name,
+                (Model.ANY_NAMESPACE, el.local_name),
+                ns_any,
+                (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
+            ]:
                 if name not in element_lookup:
                     continue
 
                 logger.debug(str(el) + ' matched ' + str(name)
                     + ' mapping in ' + parent.__class__.__name__)
-                if name.endswith('*'):
+                if name[1] == Model.ANY_LOCAL_NAME:
                     model_package, module_name = Model._map_element_to_module_name(
                         model_package, el)
                     break
@@ -163,8 +325,7 @@ class Model(object):
             if module_name is None:
                 raise ElementMappingException(parent.__class__.__name__
                     + ' does not define mapping for '
-                    + str(el) + ' element; does not match any of '
-                    + str([fq_name, el.local_name, ns_any, ('*', '*')]))
+                    + str(el) + ' element')
 
         # qualify module name if needed
         if '.' not in module_name:
@@ -182,30 +343,10 @@ class Model(object):
 
         # instantiate an instance of the class & load it
         class_ = getattr(mod, module_name)
-        if el_def is not None:
-            inst = class_(el_def=el_def)
-        else:
-            inst = class_()
+        inst = class_()
         inst.from_xml(parent, el)
 
         return inst
-
-    @staticmethod
-    def _map_element_to_module_name(model_package, el):
-        '''
-        discover the model package and model name corresponding to an element
-        '''
-        pkg_mod = importlib.import_module(model_package)
-
-        if not hasattr(pkg_mod, 'ELEMENT_MAP'):
-            raise ElementMappingException(pkg_mod.__name__
-                + ' does not define ELEMENT_MAP; cannot load ' + el)
-        if (el.namespace, el.local_name) not in pkg_mod.ELEMENT_MAP:
-            raise ElementMappingException(pkg_mod.__name__
-                + ' does not define mapping for ' + el.namespace + ', '
-                + el.local_name + ' element')
-
-        return pkg_mod.__name__, pkg_mod.ELEMENT_MAP[el.namespace, el.local_name]
 
     @staticmethod
     def find_content(uri):
@@ -225,196 +366,7 @@ class Model(object):
 
         raise ReferenceException('Could not find content for: ' + uri)
 
-    @classmethod
-    def class_from_module(cls):
-        return cls.__module__.rpartition('.')[0]
-
-    @classmethod
-    def _get_model_namespace(cls):
-        '''
-        determine a model's namespace from a class
-        '''
-        namespace = None
-
-        # determine from package
-        if namespace is None:
-            namespace = Model.package_to_namespace(cls.class_from_module())
-
-        return namespace
-
-    @classmethod
-    def _get_attribute_mappers(cls):
-        '''
-        get all the attribute definitions for a model class
-        '''
-
-        at_maps = {}
-
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Adding attribute defs from superclass '
-                        + cls_.__name__ + ': '
-                        + str(cls_._model_attribute_defs[cls_.__name__]))
-                    at_maps.update(cls_._model_attribute_defs[cls_.__name__].copy())
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__ + ' does not define attributes')
-
-        logger.debug('Attribute defs for ' + cls.__name__ + str(at_maps))
-        return at_maps
-
-    @classmethod
-    def _get_attribute_mapper(cls, namespace, local_name):
-        '''
-        get a specific attribute definition for a model class
-        '''
-
-        at_def = {}
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Getting attribute def ' + str(namespace) + ', '
-                        + local_name + ' from superclass '
-                        + cls_.__name__ + ': '
-                        + str(cls_._model_attribute_defs[cls_.__name__]))
-                    at_def = cls_._model_attribute_defs[cls_.__name__][namespace, local_name].copy()
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__
-                        + ' does not define attribute ' + str(namespace) + ', '
-                        + local_name)
-
-        logger.debug('Attribute def ' + str(namespace) + ', '
-            + local_name + ' for ' + cls.__name__ + ': ' + str(at_def))
-        return at_def
-
-    @classmethod
-    def _set_model_attribute_def(cls, namespace, local_name, kwargs):
-        '''
-        set the model attribute definition for an attribute
-        '''
-
-        if cls.__name__ not in cls._model_attribute_defs:
-            cls._model_attribute_defs[cls.__name__] = {}
-
-        logger.debug('Setting ' + str(cls) + ' ' + str(namespace) + ', ' + local_name
-            + ' attribute def to ' + str(kwargs))
-        cls._model_attribute_defs[cls.__name__][namespace, local_name] = kwargs
-
-    @classmethod
-    def _get_element_mappers(cls):
-        '''
-        get all the element definitions for a model class
-        '''
-
-        el_defs = {}
-
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Adding element defs from superclass '
-                        + cls_.__name__ + ': '
-                        + str(cls_._model_element_defs[cls_.__name__]))
-                    el_defs.update(cls_._model_element_defs[cls_.__name__].copy())
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__
-                        + ' does not define elements')
-
-        logger.debug('Element defs for ' + cls.__name__ + str(el_defs))
-        return el_defs
-
-    @classmethod
-    def _get_element_mapper(cls, namespace, local_name):
-        '''
-        get a specific element definition for a model class
-        '''
-
-        el_def = {}
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Getting element def ' + str(namespace) + ', '
-                        + local_name + ' from superclass '
-                        + cls_.__name__ + ': '
-                        + str(cls_._model_element_defs[cls_.__name__]))
-                    el_def = cls_._model_element_defs[cls_.__name__][namespace, local_name].copy()
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__
-                        + ' does not define element ' + str(namespace) + ', '
-                        + local_name)
-
-        logger.debug('Element def ' + str(namespace) + ', '
-            + local_name + ' for ' + cls.__name__ + ': ' + str(el_def))
-        return el_def
-
-    @classmethod
-    def _set_model_element_def(cls, namespace, local_name, kwargs):
-        '''
-        set the model element definition for an attribute
-        '''
-
-        if cls.__name__ not in cls._model_element_defs:
-            cls._model_element_defs[cls.__name__] = {}
-
-        logger.debug('Setting ' + str(cls) + ' ' + str(namespace) + ', '
-            + local_name + ' element def to ' + str(kwargs))
-        cls._model_element_defs[cls.__name__][namespace, local_name] = kwargs
-
-        # now set the order that this element was defined
-        if cls.__name__ not in cls._model_element_orders:
-            cls._model_element_orders[cls.__name__] = []
-
-        # have to insert at the front because decorators are applied in reverse
-        # order
-        cls._model_element_orders[cls.__name__].insert(0, (namespace, local_name))
-
-    @classmethod
-    def _get_model_element_lookup(cls):
-        '''
-        get the element lookup dict for a class
-        '''
-
-        el_lookup = {}
-
-        for el_def in cls._get_element_mappers():
-            if not isinstance(el_def, dict):
-                raise ElementMappingException('Class ' + cls.__name__
-                    + ' has an invalid element definition: ' + str(el_def))
-
-            if 'namespace' not in el_def and el_def['local_name'] == '*':
-                el_lookup['*', '*'] = el_def
-            elif 'namespace' in el_def:
-                el_lookup[el_def['namespace'], el_def['local_name']] = el_def
-            else:
-                # try using element's namespace
-                namespace = cls._get_model_namespace()
-                el_lookup[namespace, el_def['local_name']] = el_def
-
-        logger.debug('Element lookup for ' + cls.__name__ + str(el_lookup))
-        return el_lookup
-
-    @classmethod
-    def _add_model_content_def(cls, kwargs):
-        '''
-        add a model content definition for the class
-        '''
-
-        logger.debug('Setting ' + str(cls) + ' content def to ' + str(kwargs))
-        cls.__model_content_defs = kwargs
-        if cls.__name__ not in cls._model_content_defs:
-            cls._model_content_defs[cls.__name__] = []
-
-        logger.debug('Adding ' + str(cls) + ' content def: ' + str(kwargs))
-        cls._model_content_defs[cls.__name__].append(kwargs)
-
-    @classmethod
-    def _get_content_mappers(cls):
-        '''
-        get the model content definitions
-        '''
-
-        return cls._model_content_defs[cls.__name__]
-
-    def __init__(self, value=None, namespace=None, local_name=None, el_def=None):
+    def __init__(self, value=None, namespace=None, local_name=None):
         # child_map must be first to prevent recursion of __getattr__
         self._child_map = {}
         self._children_values = []
@@ -423,15 +375,6 @@ class Model(object):
         self._parent = None
 
         self._references = {}
-
-        #TODO replace with content mapping
-        self._value_enum = None
-        self._value_pattern = None
-        if el_def is not None:
-            if 'value_enum' in el_def:
-                self._value_enum = el_def['value_enum']
-            if 'value_pattern' in el_def:
-                self._value_pattern = el_def['value_pattern']
 
         if local_name is not None:
             self.local_name = local_name
@@ -449,51 +392,17 @@ class Model(object):
         self._element_counts = {}
 
         # initialize attribute values
-        for at_map in self._get_attribute_mappers().values():
-            at_map._assign_default_value(self)
+        for mapper in self._get_attribute_mappers().values():
+            mapper._initialize(self)
 
         # initialize elements; if subclass defined the corresponding attribute,
         # we don't re-define
-        for el_def in self._get_element_mappers().values():
-            if el_def['local_name'].endswith('*'):
-                if 'into' not in el_def:
-                    name = '_elements'
-                else:
-                    name = el_def['into']
+        for mapper in self._get_element_mappers().values():
+            mapper._initialize(self)
 
-                if name not in self._child_map:
-                    logger.debug('Initializing ' + name + ' to ModelList()')
-                    self._child_map[name] = ModelList(self, el_def)
-
-            elif 'list' in el_def:
-                # initialze the array if it doesn't exist
-                if el_def['list'] not in self._child_map:
-                    logger.debug('Initializing ' + el_def['list'] + ' to ModelList()')
-                    self._child_map[el_def['list']] = ModelList(self, el_def)
-
-            elif 'dict' in el_def:
-                # initialze the dict if it doesn't exist
-                if el_def['dict'] not in self._child_map:
-                    logger.debug('Initializing ' + el_def['dict'] + ' to ModelDict()')
-                    self._child_map[el_def['dict']] = ModelDict(self, el_def)
-
-            else:
-                if 'into' in el_def:
-                    name = el_def['into']
-                else:
-                    name = el_def['local_name'].replace('-', '_')
-
-                if name not in self._child_map:
-                    logger.debug('Initializing ' + name + ' to ModelChild()')
-                    self._child_map[name] = ModelChild(self, el_def)
-
-        # initialize value
-        # TODO we use self.text as the value storage; probably a better way
-        if value is not None:
-            self.set_value(value)
-        else:
-            self.text = None
-        self.tail = None
+        # initialize content
+        for mapper in self._get_content_mappers().values():
+            mapper._initialize(self)
 
     def is_nil(self):
         '''
@@ -702,15 +611,15 @@ class Model(object):
 
         # check the element restrictions
         for (namespace, local_name), el_def in self._get_element_mappers().items():
-            if namespace is None and local_name == '*':
-                el_spec = ('*', '*')
+            if namespace is None and local_name == Model.ANY_LOCAL_NAME:
+                el_spec = (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
             elif namespace is not None:
                 el_spec = (namespace, local_name)
             else:
                 el_spec = (self.namespace, local_name)
 
             min_ = 1
-            if 'dict' in el_def or 'list' in el_def or local_name == '*':
+            if 'dict' in el_def or 'list' in el_def or local_name == Model.ANY_LOCAL_NAME:
                 # dicts and lists default to no max
                 max_ = None
             else:
@@ -752,19 +661,19 @@ class Model(object):
         value = attr.value
 
         if namespace is None:
-            ns_any = (self.namespace, '*')
+            ns_any = (self.namespace, Model.ANY_LOCAL_NAME)
             fq_key = (self.namespace, local_name)
         else:
-            ns_any = (namespace, '*')
+            ns_any = (namespace, Model.ANY_LOCAL_NAME)
             fq_key = (namespace, local_name)
 
-        at_maps = self._get_element_mappers()
+        mappers = self._get_element_mappers()
 
-        for key in [fq_key, (None, local_name), ns_any, ('*', '*')]:
-            if key not in at_maps:
+        for key in [fq_key, (None, local_name), ns_any, (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)]:
+            if key not in mappers:
                 continue
 
-            at_def = at_maps[key]
+            at_def = mappers[key]
 
             if 'enum' in at_def and value not in at_def['enum']:
                 raise EnumerationException(name + ' attribute must be one of '
@@ -799,13 +708,13 @@ class Model(object):
         local_name = el.local_name
 
         if namespace is None:
-            ns_any = (self.namespace, '*')
+            ns_any = (self.namespace, Model.ANY_LOCAL_NAME)
             fq_name = (self.namespace, local_name)
         else:
-            ns_any = (namespace, '*')
+            ns_any = (namespace, Model.ANY_LOCAL_NAME)
             fq_name = (namespace, local_name)
 
-        for key in [fq_name, local_name, ns_any, ('*', '*')]:
+        for key in [fq_name, local_name, ns_any, (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)]:
             # check both namespace + local_name and just local_name
             if key not in self._model_map['element_lookup']:
                 continue
@@ -817,7 +726,7 @@ class Model(object):
                 logger.debug('Ignoring ' + fq_name + ' element in ' + str(self))
                 return
 
-            if key[1] == '*':
+            if key[1] == Model.ANY_LOCAL_NAME:
                 logger.debug(str(self) + ' parsing ' + str(key) + ' elements matching *')
                 if 'into' in el_def:
                     name = el_def['into']
@@ -991,7 +900,9 @@ class Model(object):
 
             return
 
-        raise UnknownElementException('Unknown ' + str(self) + ' sub-element ' + str(el) + ' does not match ' + str([fq_name, local_name, ns_any, '*']))
+        raise UnknownElementException('Unknown ' + str(self) + ' sub-element '
+            + str(el) + ' does not match '
+            + str([fq_name, local_name, ns_any, (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)]))
 
     def to_xml(self):
         '''
@@ -1005,7 +916,7 @@ class Model(object):
             value = self._produce_attribute(el, namespace, local_name, at_def)
 
         for (namespace, local_name), el_def in self._get_element_mappers().items():
-            if el_def['local_name'].endswith('*'):
+            if el_def['local_name'] == Model.ANY_LOCAL_NAME:
                 if 'into' in el_def:
                     lst = getattr(self, el_def['into'])
                 else:
@@ -1085,7 +996,7 @@ class Model(object):
         '''
         produce an attribute for xml
         '''
-        if local_name.endswith('*'):
+        if local_name == Model.ANY_LOCAL_NAME:
             return
 
         if 'into' in at_def:
@@ -1161,7 +1072,7 @@ class Model(object):
         el_def = self._children_el_defs[child_index]
 
         logger.debug(str(self) + ' producing ' + str(child) + ' according to ' + str(el_def))
-        if el_def['local_name'] == '*':
+        if el_def['local_name'] == Model.ANY_LOCAL_NAME:
             if 'type' in el_def and child.local_name is None:
                 raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
 
