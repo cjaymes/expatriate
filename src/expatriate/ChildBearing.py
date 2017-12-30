@@ -99,7 +99,9 @@ class ChildBearing(Node):
             n = x
             n._parent = self
         else:
-            raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
+            raise ValueError('Children of ' + self.__class__.__name__
+                + ' must be a simple type (str, int, float)'
+                + ' or a subclass of Node; got: ' + x.__class__.__name__)
 
         self.children.append(n)
 
