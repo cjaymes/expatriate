@@ -22,20 +22,8 @@ import os.path
 import re
 import sys
 
-from .List import List as ModelList
-from .Dict import Dict as ModelDict
-from .Child import Child as ModelChild
 from .decorators import *
 from .exceptions import *
-
-XML_SPACE_ENUMERATION = [
-    'default',
-    # The value "default" signals that applications' default white-space
-    # processing modes are acceptable for this element
-    'preserve',
-    # the value "preserve" indicates the intent that applications preserve all
-    # the white space
-]
 
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
@@ -51,6 +39,15 @@ logger = logging.getLogger(__name__)
 class Model(object):
     ANY_NAMESPACE = '*'
     ANY_LOCAL_NAME = '*'
+
+    XML_SPACE_ENUMERATION = (
+        'default',
+        # The value "default" signals that applications' default white-space
+        # processing modes are acceptable for this element
+        'preserve',
+        # the value "preserve" indicates the intent that applications preserve all
+        # the white space
+    )
 
     __namespace_to_package = {
         'http://www.w3.org/XML/1998/namespace': 'expatriate.model.xml',
@@ -199,7 +196,7 @@ class Model(object):
         return el_lookup
 
     @classmethod
-    def _add_model_content_def(cls, kwargs):
+    def _add_model_content_mapper(cls, kwargs):
         '''
         add a model content definition for the class
         '''
@@ -217,6 +214,9 @@ class Model(object):
         '''
         get the model content definitions
         '''
+
+        if cls.__name__ not in cls._content_mappers:
+            return ()
 
         return cls._content_mappers[cls.__name__]
 
@@ -366,28 +366,8 @@ class Model(object):
 
         raise ReferenceException('Could not find content for: ' + uri)
 
-    def __init__(self, value=None, namespace=None, local_name=None):
-        # child_map must be first to prevent recursion of __getattr__
-        self._child_map = {}
-        self._children_values = []
-        self._children_el_defs = []
-        self._children_keys = []
+    def __init__(self):
         self._parent = None
-
-        self._references = {}
-
-        if local_name is not None:
-            self.local_name = local_name
-
-        # must have namespace for concrete classes
-        if namespace is None:
-            namespace = self._get_model_namespace()
-            if namespace is None:
-                raise ValueError('No namespace defined for ' + self.__class__.__name__ + ' & could not detect')
-            else:
-                self.namespace = namespace
-        else:
-            self.namespace = namespace
 
         self._element_counts = {}
 
@@ -401,7 +381,7 @@ class Model(object):
             mapper._initialize(self)
 
         # initialize content
-        for mapper in self._get_content_mappers().values():
+        for mapper in self._get_content_mappers():
             mapper._initialize(self)
 
     def is_nil(self):
@@ -472,118 +452,36 @@ class Model(object):
 
         return s
 
-    def __setattr__(self, name, value):
-        '''
-        setattr override to keep track of indexes etc.
-        '''
-
-        try:
-            object.__getattribute__(self, '_child_map')
-        except:
-            # not initialzed yet, just pass through
-            object.__setattr__(self, name, value)
-
-        # keep index of 'id' attrs
-        if name == 'id':
-            if self._parent is not None:
-                self._parent._references[value] = self
-        if name == 'parent' and hasattr(self, 'id'):
-            self._parent._references[self.id] = self
-
-        if name in self._child_map:
-            # capture element assignment
-            el_def = self._child_map[name].el_def
-            if isinstance(self._child_map[name], ModelList):
-                if isinstance(value, list):
-                    # wrap in ModelList
-                    self._child_map[name] = ModelList(self, el_def, value)
-                else:
-                    raise ValueError('Trying to assign ' + value.__class__.__name__ + ' type to ' + name + ' attribute, but expecting list')
-            elif isinstance(self._child_map[name], ModelDict):
-                if isinstance(value, dict):
-                    # wrap in ModelDict
-                    self._child_map[name] = ModelDict(self, el_def, value)
-                else:
-                    raise ValueError('Trying to assign ' + value.__class__.__name__ + ' type to ' + name + ' attribute, but expecting dict')
-            elif isinstance(self._child_map[name], ModelChild):
-                # wrapped in ModelChild
-                self._remove_child(self._child_map[name].value)
-                self._child_map[name].value = value
-                self._append_child_for(value, self._child_map[name].el_def)
-            else:
-                raise ValueError('Child map entry for ' + name + ' is set to an unsupported type')
-        else:
-            # process as regular attribute
-            object.__setattr__(self, name, value)
-
-    def __getattr__(self, name):
-        '''
-        getattr override to keep track of indexes etc.
-        '''
-
-        try:
-            object.__getattribute__(self, '_child_map')
-        except:
-            # not initialzed yet, just return __getattribute__
-            return object.__getattribute__(self, name)
-
-        if name in self._child_map:
-            if isinstance(self._child_map[name], ModelChild):
-                return self._child_map[name].value
-            else:
-                return self._child_map[name]
-        else:
-            raise AttributeError('Attribute ' + name + ' was not found in '
-                + self.__class__.__name__ + ': ' + str(self._child_map.keys()))
-
-    def _append_child_for(self, value, el_def, key=None):
-        self._children_values.append(value)
-        self._children_el_defs.append(el_def)
-        self._children_keys.append(key)
-
-    def _remove_child(self, value):
-        try:
-            i = self._children_values.index(value)
-            del self._children_values[i]
-            del self._children_el_defs[i]
-            del self._children_keys[i]
-        except ValueError:
-            pass
-
     def find_reference(self, ref):
         '''
         find child that matches reference *ref*
         '''
 
-        if ref in self._references:
-            return self._references[ref]
-        else:
-            for c in self._children_values:
-                try:
-                    return c.find_reference(ref)
-                except:
-                    pass
+        try:
+            if self.id == ref:
+                return self
+        except AttributeError:
+            pass
+
+        # check element mappers for ref
+        raise NotImplementedError
 
         raise ReferenceException('Could not find reference ' + ref
             + ' within ' + str(self))
 
-    def from_xml(self, parent, el):
+    def from_xml(self, parent, el, namespace=None, local_name=None):
         '''
         create model instance from xml element *el*
         '''
+
         self._parent = parent
 
         logger.debug('Parsing ' + str(el) + ' element into '
             + self.__class__.__module__ + '.' + self.__class__.__name__
             + ' class')
 
-        self.local_name = el.local_name
-
-        if el.namespace is None:
-            # copy the parents
-            self.namespace = self._parent.namespace
-        else:
-            self.namespace = el.namespace
+        for mapper in self._get_attribute_mappers().values():
+            mapper.validate(self)
 
         for (namespace, local_name), at_def in self._get_attribute_mappers().items():
             # check that required attributes are defined
