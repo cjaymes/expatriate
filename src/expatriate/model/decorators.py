@@ -165,20 +165,3 @@ def content(*args, **kwargs):
 
         return cls
     return wrapper
-
-def defer_class_load(module, class_name):
-    '''
-        Returns a class from *module* and *class_name* specification at runtime,
-        avoiding reference loops between classes and model definitions.
-    '''
-    def wrapper():
-        # print('Loading module ' + module)
-        mod = importlib.import_module(module)
-
-        # print('Getting class ' + class_name + ' from module ' + module)
-        class_ = getattr(mod, class_name)
-
-        # print('Returning ' + str(class_))
-        return class_
-
-    return wrapper
