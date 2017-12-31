@@ -93,25 +93,25 @@ def test_namespace_to_package():
     with pytest.raises(UnregisteredNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
-# def test_load_root_model():
-#     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, RootFixture)
-#
-#     with pytest.raises(UnregisteredNamespaceException):
-#         test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/derp" />'
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
-#
-#     with pytest.raises(ElementMappingException):
-#         test_xml = '<test:Derp xmlns:test="http://jaymes.biz/test" />'
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
-#
+def test_load_root_model():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, RootFixture)
+
+    with pytest.raises(UnregisteredNamespaceException):
+        test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/derp" />'
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
+
+    with pytest.raises(ElementMappingException):
+        test_xml = '<test:Derp xmlns:test="http://jaymes.biz/test" />'
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
+
 # # def test_load_enclosed_model():
 # #     root = RootFixture()
 # #     el = Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/test" />'))
