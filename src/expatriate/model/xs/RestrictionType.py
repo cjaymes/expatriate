@@ -35,12 +35,12 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='base', type=QNameType)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=defer_class_load('scap.model.xs.AllType', 'AllType'),
+    cls=('scap.model.xs.AllType', 'AllType'),
     min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
 @element(local_name='simpleType', list='tags',
-    cls=defer_class_load('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
+    cls=('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
     min=0)
 @element(local_name='minExclusive', list='tags', cls=FacetType, min=0, max=None)
 @element(local_name='minInclusive', list='tags', cls=FacetType, min=0, max=None)
@@ -55,10 +55,10 @@ logger = logging.getLogger(__name__)
 @element(local_name='whiteSpace', list='tags', cls=WhitespaceElement, min=0, max=None)
 @element(local_name='pattern', list='tags', cls=PatternElement, min=0, max=None)
 @element(local_name='attribute', list='tags',
-    cls=defer_class_load('scap.model.xs.AttributeType', 'AttributeType'),
+    cls=('scap.model.xs.AttributeType', 'AttributeType'),
     min=0, max=None)
 @element(local_name='attributeGroup', list='tags',
-    cls=defer_class_load('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
+    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
     min=0, max=None)
 @element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
 class RestrictionType(AnnotatedType):

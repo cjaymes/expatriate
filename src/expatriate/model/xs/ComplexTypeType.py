@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 @element(local_name='complexContent', list='tags', cls=ComplexContentElement, min=0, max=None)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=defer_class_load('scap.model.xs.AllType', 'AllType'), min=0)
+    cls=('scap.model.xs.AllType', 'AllType'), min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
 @element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)

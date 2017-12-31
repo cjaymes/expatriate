@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='*', )
 @element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)
 @element(local_name='attributeGroup', list='tags',
-    cls=defer_class_load('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
+    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
     min=0, max=None)
 @element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
 class AttributeGroupType(AnnotatedType):

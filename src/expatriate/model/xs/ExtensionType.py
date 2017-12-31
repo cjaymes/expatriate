@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='base', type=QNameType, required=True)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=defer_class_load('scap.model.xs.AllType', 'AllType'),
+    cls=('scap.model.xs.AllType', 'AllType'),
     min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
