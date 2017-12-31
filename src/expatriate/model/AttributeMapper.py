@@ -18,6 +18,8 @@
 import importlib
 import logging
 
+from .exceptions import *
+
 logger = logging.getLogger(__name__)
 
 class AttributeMapper:
@@ -66,6 +68,7 @@ class AttributeMapper:
             raise DecoratorException('Attributes need at least local_name defined')
 
         self._kwargs = kwargs
+        self._count = 0
 
     def initialize(self, model):
         if 'into' in self._kwargs:
@@ -130,6 +133,8 @@ class AttributeMapper:
 
         setattr(model, name, value)
 
+        self._count += 1
+
     def validate(self, model):
         name = self._kwargs['local_name']
 
@@ -137,7 +142,7 @@ class AttributeMapper:
         if (
             'required' in self._kwargs
             and self._kwargs['required']
-            and not hasattr(model, name)
+            and self._count > 0
         ):
             raise RequiredAttributeException(str(model) + ' must define ' + name + ' attribute')
 
@@ -145,6 +150,6 @@ class AttributeMapper:
         if (
             'prohibited' in self._kwargs
             and self._kwargs['prohibited']
-            and hasattr(model, name)
+            and self._count == 0
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')
