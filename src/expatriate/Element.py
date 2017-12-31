@@ -264,3 +264,11 @@ class Element(ChildBearing, Subscriber):
         for c in self.children:
             do += c.get_node_count()
         return do
+
+    def is_nil(self):
+        prefix = self.prefix_to_namespace('http://www.w3.org/2001/XMLSchema-instance')
+        name = prefix + ':nil'
+        if name in self.attributes and self.attributes[name] == 'true':
+            return True
+        else:
+            return False
