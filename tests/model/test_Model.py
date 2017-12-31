@@ -79,20 +79,20 @@ def test_is_not_nil():
 #     assert Model.parse_tag('{http://jaymes.biz/test}test') == ('http://jaymes.biz/test', 'test')
 #     assert Model.parse_tag('test') == (None, 'test')
 
-def test_package_to_xmlns():
+def test_package_to_namespace():
     assert Model.package_to_namespace('fixtures.test') == 'http://jaymes.biz/test'
     assert Model.package_to_namespace('fixtures.test2') == 'http://jaymes.biz/test2'
 
     with pytest.raises(UnregisteredNamespaceException):
         Model.package_to_namespace('scap.model.derp')
 
-# def test_xmlns_to_package():
-#     assert Model.xmlns_to_package('http://jaymes.biz/test') == 'fixtures.test'
-#     assert Model.xmlns_to_package('http://jaymes.biz/test2') == 'fixtures.test2'
-#
-#     with pytest.raises(UnregisteredNamespaceException):
-#         Model.xmlns_to_package('http://jaymes.biz/derp')
-#
+def test_namespace_to_package():
+    assert Model.namespace_to_package('http://jaymes.biz/test') == 'fixtures.test'
+    assert Model.namespace_to_package('http://jaymes.biz/test2') == 'fixtures.test2'
+
+    with pytest.raises(UnregisteredNamespaceException):
+        Model.namespace_to_package('http://jaymes.biz/derp')
+
 # def test_load_root_model():
 #     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
 #     doc = expatriate.Document()
