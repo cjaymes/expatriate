@@ -424,7 +424,7 @@ class Model(object):
         '''
         string representation of the model
         '''
-        s = self.__class__.__module__ + '.' + self.__class__.__name__
+        s = self.__class__.__name__
         if hasattr(self, 'id') and self.id is not None:
             s += ' id: ' + self.id
         elif hasattr(self, 'Id') and self.Id is not None:
