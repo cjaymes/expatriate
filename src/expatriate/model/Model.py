@@ -375,6 +375,7 @@ class Model(object):
             mapper.initialize(self)
 
         # initialize content
+        self._content = []
         for mapper in self._get_content_mappers():
             mapper.initialize(self)
 
@@ -392,27 +393,16 @@ class Model(object):
         self.set_value(None)
 
     def get_value(self):
-        #TODO replace for content
-        logger.debug(self.__class__.__name__ + ' value currently '
-            + str(self.text))
-        return self.text
+        if len(self._content) == 0:
+            return None
+        else:
+            return ''.join(self._content)
 
     def set_value(self, value):
-        #TODO replace for content
-        if self._value_enum is not None:
-            if value not in self._value_enum:
-                raise ValueError(self.__class__.__name__ + ' Invalid value '
-                    + str(value) + '; not in ' + str(self._value_enum))
-        if self._value_pattern is not None:
-            if (
-                not isinstance(value, str)
-                or not re.fullmatch(self._value_pattern, value)
-            ):
-                raise ValueError(self.__class__.__name__ + ' Invalid value '
-                    + str(value) + '; does not match ' + self._value_pattern)
-        self.text = value
-        logger.debug(self.__class__.__name__ + ' value set to '
-            + str(self.text))
+        if value is None:
+            self._content = []
+        else:
+            self._content = [value]
 
     def parse_value(self, value):
         '''
