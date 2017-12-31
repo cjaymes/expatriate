@@ -171,14 +171,14 @@ def defer_class_load(module, class_name):
         Returns a class from *module* and *class_name* specification at runtime,
         avoiding reference loops between classes and model definitions.
     '''
-    def _load_class():
-        # use cached copy of module if possible
-        if module not in sys.modules:
-            logger.debug('Loading module ' + module)
-            mod = importlib.import_module(module)
-        else:
-            mod = sys.modules[module]
+    def wrapper():
+        # print('Loading module ' + module)
+        mod = importlib.import_module(module)
 
-        return getattr(mod, class_name)
+        # print('Getting class ' + class_name + ' from module ' + module)
+        class_ = getattr(mod, class_name)
 
-    return _load_class
+        # print('Returning ' + str(class_))
+        return class_
+
+    return wrapper
