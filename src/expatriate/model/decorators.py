@@ -179,6 +179,6 @@ def defer_class_load(module, class_name):
         else:
             mod = sys.modules[module]
 
-        return setattr(mod, class_name)
+        return getattr(mod, class_name)
 
     return _load_class
