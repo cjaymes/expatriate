@@ -25,28 +25,23 @@ from expatriate.model.decorators import *
 from expatriate.model.exceptions import *
 from expatriate.model.types import *
 from expatriate.model import Model
-#
-# from fixtures.test.RootFixture import RootFixture
-# from fixtures.test.EnclosedFixture import EnclosedFixture
-# from fixtures.test.AttributeFixture import AttributeFixture
-# from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
-# from fixtures.test.WildcardElementNotInFixture import WildcardElementNotInFixture
-# from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
-# from fixtures.test.AppendElementFixture import AppendElementFixture
-# from fixtures.test.MapElementFixture import MapElementFixture
-# from fixtures.test.MappableElementFixture import MappableElementFixture
-# from fixtures.test.InitFixture import InitFixture
-# from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
-# from fixtures.test.InheritingFixture import InheritingFixture
-#
-# from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
-#
-logging.basicConfig(level=logging.DEBUG)
 
-from fixtures.test.EnclosedFixture import EnclosedFixture
 from fixtures.test.RootFixture import RootFixture
+from fixtures.test.EnclosedFixture import EnclosedFixture
+from fixtures.test.AttributeFixture import AttributeFixture
+from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
+from fixtures.test.WildcardElementNotInFixture import WildcardElementNotInFixture
+from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
+from fixtures.test.AppendElementFixture import AppendElementFixture
+from fixtures.test.MapElementFixture import MapElementFixture
+from fixtures.test.MappableElementFixture import MappableElementFixture
+from fixtures.test.InitFixture import InitFixture
+from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
+from fixtures.test.InheritingFixture import InheritingFixture
 
 from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
+
+logging.basicConfig(level=logging.DEBUG)
 
 Model.register_namespace('fixtures.test', 'http://jaymes.biz/test')
 Model.register_namespace('fixtures.test2', 'http://jaymes.biz/test2')
@@ -73,13 +68,13 @@ def test_is_nil():
     assert model.get_value() is None
     assert model.is_nil()
 
-# def test_is_not_nil():
-#     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert not model.is_nil()
-#
+def test_is_not_nil():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert not model.is_nil()
+
 # def test_parse_tag():
 #     assert Model.parse_tag('{http://jaymes.biz/test}test') == ('http://jaymes.biz/test', 'test')
 #     assert Model.parse_tag('test') == (None, 'test')
