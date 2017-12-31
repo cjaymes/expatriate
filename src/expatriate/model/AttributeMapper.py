@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+import importlib
 import logging
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ class AttributeMapper:
 
         self._kwargs = kwargs
 
-    def _initialize(self, model):
+    def initialize(self, model):
         if 'into' in self._kwargs:
             attr_name = self._kwargs['into']
         else:
@@ -89,3 +90,61 @@ class AttributeMapper:
 
     def get_local_name(self):
         return self._kwargs['local_name']
+
+    def matches(self, attr):
+        from .Model import Model
+
+        return (self.get_namespace(), self.get_local_name()) in (
+            (attr.namespace, attr.local_name),
+            (None, attr.local_name),
+            (attr.namespace, Model.ANY_LOCAL_NAME),
+            (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
+        )
+
+    def _get_attr_name(self):
+        if 'into' in self._kwargs:
+            return self._kwargs['into']
+        else:
+            return self._kwargs['local_name'].replace('-', '_')
+
+    def parse_in(self, model, attr):
+        name = self._get_attr_name()
+        value = attr.value
+
+        if 'enum' in self._kwargs and value not in self._kwargs['enum']:
+            raise EnumerationException(name + ' attribute must be one of '
+                + str(self._kwargs['enum']) + ': ' + str(value))
+
+        # convert value
+        if 'type' in self._kwargs:
+            logger.debug('Parsing ' + str(value) + ' as '
+                + str(self._kwargs['type']))
+            type_ = self._kwargs['type']
+            # load from a tuple (module_name, class_name) to defer class load
+            if isinstance(type_, tuple):
+                mod = importlib.import_module(type_[0])
+                type_ = getattr(mod, type_[1])
+            value = type_().parse_value(value)
+
+        logger.debug('Setting attribute ' + name + ' = ' + str(value))
+
+        setattr(model, name, value)
+
+    def validate(self, model):
+        name = self._kwargs['local_name']
+
+        # check that required attributes are defined
+        if (
+            'required' in self._kwargs
+            and self._kwargs['required']
+            and not hasattr(model, name)
+        ):
+            raise RequiredAttributeException(str(model) + ' must define ' + name + ' attribute')
+
+        # check that prohibited attributes are not defined
+        if (
+            'prohibited' in self._kwargs
+            and self._kwargs['prohibited']
+            and hasattr(model, name)
+        ):
+            raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')

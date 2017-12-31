@@ -27,18 +27,27 @@ class ContentMapper:
             enum
                 Enumeration the attribute's value must be from
             pattern
-                Pattern which the value of the attribute must match.
+                Pattern which the value must match.
             type
                 Type against which a value must validate
 
             min
-                The minimum value of the attribute. Can be numeric or None (the
+                The minimum value of the content. Can be numeric or None (the
                 default).
             max
-                The maximum value of the attribute. Can be numeric or None (the
+                The maximum value of the content. Can be numeric or None (the
                 default).
         '''
         self._kwargs = kwargs
 
-    def _initialize(self, model):
+    def initialize(self, model):
+        from .Model import Model
+        pass
+
+    def parse_in(self, model, child):
+        from .Model import Model
+        pass
+
+    def validate(self, model):
+        from .Model import Model
         pass
