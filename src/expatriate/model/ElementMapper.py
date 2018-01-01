@@ -159,12 +159,19 @@ class ElementMapper(Mapper):
     def matches(self, child):
         from .Model import Model
 
-        return (self.get_namespace(), self.get_local_name()) in (
+        matches = (self.get_namespace(), self.get_local_name()) in (
             (child.namespace, child.local_name),
             (None, child.local_name),
             (child.namespace, Model.ANY_LOCAL_NAME),
             (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
         )
+
+        if matches:
+            logger.debug(str(self) + ' matches ' + str(child))
+        else:
+            logger.debug(str(self) + ' does not match ' + str(child))
+
+        return matches
 
     def element_to_class(self, model, el):
         from .Model import Model
@@ -211,8 +218,6 @@ class ElementMapper(Mapper):
                 value = type_.parse_value(child.get_value())
             else:
                 value = Model.load(model, child)
-                value.namespace = namespace
-                value.local_name = local_name
 
             lst.append(value)
 

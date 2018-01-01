@@ -241,25 +241,25 @@ def test_load_element_max():
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
-#
-# def test_load_element_wildcard_not_in():
-#     test_xml = '''
-#         <test:WildcardElementNotInFixture xmlns:test2="http://jaymes.biz/test2" xmlns:test="http://jaymes.biz/test">
-#         <test:wildcard_element>test1</test:wildcard_element>
-#         <test2:wildcard_element>test2</test2:wildcard_element>
-#         </test:WildcardElementNotInFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, WildcardElementNotInFixture)
-#     assert hasattr(model, '_elements')
-#     assert isinstance(model._elements, ModelList)
-#     assert len(model._elements) == 2
-#     assert isinstance(model._elements[0], EnclosedFixture)
-#     assert isinstance(model._elements[1], EnclosedFixture2)
-#     assert model._elements[0].get_value() == 'test1'
-#     assert model._elements[1].get_value() == 'test2'
+
+def test_load_element_wildcard_not_in():
+    test_xml = '''
+        <test:WildcardElementNotInFixture xmlns:test2="http://jaymes.biz/test2" xmlns:test="http://jaymes.biz/test">
+        <test:wildcard_element>test1</test:wildcard_element>
+        <test2:wildcard_element>test2</test2:wildcard_element>
+        </test:WildcardElementNotInFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, WildcardElementNotInFixture)
+    assert hasattr(model, '_elements')
+    assert isinstance(model._elements, list)
+    assert len(model._elements) == 2
+    assert isinstance(model._elements[0], EnclosedFixture)
+    assert isinstance(model._elements[1], EnclosedFixture2)
+    assert model._elements[0].get_value() == 'test1'
+    assert model._elements[1].get_value() == 'test2'
 #
 # def test_load_element_wildcard_in():
 #     test_xml = '''
