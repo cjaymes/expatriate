@@ -332,29 +332,29 @@ def test_load_element_append_type():
 
     assert isinstance(model.append_type[1], float)
     assert model.append_type[1] == 1.2
-#
-# def test_load_element_append_class():
-#     test_xml = '''
-#         <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
-#         <test:append_class>test1</test:append_class>
-#         <test:append_class>test2</test:append_class>
-#         </test:AppendElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, AppendElementFixture)
-#
-#     assert hasattr(model, 'append_class')
-#     assert isinstance(model.append_class, ModelList)
-#     assert len(model.append_class) == 2
-#
-#     assert isinstance(model.append_class[0], EnclosedFixture)
-#     assert model.append_class[0].get_value() == 'test1'
-#
-#     assert isinstance(model.append_class[1], EnclosedFixture)
-#     assert model.append_class[1].get_value() == 'test2'
+
+def test_load_element_append_class():
+    test_xml = '''
+        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:append_class>test1</test:append_class>
+        <test:append_class>test2</test:append_class>
+        </test:AppendElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, AppendElementFixture)
+
+    assert hasattr(model, 'append_class')
+    assert isinstance(model.append_class, list)
+    assert len(model.append_class) == 2
+
+    assert isinstance(model.append_class[0], EnclosedFixture)
+    assert model.append_class[0].get_value() == 'test1'
+
+    assert isinstance(model.append_class[1], EnclosedFixture)
+    assert model.append_class[1].get_value() == 'test2'
 #
 # def test_load_element_map_key_explicit():
 #     test_xml = '''
@@ -520,11 +520,11 @@ def test_load_element_append_type():
 #     assert init.default_attr == 'Default'
 #
 #     assert hasattr(init, 'list_')
-#     assert isinstance(init.list_, ModelList)
+#     assert isinstance(init.list_, list)
 #     assert len(init.list_) == 0
 #
 #     assert hasattr(init, 'dict_')
-#     assert isinstance(init.dict_, ModelDict)
+#     assert isinstance(init.dict_, dict)
 #     assert len(init.dict_.keys()) == 0
 #
 #     assert not hasattr(init, 'in_test')
@@ -535,11 +535,11 @@ def test_load_element_append_type():
 #     assert init.dash_test is None
 #
 #     assert hasattr(init, 'test2_elements')
-#     assert isinstance(init.test2_elements, ModelList)
+#     assert isinstance(init.test2_elements, list)
 #     assert len(init.test2_elements) == 0
 #
 #     assert hasattr(init, '_elements')
-#     assert isinstance(init._elements, ModelList)
+#     assert isinstance(init._elements, list)
 #     assert len(init._elements) == 0
 #
 # def test_get_package():
