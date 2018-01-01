@@ -537,10 +537,10 @@ def test_initialization():
 def test_get_package():
     root = RootFixture()
     assert root.get_package() == 'fixtures.test'
-#
-# def test_str_id_func():
-#     root = RootFixture()
-#     assert str(root) == ('fixtures.test.RootFixture.RootFixture # ' + str(id(root)))
+
+def test_str_id_func():
+    root = RootFixture()
+    assert str(root) == ('RootFixture # ' + str(id(root)))
 #
 # def test_str_id():
 #     root = RootFixture()
