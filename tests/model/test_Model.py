@@ -309,29 +309,29 @@ def test_load_element_append_nil():
 
     assert isinstance(model.append_nil[1], EnclosedFixture)
     assert model.append_nil[1].get_value() == 'test2'
-#
-# def test_load_element_append_type():
-#     test_xml = '''
-#         <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
-#         <test:append_type>1.1</test:append_type>
-#         <test:append_type>1.2</test:append_type>
-#         </test:AppendElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, AppendElementFixture)
-#
-#     assert hasattr(model, 'append_type')
-#     assert isinstance(model.append_type, ModelList)
-#     assert len(model.append_type) == 2
-#
-#     assert isinstance(model.append_type[0], float)
-#     assert model.append_type[0] == 1.1
-#
-#     assert isinstance(model.append_type[1], float)
-#     assert model.append_type[1] == 1.2
+
+def test_load_element_append_type():
+    test_xml = '''
+        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:append_type>1.1</test:append_type>
+        <test:append_type>1.2</test:append_type>
+        </test:AppendElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, AppendElementFixture)
+
+    assert hasattr(model, 'append_type')
+    assert isinstance(model.append_type, list)
+    assert len(model.append_type) == 2
+
+    assert isinstance(model.append_type[0], float)
+    assert model.append_type[0] == 1.1
+
+    assert isinstance(model.append_type[1], float)
+    assert model.append_type[1] == 1.2
 #
 # def test_load_element_append_class():
 #     test_xml = '''
