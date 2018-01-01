@@ -293,8 +293,6 @@ class ElementMapper(Mapper):
                 else:
                     # needs 'class' in self._kwargs
                     value = Model.load(model, el)
-                    value.namespace = namespace
-                    value.local_name = local_name
 
             dict_[key] = value
 

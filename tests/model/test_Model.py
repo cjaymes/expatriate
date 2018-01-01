@@ -465,34 +465,34 @@ def test_load_element_map_value_type():
 
     assert 'test2' in model.map_value_type
     assert model.map_value_type['test2'] == 'test2'
-#
-# def test_load_element_map_value_class():
-#     test_xml = '''
-#         <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <test:map_value_class id="test1" tag="blue">text1</test:map_value_class>
-#         <test:map_value_class id="test2" tag="red">text2</test:map_value_class>
-#         </test:MapElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, MapElementFixture)
-#
-#     assert hasattr(model, 'map_value_class')
-#     assert len(model.map_value_class) == 2
-#
-#     assert 'test1' in model.map_value_class
-#     assert isinstance(model.map_value_class['test1'], MappableElementFixture)
-#     assert model.map_value_class['test1'].id == 'test1'
-#     assert model.map_value_class['test1'].tag == 'blue'
-#     assert model.map_value_class['test1'].get_value() == 'text1'
-#
-#     assert 'test2' in model.map_value_class
-#     assert isinstance(model.map_value_class['test2'], MappableElementFixture)
-#     assert model.map_value_class['test2'].id == 'test2'
-#     assert model.map_value_class['test2'].tag == 'red'
-#     assert model.map_value_class['test2'].get_value() == 'text2'
+
+def test_load_element_map_value_class():
+    test_xml = '''
+        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:map_value_class id="test1" tag="blue">text1</test:map_value_class>
+        <test:map_value_class id="test2" tag="red">text2</test:map_value_class>
+        </test:MapElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, MapElementFixture)
+
+    assert hasattr(model, 'map_value_class')
+    assert len(model.map_value_class) == 2
+
+    assert 'test1' in model.map_value_class
+    assert isinstance(model.map_value_class['test1'], MappableElementFixture)
+    assert model.map_value_class['test1'].id == 'test1'
+    assert model.map_value_class['test1'].tag == 'blue'
+    assert model.map_value_class['test1'].get_value() == 'text1'
+
+    assert 'test2' in model.map_value_class
+    assert isinstance(model.map_value_class['test2'], MappableElementFixture)
+    assert model.map_value_class['test2'].id == 'test2'
+    assert model.map_value_class['test2'].tag == 'red'
+    assert model.map_value_class['test2'].get_value() == 'text2'
 #
 # def test_init_value():
 #     root = RootFixture(value='test')
