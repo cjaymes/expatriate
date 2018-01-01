@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 class Element(ChildBearing, Subscriber):
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
-        super(Element, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         if attributes is None:
             self._attributes = PublishingDict({})
@@ -150,9 +150,7 @@ class Element(ChildBearing, Subscriber):
             self._prefix_to_namespace = {
                 'xml': 'http://www.w3.org/XML/1998/namespace',
             }
-            self._namespace_to_prefixes = {
-                'http://www.w3.org/XML/1998/namespace': 'xml',
-            }
+            self._namespace_to_prefixes = {v: k for k, v in self._prefix_to_namespace.items()}
 
         # check for prefix namespaces
         for k, v in self._attributes.items():
@@ -266,7 +264,12 @@ class Element(ChildBearing, Subscriber):
         return do
 
     def is_nil(self):
-        prefix = self.prefix_to_namespace('http://www.w3.org/2001/XMLSchema-instance')
+        try:
+            prefix = self.namespace_to_prefix('http://www.w3.org/2001/XMLSchema-instance')
+        except UnknownNamespaceException:
+            # if the namespace hasn't been defined, attr doesn't exist either
+            return False
+        
         name = prefix + ':nil'
         if name in self.attributes and self.attributes[name] == 'true':
             return True
