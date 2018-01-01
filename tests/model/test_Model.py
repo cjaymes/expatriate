@@ -533,10 +533,10 @@ def test_initialization():
     assert hasattr(init, '_elements')
     assert isinstance(init._elements, list)
     assert len(init._elements) == 0
-#
-# def test_get_package():
-#     root = RootFixture()
-#     assert root.get_package() == 'fixtures.test'
+
+def test_get_package():
+    root = RootFixture()
+    assert root.get_package() == 'fixtures.test'
 #
 # def test_str_id_func():
 #     root = RootFixture()
