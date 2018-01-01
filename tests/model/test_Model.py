@@ -287,28 +287,28 @@ def test_load_element_wildcard_in():
 
     assert isinstance(model.elements[0], EnclosedFixture2)
     assert model.elements[0].get_value() == 'test2'
-#
-# def test_load_element_append_nil():
-#     test_xml = '''
-#         <test:AppendElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <test:append_nil xsi:nil="true" />
-#         <test:append_nil>test2</test:append_nil>
-#         </test:AppendElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, AppendElementFixture)
-#
-#     assert hasattr(model, 'append_nil')
-#     assert isinstance(model.append_nil, ModelList)
-#     assert len(model.append_nil) == 2
-#
-#     assert model.append_nil[0] is None
-#
-#     assert isinstance(model.append_nil[1], EnclosedFixture)
-#     assert model.append_nil[1].get_value() == 'test2'
+
+def test_load_element_append_nil():
+    test_xml = '''
+        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:append_nil xsi:nil="true" />
+        <test:append_nil>test2</test:append_nil>
+        </test:AppendElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, AppendElementFixture)
+
+    assert hasattr(model, 'append_nil')
+    assert isinstance(model.append_nil, list)
+    assert len(model.append_nil) == 2
+
+    assert model.append_nil[0] is None
+
+    assert isinstance(model.append_nil[1], EnclosedFixture)
+    assert model.append_nil[1].get_value() == 'test2'
 #
 # def test_load_element_append_type():
 #     test_xml = '''
