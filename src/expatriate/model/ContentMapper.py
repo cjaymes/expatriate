@@ -18,6 +18,7 @@
 import logging
 
 from .Mapper import Mapper
+from ..Node import Node
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +43,7 @@ class ContentMapper(Mapper):
 
     def initialize(self, model):
         from .Model import Model
-        pass
-
-    def parse_in(self, model, child):
-        from .Model import Model
-        pass
+        model._content = []
 
     def validate(self, model):
         from .Model import Model

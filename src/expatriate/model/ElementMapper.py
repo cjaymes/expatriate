@@ -166,6 +166,25 @@ class ElementMapper(Mapper):
             (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
         )
 
+    def element_to_class(self, model, el):
+        from .Model import Model
+
+        if el.namespace is None:
+            model_package = model.get_package()
+        else:
+            model_package = Model.namespace_to_package(el.namespace)
+
+        if self.get_local_name() == Model.ANY_LOCAL_NAME:
+            return Model.element_to_class(model_package, el)
+        elif 'cls' in self._kwargs:
+            class_ = self._kwargs['cls']
+            if isinstance(class_, tuple):
+                mod = importlib.import_module(class_[0])
+                class_ = getattr(mod, class_[1])
+            return class_
+        else:
+            raise NotImplementedError
+
     def parse_in(self, model, child):
         from .Model import Model
 
@@ -174,13 +193,13 @@ class ElementMapper(Mapper):
         name = self._get_attr_name()
 
         if 'ignore' in self._kwargs and self._kwargs['ignore'] == True:
-            logger.debug('Ignoring ' + name + ' element in ' + str(self))
+            logger.debug('Ignoring ' + name + ' element in ' + str(model))
             return
 
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
-            logger.debug(str(self) + ' parsing elements matching * into ' + name)
+            logger.debug(str(model) + ' parsing elements matching * into ' + name)
 
-            lst = getattr(self, name)
+            lst = getattr(model, name)
 
             if child.is_nil():
                 # check we can accept nil
@@ -189,9 +208,9 @@ class ElementMapper(Mapper):
                 value = None
             elif 'type' in self._kwargs:
                 type_ = self._kwargs['type']()
-                value = type_.parse_value(el.text)
+                value = type_.parse_value(child.get_value())
             else:
-                value = Model.load(self, el)
+                value = Model.load(model, child)
                 value.namespace = namespace
                 value.local_name = local_name
 
@@ -200,9 +219,9 @@ class ElementMapper(Mapper):
             logger.debug('Appended ' + str(value) + ' to ' + name)
 
         elif 'list' in self._kwargs:
-            logger.debug(str(self) + ' parsing ' + str(child) + ' elements into ' + name)
+            logger.debug(str(model) + ' parsing ' + str(child) + ' elements into ' + name)
 
-            lst = getattr(self, name)
+            lst = getattr(model, name)
 
             if child.is_nil():
                 # check we can accept nil
@@ -214,28 +233,28 @@ class ElementMapper(Mapper):
                 value = ''.join(child.children)
                 value = type_().parse_value(value)
             else:
-                value = Model.load(self, el)
+                value = Model.load(model, child)
 
             lst.append(value)
 
             logger.debug('Appended ' + str(value) + ' to ' + name)
 
         elif 'dict' in self._kwargs:
-            logger.debug(str(self) + ' parsing ' + str(child) + ' elements into ' + name)
+            logger.debug(str(model) + ' parsing ' + str(child) + ' elements into ' + name)
 
-            dict_ = getattr(self, name)
+            dict_ = getattr(model, name)
 
             # TODO: implement key_element as well
             if 'dict_key' in self._kwargs:
-                if self._kwargs['dict_key'] not in el.keys():
+                if self._kwargs['dict_key'] not in child.attributes:
                     key = None
                 else:
-                    key = el.get(self._kwargs['dict_key'])
+                    key = child.attributes[self._kwargs['dict_key']].value
             else:
-                if 'id' not in el.keys():
+                if 'id' not in child.attributes:
                     key = None
                 else:
-                    key = el.get('id')
+                    key = child.attributes['id']
 
             # TODO: implement value_element? as well
             if child.is_nil():
@@ -246,7 +265,7 @@ class ElementMapper(Mapper):
             elif 'value_attr' in self._kwargs:
                 # TODO add ContentMapper
                 # try parsing from an attribute
-                if self._kwargs['value_attr'] not in el.keys():
+                if self._kwargs['value_attr'] not in child.attributes:
                     raise ValueError('Could not parse value from '
                         + str(child) + ' attribute '
                         + self._kwargs['value_attr'])
@@ -258,16 +277,17 @@ class ElementMapper(Mapper):
                         + ' without explicit type')
 
                 type_ = self._kwargs['type']()
-                value = type_.parse_value(el.get(self._kwargs['value_attr']))
+                value = child.attributes[self._kwargs['value_attr']].value
+                value = type_.parse_value(value)
 
             else:
                 # try parsing from the element itself, just mapping with the key
                 if 'type' in self._kwargs:
                     type_ = self._kwargs['type']()
-                    value = type_.parse_value(el.text)
+                    value = type_.parse_value(model.get_value())
                 else:
                     # needs 'class' in self._kwargs
-                    value = Model.load(self, el)
+                    value = Model.load(model, child)
                     value.namespace = namespace
                     value.local_name = local_name
 
@@ -276,7 +296,7 @@ class ElementMapper(Mapper):
             logger.debug('Mapped ' + str(key) + ' to ' + str(value) + ' in ' + name)
 
         elif 'class' in self._kwargs:
-            logger.debug(str(self) + ' parsing ' + str(child) + ' element as '
+            logger.debug(str(model) + ' parsing ' + str(child) + ' element as '
                 + str(self._kwargs['class']))
 
             if child.is_nil():
@@ -285,15 +305,15 @@ class ElementMapper(Mapper):
                     raise ValueError(str(child) + ' is nil, but not expecting nil value')
                 value = None
             else:
-                value = Model.load(self, el)
+                value = Model.load(model, child)
 
-            setattr(self, name, value)
+            setattr(model, name, value)
 
             logger.debug('Set attribute ' + str(name) + ' to ' + str(value)
-                + ' in ' + str(self))
+                + ' in ' + str(model))
 
         elif 'type' in self._kwargs:
-            logger.debug(str(self) + ' parsing ' + str(child) + ' elements as '
+            logger.debug(str(model) + ' parsing ' + str(child) + ' elements as '
                 + self._kwargs['type'])
 
             if child.is_nil():
@@ -307,26 +327,31 @@ class ElementMapper(Mapper):
                 if isinstance(type_, tuple):
                     mod = importlib.import_module(type_[0])
                     type_ = getattr(mod, type_[1])
-                value = ''.join(child.children)
+                value = child.get_value()
                 value = type_().parse_value(value)
 
-            setattr(self, name, value)
+            setattr(model, name, value)
 
-            logger.debug('Set attribute ' + str(name) + ' to ' + str(value) + ' in ' + str(self))
+            logger.debug('Set attribute ' + str(name) + ' to ' + str(value)
+                + ' in ' + str(model))
 
         elif 'enum' in self._kwargs:
-            logger.debug(str(self) + ' parsing ' + str(child) + ' elements from enum ' + str(self._kwargs['enum']))
+            logger.debug(str(model) + ' parsing ' + str(child)
+                + ' elements from enum ' + str(self._kwargs['enum']))
 
-            value = ''.join(child.children)
+            value = child.get_value()
             if value not in self._kwargs['enum']:
-                raise EnumerationException(str(child) + ' value must be one of ' + str(self._kwargs['enum']))
+                raise EnumerationException(str(child)
+                    + ' value must be one of ' + str(self._kwargs['enum']))
 
-            setattr(self, name, value)
+            setattr(model, name, value)
 
-            logger.debug('Set enum attribute ' + str(name) + ' to ' + str(value) + ' in ' + str(self))
+            logger.debug('Set enum attribute ' + str(name) + ' to '
+                + str(value) + ' in ' + str(model))
 
         else:
-            raise UnknownElementException(str(self) + ' could not parse ' + str(child) + ' element')
+            raise UnknownElementException(str(model) + ' could not parse '
+                + str(child) + ' element')
 
         model._element_counts[name] += 1
 

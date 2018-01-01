@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='nil', type=('expatriate.model.xs.BooleanType', 'BooleanType'), into='_xsi_nil', default=False)
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='schemaLocation', type=('expatriate.model.xs.AnyUriType', 'AnyUriType'), into='_xsi_schemaLocation')
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='noNamespaceSchemaLocation', type=('expatriate.model.xs.AnyUriType', 'AnyUriType'), into='_xsi_noNamespaceSchemaLocation')
+@content()
 class Model(object):
     ANY_NAMESPACE = '*'
     ANY_LOCAL_NAME = '*'
@@ -108,7 +109,7 @@ class Model(object):
 
         # determine from package
         if namespace is None:
-            namespace = Model.package_to_namespace(cls.class_from_module())
+            namespace = Model.package_to_namespace(cls.get_package())
 
         return namespace
 
@@ -183,30 +184,7 @@ class Model(object):
         cls._element_mapper_order[cls.__name__].insert(0, (mapper.get_namespace(), mapper.get_local_name()))
 
     @classmethod
-    def _get_element_lookup(cls):
-        '''
-        get the element lookup dict for a class
-        '''
-
-        el_lookup = {}
-
-        for mapper in cls._get_element_mappers():
-            if mapper.get_namespace() is None and mapper.get_local_name() == Model.ANY_LOCAL_NAME:
-                logger.debug('Adding element lookup for ' + str(Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME))
-                el_lookup[Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME] = mapper
-            elif mapper.get_namespace() is None:
-                # try using element's namespace
-                namespace = cls._get_model_namespace()
-                logger.debug('Adding element lookup for ' + str(namespace, mapper.get_local_name()))
-                el_lookup[namespace, mapper.get_local_name()] = mapper
-            else:
-                logger.debug('Adding element lookup for ' + str(mapper.get_namespace(), mapper.get_local_name()))
-                el_lookup[mapper.get_namespace(), mapper.get_local_name()] = mapper
-
-        return el_lookup
-
-    @classmethod
-    def _add_model_content_mapper(cls, kwargs):
+    def _add_content_mapper(cls, kwargs):
         '''
         add a model content definition for the class
         '''
@@ -279,7 +257,7 @@ class Model(object):
         return Model.__namespace_to_package[namespace]
 
     @classmethod
-    def class_from_module(cls):
+    def get_package(cls):
         return cls.__module__.rpartition('.')[0]
 
     @staticmethod
@@ -296,63 +274,25 @@ class Model(object):
                     + str(el) + ') and parent model')
 
             model_package = Model.namespace_to_package(el.namespace)
-            model_package, module_name = Model._map_element_to_module_name(
-                model_package, el)
+            class_ = Model.element_to_class(model_package, el)
         else:
-            if el.namespace is None:
-                model_package = parent.class_from_module()
-                ns_any = parent.namespace, Model.ANY_LOCAL_NAME
-                fq_name = parent.namespace, el.local_name
-            else:
-                model_package = Model.namespace_to_package(el.namespace)
-                ns_any = el.namespace, Model.ANY_LOCAL_NAME
-                fq_name = el.namespace, el.local_name
-
-            element_lookup = Model._get_element_lookup(parent.__class__)
-
             logger.debug('Checking ' + parent.__class__.__name__
                 + ' for element ' + str(el))
-            module_name = None
-            for name in [
-                fq_name,
-                (Model.ANY_NAMESPACE, el.local_name),
-                ns_any,
-                (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
-            ]:
-                if name not in element_lookup:
-                    continue
 
-                logger.debug(str(el) + ' matched ' + str(name)
-                    + ' mapping in ' + parent.__class__.__name__)
-                if name[1] == Model.ANY_LOCAL_NAME:
-                    model_package, module_name = Model._map_element_to_module_name(
-                        model_package, el)
+            for mapper in parent._get_element_mappers():
+                if mapper.matches(el):
+                    logger.debug(str(el) + ' matched ' + str(mapper)
+                        + ' in ' + parent.__class__.__name__)
+                    class_ = mapper.element_to_class(parent, el)
                     break
-                elif 'class' in element_lookup[name]:
-                    module_name = element_lookup[name]['class']
-                    break
-
-            if module_name is None:
+            else:
                 raise ElementMappingException(parent.__class__.__name__
                     + ' does not define mapping for '
                     + str(el) + ' element')
 
-        # qualify module name if needed
-        if '.' not in module_name:
-            model_module = model_package + '.' + module_name
-        else:
-            model_module = module_name
-            module_name = module_name.rpartition('.')[2]
-
-        # use cached copy of module if possible
-        if model_module not in sys.modules:
-            logger.debug('Loading module ' + model_module)
-            mod = importlib.import_module(model_module)
-        else:
-            mod = sys.modules[model_module]
+        logger.debug('Loaded class ' + str(class_) + ' for ' + str(el))
 
         # instantiate an instance of the class & load it
-        class_ = getattr(mod, module_name)
         inst = class_()
         inst.from_xml(parent, el)
 
@@ -503,9 +443,11 @@ class Model(object):
                 else:
                     raise UnknownElementException('Unknown ' + str(self)
                         + ' child ' + str(child) + ' does not match any mappers')
+            elif isinstance(child, expatriate.CharacterData):
+                self._content.append(child.data)
             else:
-                for mapper in self._get_content_mappers().values():
-                    mapper.parse_in(self, child)
+                raise UnknownElementException('Unknown ' + str(self)
+                    + ' child ' + str(child) + ' does not match any mappers')
 
         for mapper in self._get_attribute_mappers():
             mapper.validate(self)

@@ -90,10 +90,17 @@ def test_namespace_to_package():
         Model.namespace_to_package('http://jaymes.biz/derp')
 
 def test_element_to_class():
-    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />'
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
     doc = expatriate.Document()
     doc.parse(test_xml)
     assert Model.element_to_class('fixtures.test', doc.root_element) == RootFixture
+
+def test_get_value():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test">test</test:RootFixture>'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert model.get_value() == 'test'
 
 def test_load_root_model():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
@@ -113,24 +120,6 @@ def test_load_root_model():
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
-
-# def test_load_enclosed_model():
-#     root = RootFixture()
-#     el = Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/test" />'))
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(el, EnclosedFixture)
-#
-#     el = Model.load(root, ET.fromstring('<EnclosedFixture />'))
-#     assert isinstance(el, EnclosedFixture)
-#
-#     with pytest.raises(UnregisteredNamespaceException):
-#         Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/derp" />'))
-#     with pytest.raises(UnregisteredNamespaceException):
-#         Model.load(None, ET.fromstring('<EnclosedFixture />'))
-#     with pytest.raises(ElementMappingException):
-#         Model.load(root, ET.fromstring('<Derp />'))
 
 def test_load_attribute_required():
     test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
@@ -182,61 +171,76 @@ def test_load_attribute_no_default():
     assert isinstance(model, AttributeFixture)
     assert hasattr(model, 'in_test')
     assert model.in_test is None
-#
-# def test_load_element_min():
-#     test_xml = '''
-#         <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
-#         <test:min>test1</test:min>
-#         <test:min>test2</test:min>
-#         <test:min>test3</test:min>
-#         <test:max>test4</test:max>
-#         <test:max>test5</test:max>
-#         </test:MinMaxElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, MinMaxElementFixture)
-#
-#     assert hasattr(model, 'min')
-#     assert isinstance(model.min, ModelList)
-#     assert len(model.min) == 3
-#     assert model.min[0].text == 'test1'
-#     assert model.min[1].text == 'test2'
-#     assert model.min[2].text == 'test3'
-#
-#     assert hasattr(model, 'max')
-#     assert isinstance(model.max, ModelList)
-#     assert len(model.max) == 2
-#     assert model.max[0].text == 'test4'
-#     assert model.max[1].text == 'test5'
-#
-#     with pytest.raises(MinimumElementException):
-#         test_xml = '''
-#             <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
-#             <test:min>test1</test:min>
-#             <test:max>test4</test:max>
-#             <test:max>test5</test:max>
-#             </test:MinMaxElementFixture>
-#             '''
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
-#
-#     with pytest.raises(MaximumElementException):
-#         test_xml = '''
-#             <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
-#             <test:min>test1</test:min>
-#             <test:min>test2</test:min>
-#             <test:min>test3</test:min>
-#             <test:max>test4</test:max>
-#             <test:max>test5</test:max>
-#             <test:max>test6</test:max>
-#             </test:MinMaxElementFixture>
-#             '''
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
+
+def test_load_element_min():
+    test_xml = '''
+        <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:min>test1</test:min>
+        <test:min>test2</test:min>
+        <test:min>test3</test:min>
+        <test:max>test4</test:max>
+        <test:max>test5</test:max>
+        </test:MinMaxElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, MinMaxElementFixture)
+
+    assert hasattr(model, 'min')
+    assert isinstance(model.min, list)
+    assert len(model.min) == 3
+    assert model.min[0].get_value() == 'test1'
+    assert model.min[1].get_value() == 'test2'
+    assert model.min[2].get_value() == 'test3'
+
+    with pytest.raises(MinimumElementException):
+        test_xml = '''
+            <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
+            <test:min>test1</test:min>
+            <test:max>test4</test:max>
+            <test:max>test5</test:max>
+            </test:MinMaxElementFixture>
+            '''
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
+
+def test_load_element_max():
+    test_xml = '''
+        <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:min>test1</test:min>
+        <test:min>test2</test:min>
+        <test:min>test3</test:min>
+        <test:max>test4</test:max>
+        <test:max>test5</test:max>
+        </test:MinMaxElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, MinMaxElementFixture)
+
+    assert hasattr(model, 'max')
+    assert isinstance(model.max, list)
+    assert len(model.max) == 2
+    assert model.max[0].get_value() == 'test4'
+    assert model.max[1].get_value() == 'test5'
+
+    with pytest.raises(MaximumElementException):
+        test_xml = '''
+            <test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test">
+            <test:min>test1</test:min>
+            <test:min>test2</test:min>
+            <test:min>test3</test:min>
+            <test:max>test4</test:max>
+            <test:max>test5</test:max>
+            <test:max>test6</test:max>
+            </test:MinMaxElementFixture>
+            '''
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
 #
 # def test_load_element_wildcard_not_in():
 #     test_xml = '''
@@ -254,8 +258,8 @@ def test_load_attribute_no_default():
 #     assert len(model._elements) == 2
 #     assert isinstance(model._elements[0], EnclosedFixture)
 #     assert isinstance(model._elements[1], EnclosedFixture2)
-#     assert model._elements[0].text == 'test1'
-#     assert model._elements[1].text == 'test2'
+#     assert model._elements[0].get_value() == 'test1'
+#     assert model._elements[1].get_value() == 'test2'
 #
 # def test_load_element_wildcard_in():
 #     test_xml = '''
@@ -279,10 +283,10 @@ def test_load_attribute_no_default():
 #     assert len(model.elements) == 1
 #
 #     assert isinstance(model.test_elements[0], EnclosedFixture)
-#     assert model.test_elements[0].text == 'test1'
+#     assert model.test_elements[0].get_value() == 'test1'
 #
 #     assert isinstance(model.elements[0], EnclosedFixture2)
-#     assert model.elements[0].text == 'test2'
+#     assert model.elements[0].get_value() == 'test2'
 #
 # def test_load_element_append_nil():
 #     test_xml = '''
@@ -304,7 +308,7 @@ def test_load_attribute_no_default():
 #     assert model.append_nil[0] is None
 #
 #     assert isinstance(model.append_nil[1], EnclosedFixture)
-#     assert model.append_nil[1].text == 'test2'
+#     assert model.append_nil[1].get_value() == 'test2'
 #
 # def test_load_element_append_type():
 #     test_xml = '''
@@ -347,10 +351,10 @@ def test_load_attribute_no_default():
 #     assert len(model.append_class) == 2
 #
 #     assert isinstance(model.append_class[0], EnclosedFixture)
-#     assert model.append_class[0].text == 'test1'
+#     assert model.append_class[0].get_value() == 'test1'
 #
 #     assert isinstance(model.append_class[1], EnclosedFixture)
-#     assert model.append_class[1].text == 'test2'
+#     assert model.append_class[1].get_value() == 'test2'
 #
 # def test_load_element_map_key_explicit():
 #     test_xml = '''
@@ -482,17 +486,17 @@ def test_load_attribute_no_default():
 #     assert isinstance(model.map_value_class['test1'], MappableElementFixture)
 #     assert model.map_value_class['test1'].id == 'test1'
 #     assert model.map_value_class['test1'].tag == 'blue'
-#     assert model.map_value_class['test1'].text == 'text1'
+#     assert model.map_value_class['test1'].get_value() == 'text1'
 #
 #     assert 'test2' in model.map_value_class
 #     assert isinstance(model.map_value_class['test2'], MappableElementFixture)
 #     assert model.map_value_class['test2'].id == 'test2'
 #     assert model.map_value_class['test2'].tag == 'red'
-#     assert model.map_value_class['test2'].text == 'text2'
+#     assert model.map_value_class['test2'].get_value() == 'text2'
 #
 # def test_init_value():
 #     root = RootFixture(value='test')
-#     assert root.text == 'test'
+#     assert root.get_value() == 'test'
 #
 # def test_init_tag_name():
 #     root = RootFixture(tag_name='test')
