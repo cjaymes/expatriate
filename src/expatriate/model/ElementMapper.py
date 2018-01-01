@@ -381,11 +381,11 @@ class ElementMapper(Mapper):
         if min_ != 0 and model._element_counts[name] < min_:
             raise MinimumElementException(self.__class__.__name__
                 + ' must have at least ' + str(min_) + ' '
-                + str(self.get_namespace(), self.get_local_name())
+                + str((self.get_namespace(), self.get_local_name()))
                 + ' elements')
 
         if max_ is not None and model._element_counts[name] > max_:
             raise MaximumElementException(self.__class__.__name__
                 + ' may have at most ' + str(max_) + ' '
-                + str(self.get_namespace(), self.get_local_name())
+                + str((self.get_namespace(), self.get_local_name()))
                 + ' elements')
