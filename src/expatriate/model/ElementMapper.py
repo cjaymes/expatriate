@@ -267,22 +267,22 @@ class ElementMapper(Mapper):
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
                     raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
-            elif 'value_attr' in self._kwargs:
+            elif 'dict_value' in self._kwargs:
                 # TODO add ContentMapper
                 # try parsing from an attribute
-                if self._kwargs['value_attr'] not in el.attributes:
+                if self._kwargs['dict_value'] not in el.attributes:
                     raise ValueError('Could not parse value from '
                         + str(el) + ' attribute '
-                        + self._kwargs['value_attr'])
+                        + self._kwargs['dict_value'])
 
                 if 'type' not in self._kwargs:
                     raise ValueError('Could not parse value from '
                         + str(el) + ' attribute '
-                        + self._kwargs['value_attr']
+                        + self._kwargs['dict_value']
                         + ' without explicit type')
 
                 type_ = self._kwargs['type']()
-                value = el.attributes[self._kwargs['value_attr']]
+                value = el.attributes[self._kwargs['dict_value']]
                 value = type_.parse_value(value)
 
             else:

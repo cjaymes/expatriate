@@ -421,28 +421,28 @@ def test_load_element_map_value_nil():
 
     assert 'test2' in model.map_value_nil
     assert model.map_value_nil['test2'] == 'test2'
-#
-# def test_load_element_map_value_attr():
-#     test_xml = '''
-#         <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <test:map_value_attr id="test1" value="test1"/>
-#         <test:map_value_attr id="test2" value="test2"/>
-#         </test:MapElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, MapElementFixture)
-#
-#     assert hasattr(model, 'map_value_attr')
-#     assert len(model.map_value_attr) == 2
-#
-#     assert 'test1' in model.map_value_attr
-#     assert model.map_value_attr['test1'] == 'test1'
-#
-#     assert 'test2' in model.map_value_attr
-#     assert model.map_value_attr['test2'] == 'test2'
+
+def test_load_element_map_value_attr():
+    test_xml = '''
+        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:map_value_attr id="test1" value="test1"/>
+        <test:map_value_attr id="test2" value="test2"/>
+        </test:MapElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, MapElementFixture)
+
+    assert hasattr(model, 'map_value_attr')
+    assert len(model.map_value_attr) == 2
+
+    assert 'test1' in model.map_value_attr
+    assert model.map_value_attr['test1'] == 'test1'
+
+    assert 'test2' in model.map_value_attr
+    assert model.map_value_attr['test2'] == 'test2'
 #
 # def test_load_element_map_value_type():
 #     test_xml = '''
