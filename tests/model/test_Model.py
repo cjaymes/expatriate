@@ -400,27 +400,27 @@ def test_load_element_map_key_implicit():
     assert 'test2' in model.map_implicit_key
     assert model.map_implicit_key['test2'] == 'test2'
 
-# def test_load_element_map_value_nil():
-#     test_xml = '''
-#         <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <test:map_value_nil id="test1" xsi:nil="true"/>
-#         <test:map_value_nil id="test2">test2</test:map_value_nil>
-#         </test:MapElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, MapElementFixture)
-#
-#     assert hasattr(model, 'map_value_nil')
-#     assert len(model.map_value_nil) == 2
-#
-#     assert 'test1' in model.map_value_nil
-#     assert model.map_value_nil['test1'] == None
-#
-#     assert 'test2' in model.map_value_nil
-#     assert model.map_value_nil['test2'] == 'test2'
+def test_load_element_map_value_nil():
+    test_xml = '''
+        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:map_value_nil id="test1" xsi:nil="true"/>
+        <test:map_value_nil id="test2">test2</test:map_value_nil>
+        </test:MapElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, MapElementFixture)
+
+    assert hasattr(model, 'map_value_nil')
+    assert len(model.map_value_nil) == 2
+
+    assert 'test1' in model.map_value_nil
+    assert model.map_value_nil['test1'] == None
+
+    assert 'test2' in model.map_value_nil
+    assert model.map_value_nil['test2'] == 'test2'
 #
 # def test_load_element_map_value_attr():
 #     test_xml = '''
