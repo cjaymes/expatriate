@@ -158,15 +158,15 @@ def test_load_attribute_dash():
     assert isinstance(model, AttributeFixture)
     assert hasattr(model, 'dash_attribute')
     assert model.dash_attribute == 'test'
-#
-# def test_load_attribute_default():
-#     test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" />'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, AttributeFixture)
-#     assert hasattr(model, 'default_attribute')
-#     assert model.default_attribute == 'test'
+
+def test_load_attribute_default():
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, AttributeFixture)
+    assert hasattr(model, 'default_attribute')
+    assert model.default_attribute == 'test'
 #
 # def test_load_attribute_no_default():
 #     test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" />'
