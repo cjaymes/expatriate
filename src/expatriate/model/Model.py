@@ -445,11 +445,8 @@ class Model(object):
                 else:
                     raise UnknownElementException('Unknown ' + str(self)
                         + ' child ' + str(child) + ' does not match any mappers')
-            elif isinstance(child, expatriate.CharacterData):
-                self._content.append(child.data)
             else:
-                raise UnknownElementException('Unknown ' + str(self)
-                    + ' child ' + str(child) + ' does not match any mappers')
+                self._content.append(child.get_string_value())
 
         for mapper in self._get_attribute_mappers():
             mapper.validate(self)

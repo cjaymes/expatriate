@@ -156,20 +156,20 @@ class ElementMapper(Mapper):
         else:
             value = None
 
-    def matches(self, child):
+    def matches(self, el):
         from .Model import Model
 
         matches = (self.get_namespace(), self.get_local_name()) in (
-            (child.namespace, child.local_name),
-            (None, child.local_name),
-            (child.namespace, Model.ANY_LOCAL_NAME),
+            (el.namespace, el.local_name),
+            (None, el.local_name),
+            (el.namespace, Model.ANY_LOCAL_NAME),
             (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
         )
 
         if matches:
-            logger.debug(str(self) + ' matches ' + str(child))
+            logger.debug(str(self) + ' matches ' + str(el))
         else:
-            logger.debug(str(self) + ' does not match ' + str(child))
+            logger.debug(str(self) + ' does not match ' + str(el))
 
         return matches
 
@@ -192,10 +192,10 @@ class ElementMapper(Mapper):
         else:
             raise NotImplementedError
 
-    def parse_in(self, model, child):
+    def parse_in(self, model, el):
         from .Model import Model
 
-        logger.debug('Parsing element ' + child.name + ' using kwargs: ' + str(self._kwargs))
+        logger.debug('Parsing element ' + el.name + ' using kwargs: ' + str(self._kwargs))
 
         name = self._get_attr_name()
 
@@ -208,81 +208,81 @@ class ElementMapper(Mapper):
 
             lst = getattr(model, name)
 
-            if child.is_nil():
+            if el.is_nil():
                 # check we can accept nil
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
-                    raise ValueError(str(child) + ' is nil, but not expecting nil value')
+                    raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
             elif 'type' in self._kwargs:
                 type_ = self._kwargs['type']()
-                value = type_.parse_value(child.get_value())
+                value = type_.parse_value(el.get_string_value())
             else:
-                value = Model.load(model, child)
+                value = Model.load(model, el)
 
             lst.append(value)
 
             logger.debug('Appended ' + str(value) + ' to ' + name)
 
         elif 'list' in self._kwargs:
-            logger.debug(str(model) + ' parsing ' + str(child) + ' elements into ' + name)
+            logger.debug(str(model) + ' parsing ' + str(el) + ' elements into ' + name)
 
             lst = getattr(model, name)
 
-            if child.is_nil():
+            if el.is_nil():
                 # check we can accept nil
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
-                    raise ValueError(str(child) + ' is nil, but not expecting nil value')
+                    raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
             elif 'type' in self._kwargs:
                 type_ = self._kwargs['type']
-                value = ''.join(child.children)
+                value = el.get_string_value()
                 value = type_().parse_value(value)
             else:
-                value = Model.load(model, child)
+                value = Model.load(model, el)
 
             lst.append(value)
 
             logger.debug('Appended ' + str(value) + ' to ' + name)
 
         elif 'dict' in self._kwargs:
-            logger.debug(str(model) + ' parsing ' + str(child) + ' elements into ' + name)
+            logger.debug(str(model) + ' parsing ' + str(el) + ' elements into ' + name)
 
             dict_ = getattr(model, name)
 
             # TODO: implement key_element as well
             if 'dict_key' in self._kwargs:
-                if self._kwargs['dict_key'] not in child.attributes:
+                if self._kwargs['dict_key'] not in el.attributes:
                     key = None
                 else:
-                    key = child.attributes[self._kwargs['dict_key']].value
+                    key = el.attributes[self._kwargs['dict_key']].value
             else:
-                if 'id' not in child.attributes:
+                if 'id' not in el.attributes:
                     key = None
                 else:
-                    key = child.attributes['id']
+                    key = el.attributes['id']
 
             # TODO: implement value_element? as well
-            if child.is_nil():
+            if el.is_nil():
                 # check we can accept nil
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
-                    raise ValueError(str(child) + ' is nil, but not expecting nil value')
+                    raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
             elif 'value_attr' in self._kwargs:
                 # TODO add ContentMapper
                 # try parsing from an attribute
-                if self._kwargs['value_attr'] not in child.attributes:
+                if self._kwargs['value_attr'] not in el.attributes:
                     raise ValueError('Could not parse value from '
-                        + str(child) + ' attribute '
+                        + str(el) + ' attribute '
                         + self._kwargs['value_attr'])
 
                 if 'type' not in self._kwargs:
                     raise ValueError('Could not parse value from '
-                        + str(child) + ' attribute '
+                        + str(el) + ' attribute '
                         + self._kwargs['value_attr']
                         + ' without explicit type')
 
                 type_ = self._kwargs['type']()
-                value = child.attributes[self._kwargs['value_attr']].value
+                value = el.attributes[self._kwargs['value_attr']].value
                 value = type_.parse_value(value)
 
             else:
@@ -292,7 +292,7 @@ class ElementMapper(Mapper):
                     value = type_.parse_value(model.get_value())
                 else:
                     # needs 'class' in self._kwargs
-                    value = Model.load(model, child)
+                    value = Model.load(model, el)
                     value.namespace = namespace
                     value.local_name = local_name
 
@@ -301,16 +301,16 @@ class ElementMapper(Mapper):
             logger.debug('Mapped ' + str(key) + ' to ' + str(value) + ' in ' + name)
 
         elif 'class' in self._kwargs:
-            logger.debug(str(model) + ' parsing ' + str(child) + ' element as '
+            logger.debug(str(model) + ' parsing ' + str(el) + ' element as '
                 + str(self._kwargs['class']))
 
-            if child.is_nil():
+            if el.is_nil():
                 # check we can accept nil
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
-                    raise ValueError(str(child) + ' is nil, but not expecting nil value')
+                    raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
             else:
-                value = Model.load(model, child)
+                value = Model.load(model, el)
 
             setattr(model, name, value)
 
@@ -318,13 +318,13 @@ class ElementMapper(Mapper):
                 + ' in ' + str(model))
 
         elif 'type' in self._kwargs:
-            logger.debug(str(model) + ' parsing ' + str(child) + ' elements as '
+            logger.debug(str(model) + ' parsing ' + str(el) + ' elements as '
                 + self._kwargs['type'])
 
-            if child.is_nil():
+            if el.is_nil():
                 # check we can accept nil
                 if 'nillable' not in self._kwargs or not self._kwargs['nillable']:
-                    raise ValueError(str(child) + ' is nil, but not expecting nil value')
+                    raise ValueError(str(el) + ' is nil, but not expecting nil value')
                 value = None
             else:
                 type_ = self._kwargs['type']
@@ -332,7 +332,7 @@ class ElementMapper(Mapper):
                 if isinstance(type_, tuple):
                     mod = importlib.import_module(type_[0])
                     type_ = getattr(mod, type_[1])
-                value = child.get_value()
+                value = el.get_string_value()
                 value = type_().parse_value(value)
 
             setattr(model, name, value)
@@ -341,12 +341,12 @@ class ElementMapper(Mapper):
                 + ' in ' + str(model))
 
         elif 'enum' in self._kwargs:
-            logger.debug(str(model) + ' parsing ' + str(child)
+            logger.debug(str(model) + ' parsing ' + str(el)
                 + ' elements from enum ' + str(self._kwargs['enum']))
 
-            value = child.get_value()
+            value = el.get_string_value()
             if value not in self._kwargs['enum']:
-                raise EnumerationException(str(child)
+                raise EnumerationException(str(el)
                     + ' value must be one of ' + str(self._kwargs['enum']))
 
             setattr(model, name, value)
@@ -356,7 +356,7 @@ class ElementMapper(Mapper):
 
         else:
             raise UnknownElementException(str(model) + ' could not parse '
-                + str(child) + ' element')
+                + str(el) + ' element')
 
         model._element_counts[name] += 1
 
