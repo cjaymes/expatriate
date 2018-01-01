@@ -75,10 +75,6 @@ def test_is_not_nil():
     model = Model.load(None, doc.root_element)
     assert not model.is_nil()
 
-# def test_parse_tag():
-#     assert Model.parse_tag('{http://jaymes.biz/test}test') == ('http://jaymes.biz/test', 'test')
-#     assert Model.parse_tag('test') == (None, 'test')
-
 def test_package_to_namespace():
     assert Model.package_to_namespace('fixtures.test') == 'http://jaymes.biz/test'
     assert Model.package_to_namespace('fixtures.test2') == 'http://jaymes.biz/test2'
@@ -112,39 +108,39 @@ def test_load_root_model():
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
-# # def test_load_enclosed_model():
-# #     root = RootFixture()
-# #     el = Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/test" />'))
-# #     doc = expatriate.Document()
-# #     doc.parse(test_xml)
-# #     model = Model.load(None, doc.root_element)
-# #     assert isinstance(el, EnclosedFixture)
-# #
-# #     el = Model.load(root, ET.fromstring('<EnclosedFixture />'))
-# #     assert isinstance(el, EnclosedFixture)
-# #
-# #     with pytest.raises(UnregisteredNamespaceException):
-# #         Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/derp" />'))
-# #     with pytest.raises(UnregisteredNamespaceException):
-# #         Model.load(None, ET.fromstring('<EnclosedFixture />'))
-# #     with pytest.raises(ElementMappingException):
-# #         Model.load(root, ET.fromstring('<Derp />'))
-#
-# def test_load_attribute_required():
-#     test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
+# def test_load_enclosed_model():
+#     root = RootFixture()
+#     el = Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/test" />'))
 #     doc = expatriate.Document()
 #     doc.parse(test_xml)
 #     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, RequiredAttributeFixture)
-#     assert hasattr(model, 'required_attribute')
-#     assert model.required_attribute == 'test'
+#     assert isinstance(el, EnclosedFixture)
 #
-#     with pytest.raises(RequiredAttributeException):
-#         test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" />'
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
+#     el = Model.load(root, ET.fromstring('<EnclosedFixture />'))
+#     assert isinstance(el, EnclosedFixture)
 #
+#     with pytest.raises(UnregisteredNamespaceException):
+#         Model.load(root, ET.fromstring('<test:EnclosedFixture xmlns:test="http://jaymes.biz/derp" />'))
+#     with pytest.raises(UnregisteredNamespaceException):
+#         Model.load(None, ET.fromstring('<EnclosedFixture />'))
+#     with pytest.raises(ElementMappingException):
+#         Model.load(root, ET.fromstring('<Derp />'))
+
+def test_load_attribute_required():
+    test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, RequiredAttributeFixture)
+    assert hasattr(model, 'required_attribute')
+    assert model.required_attribute == 'test'
+
+    with pytest.raises(RequiredAttributeException):
+        test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" />'
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
+
 # def test_load_attribute_in():
 #     test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" in_attribute="test" />'
 #     doc = expatriate.Document()

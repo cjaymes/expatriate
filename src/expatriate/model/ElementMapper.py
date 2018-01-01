@@ -81,7 +81,8 @@ class ElementMapper:
             raise DecoratorException('Attributes need at least local_name defined')
 
         self._kwargs = kwargs
-        self._count = 0
+
+
 
     def _get_attr_name(self):
         from .Model import Model
@@ -119,6 +120,8 @@ class ElementMapper:
         if not hasattr(model, name):
             logger.debug('Initializing ' + str(self) + ' '+ name + ' to ' + str(value))
             setattr(model, name, value)
+
+        model._element_counts[name] = 0
 
     def get_namespace(self):
         if 'namespace' in self._kwargs:
@@ -165,6 +168,8 @@ class ElementMapper:
 
     def parse_in(self, model, child):
         from .Model import Model
+
+        logger.debug('Parsing element ' + child.name + ' using kwargs: ' + str(self._kwargs))
 
         name = self._get_attr_name()
 
@@ -323,10 +328,12 @@ class ElementMapper:
         else:
             raise UnknownElementException(str(self) + ' could not parse ' + str(child) + ' element')
 
-        self._count += 1
+        model._element_counts[name] += 1
 
     def validate(self, model):
         from .Model import Model
+
+        name = self._get_attr_name()
 
         min_ = 1
         if (
@@ -346,13 +353,13 @@ class ElementMapper:
             max_ = self._kwargs['max']
 
         # check that we have the min & max of those elements
-        if min_ != 0 and self._count < min_:
+        if min_ != 0 and model._element_counts[name] < min_:
             raise MinimumElementException(self.__class__.__name__
                 + ' must have at least ' + str(min_) + ' '
                 + str(self.get_namespace(), self.get_local_name())
                 + ' elements')
 
-        if max_ is not None and self._count > max_:
+        if max_ is not None and model._element_counts[name] > max_:
             raise MaximumElementException(self.__class__.__name__
                 + ' may have at most ' + str(max_) + ' '
                 + str(self.get_namespace(), self.get_local_name())

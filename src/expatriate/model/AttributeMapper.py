@@ -68,13 +68,15 @@ class AttributeMapper:
             raise DecoratorException('Attributes need at least local_name defined')
 
         self._kwargs = kwargs
-        self._count = 0
+
+    def _get_attr_name(self):
+        if 'into' in self._kwargs:
+            return self._kwargs['into']
+        else:
+            return self._kwargs['local_name'].replace('-', '_')
 
     def initialize(self, model):
-        if 'into' in self._kwargs:
-            attr_name = self._kwargs['into']
-        else:
-            attr_name = self._kwargs['local_name'].replace('-', '_')
+        attr_name = self._get_attr_name()
 
         if 'default' in self._kwargs:
             default_value = self._kwargs['default']
@@ -83,7 +85,10 @@ class AttributeMapper:
 
         setattr(model, attr_name, default_value)
 
-        logger.debug(str(model) + ' attribute ' + attr_name + ' default ' + str(default_value))
+        model._attribute_counts[attr_name] = 0
+
+        logger.debug('Initialized ' + str(model) + ' attribute ' + attr_name
+            + ' to default ' + str(default_value))
 
     def get_namespace(self):
         if 'namespace' in self._kwargs:
@@ -97,20 +102,23 @@ class AttributeMapper:
     def matches(self, attr):
         from .Model import Model
 
-        return (self.get_namespace(), self.get_local_name()) in (
+        matches = (self.get_namespace(), self.get_local_name()) in (
             (attr.namespace, attr.local_name),
             (None, attr.local_name),
             (attr.namespace, Model.ANY_LOCAL_NAME),
             (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
         )
 
-    def _get_attr_name(self):
-        if 'into' in self._kwargs:
-            return self._kwargs['into']
+        if matches:
+            logger.debug('AttributeMapper matches ' + str(attr))
         else:
-            return self._kwargs['local_name'].replace('-', '_')
+            logger.debug('AttributeMapper does not match ' + str(attr))
+
+        return matches
 
     def parse_in(self, model, attr):
+        logger.debug('Parsing attribute ' + attr.name + ' using kwargs: ' + str(self._kwargs))
+
         name = self._get_attr_name()
         value = attr.value
 
@@ -129,20 +137,23 @@ class AttributeMapper:
                 type_ = getattr(mod, type_[1])
             value = type_().parse_value(value)
 
-        logger.debug('Setting attribute ' + name + ' = ' + str(value))
+        logger.debug('Parsed attribute ' + name + ' = ' + str(value))
 
         setattr(model, name, value)
 
-        self._count += 1
+        model._attribute_counts[name] += 1
 
     def validate(self, model):
+        name = self._get_attr_name()
+        logger.debug('Validating attribute ' + str(self._kwargs) + ' count: ' + str(model._attribute_counts[name]))
+
         name = self._kwargs['local_name']
 
         # check that required attributes are defined
         if (
             'required' in self._kwargs
             and self._kwargs['required']
-            and self._count > 0
+            and model._attribute_counts[name] <= 0
         ):
             raise RequiredAttributeException(str(model) + ' must define ' + name + ' attribute')
 
@@ -150,6 +161,6 @@ class AttributeMapper:
         if (
             'prohibited' in self._kwargs
             and self._kwargs['prohibited']
-            and self._count == 0
+            and model._attribute_counts[name] > 0
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')

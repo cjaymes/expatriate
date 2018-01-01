@@ -364,6 +364,8 @@ class Model(object):
 
     def __init__(self):
         self._parent = None
+        self._attribute_counts = {}
+        self._element_counts = {}
 
         # initialize attribute values
         for mapper in self._get_attribute_mappers():
