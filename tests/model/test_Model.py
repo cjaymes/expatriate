@@ -501,46 +501,46 @@ def test_load_element_map_value_class():
 # def test_init_tag_name():
 #     root = RootFixture(tag_name='test')
 #     assert root.to_xml().tag == '{http://jaymes.biz/test}test'
-#
-# def test_initialization():
-#     init = InitFixture()
-#
-#     assert isinstance(init, InitFixture)
-#     assert hasattr(init, 'attr')
-#     assert init.attr is None
-#
-#     assert not hasattr(init, 'in_attr')
-#     assert hasattr(init, 'test_attr')
-#     assert init.test_attr is None
-#
-#     assert hasattr(init, 'dash_attr')
-#     assert init.dash_attr is None
-#
-#     assert hasattr(init, 'default_attr')
-#     assert init.default_attr == 'Default'
-#
-#     assert hasattr(init, 'list_')
-#     assert isinstance(init.list_, list)
-#     assert len(init.list_) == 0
-#
-#     assert hasattr(init, 'dict_')
-#     assert isinstance(init.dict_, dict)
-#     assert len(init.dict_.keys()) == 0
-#
-#     assert not hasattr(init, 'in_test')
-#     assert hasattr(init, 'test_in')
-#     assert init.test_in is None
-#
-#     assert hasattr(init, 'dash_test')
-#     assert init.dash_test is None
-#
-#     assert hasattr(init, 'test2_elements')
-#     assert isinstance(init.test2_elements, list)
-#     assert len(init.test2_elements) == 0
-#
-#     assert hasattr(init, '_elements')
-#     assert isinstance(init._elements, list)
-#     assert len(init._elements) == 0
+
+def test_initialization():
+    init = InitFixture()
+
+    assert isinstance(init, InitFixture)
+    assert hasattr(init, 'attr')
+    assert init.attr is None
+
+    assert not hasattr(init, 'in_attr')
+    assert hasattr(init, 'test_attr')
+    assert init.test_attr is None
+
+    assert hasattr(init, 'dash_attr')
+    assert init.dash_attr is None
+
+    assert hasattr(init, 'default_attr')
+    assert init.default_attr == 'Default'
+
+    assert hasattr(init, 'list_')
+    assert isinstance(init.list_, list)
+    assert len(init.list_) == 0
+
+    assert hasattr(init, 'dict_')
+    assert isinstance(init.dict_, dict)
+    assert len(init.dict_.keys()) == 0
+
+    assert not hasattr(init, 'in_test')
+    assert hasattr(init, 'test_in')
+    assert init.test_in is None
+
+    assert hasattr(init, 'dash_test')
+    assert init.dash_test is None
+
+    assert hasattr(init, 'test2_elements')
+    assert isinstance(init.test2_elements, list)
+    assert len(init.test2_elements) == 0
+
+    assert hasattr(init, '_elements')
+    assert isinstance(init._elements, list)
+    assert len(init._elements) == 0
 #
 # def test_get_package():
 #     root = RootFixture()
