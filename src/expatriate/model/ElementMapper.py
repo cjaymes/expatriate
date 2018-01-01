@@ -254,7 +254,7 @@ class ElementMapper(Mapper):
                 if self._kwargs['dict_key'] not in el.attributes:
                     key = None
                 else:
-                    key = el.attributes[self._kwargs['dict_key']].value
+                    key = el.attributes[self._kwargs['dict_key']]
             else:
                 if 'id' not in el.attributes:
                     key = None
@@ -282,14 +282,14 @@ class ElementMapper(Mapper):
                         + ' without explicit type')
 
                 type_ = self._kwargs['type']()
-                value = el.attributes[self._kwargs['value_attr']].value
+                value = el.attributes[self._kwargs['value_attr']]
                 value = type_.parse_value(value)
 
             else:
                 # try parsing from the element itself, just mapping with the key
                 if 'type' in self._kwargs:
                     type_ = self._kwargs['type']()
-                    value = type_.parse_value(model.get_value())
+                    value = type_.parse_value(el.get_string_value())
                 else:
                     # needs 'class' in self._kwargs
                     value = Model.load(model, el)
