@@ -546,11 +546,11 @@ def test_str_id():
     root = RootFixture()
     root.id = 'test'
     assert str(root) == ('RootFixture id: test')
-#
-# def test_str_Id():
-#     root = RootFixture()
-#     root.Id = 'test'
-#     assert str(root) == ('RootFixture Id: test')
+
+def test_str_Id():
+    root = RootFixture()
+    root.Id = 'test'
+    assert str(root) == ('RootFixture Id: test')
 #
 # def test_str_name():
 #     root = RootFixture()
