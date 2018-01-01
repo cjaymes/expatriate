@@ -493,14 +493,6 @@ def test_load_element_map_value_class():
     assert model.map_value_class['test2'].id == 'test2'
     assert model.map_value_class['test2'].tag == 'red'
     assert model.map_value_class['test2'].get_value() == 'text2'
-#
-# def test_init_value():
-#     root = RootFixture(value='test')
-#     assert root.get_value() == 'test'
-#
-# def test_init_tag_name():
-#     root = RootFixture(tag_name='test')
-#     assert root.to_xml().tag == '{http://jaymes.biz/test}test'
 
 def test_initialization():
     init = InitFixture()
