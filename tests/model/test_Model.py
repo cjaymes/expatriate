@@ -89,6 +89,12 @@ def test_namespace_to_package():
     with pytest.raises(UnregisteredNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
+def test_element_to_class():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    assert Model.element_to_class('fixtures.test', doc.root_element) == RootFixture
+
 def test_load_root_model():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
     doc = expatriate.Document()

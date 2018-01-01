@@ -69,21 +69,35 @@ class Model(object):
     _content_mappers = {}
 
     @staticmethod
-    def _map_element_to_module_name(model_package, el):
+    def element_to_class(model_package, el):
         '''
         discover the model package and model name corresponding to an element
         '''
-        pkg_mod = importlib.import_module(model_package)
+        try:
+            pkg_mod = importlib.import_module(model_package)
+        except:
+            raise ElementMappingException('Unable to determine mapping for '
+                + str(el) + ' element: cannot load package module '
+                + model_package)
 
-        if not hasattr(pkg_mod, 'ELEMENT_MAP'):
+        try:
+            class_name = pkg_mod.ELEMENT_MAP[el.namespace, el.local_name]
+        except AttributeError:
             raise ElementMappingException(pkg_mod.__name__
-                + ' does not define ELEMENT_MAP; cannot load ' + el)
-        if (el.namespace, el.local_name) not in pkg_mod.ELEMENT_MAP:
+                + ' does not define ELEMENT_MAP; cannot load ' + str(el))
+        except KeyError:
             raise ElementMappingException(pkg_mod.__name__
-                + ' does not define mapping for ' + el.namespace + ', '
-                + el.local_name + ' element')
+                + ' does not define mapping for ' + str(el) + ' element')
 
-        return pkg_mod.__name__, pkg_mod.ELEMENT_MAP[el.namespace, el.local_name]
+        try:
+            mod = importlib.import_module(model_package + '.' + class_name)
+            class_ = getattr(mod, class_name)
+        except:
+            raise ElementMappingException('Unable to determine mapping for '
+                + str(el) + ' element: cannot load class module '
+                + model_package + '.' + class_name)
+
+        return class_
 
     @classmethod
     def _get_model_namespace(cls):
