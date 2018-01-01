@@ -142,7 +142,8 @@ class Model(object):
         if cls.__name__ not in cls._attribute_mappers:
             cls._attribute_mappers[cls.__name__] = []
 
-        cls._attribute_mappers[cls.__name__].append(mapper)
+        # mappers come in reverse order, so we insert rather than append
+        cls._attribute_mappers[cls.__name__].insert(0, mapper)
 
     @classmethod
     def _get_element_mappers(cls):
@@ -173,7 +174,8 @@ class Model(object):
         if cls.__name__ not in cls._element_mappers:
             cls._element_mappers[cls.__name__] = []
 
-        cls._element_mappers[cls.__name__].append(mapper)
+        # mappers come in reverse order, so we insert rather than append
+        cls._element_mappers[cls.__name__].insert(0, mapper)
 
         # now set the order that this element was defined
         if cls.__name__ not in cls._element_mapper_order:
