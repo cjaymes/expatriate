@@ -377,29 +377,29 @@ def test_load_element_map_key_explicit():
 
     assert 'test2' in model.map_explicit_key
     assert model.map_explicit_key['test2'] == 'test2'
-#
-# def test_load_element_map_key_implicit():
-#     test_xml = '''
-#         <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <test:map_implicit_key id="test1">test1</test:map_implicit_key>
-#         <test:map_implicit_key id="test2">test2</test:map_implicit_key>
-#         </test:MapElementFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, MapElementFixture)
-#
-#     assert hasattr(model, 'map_implicit_key')
-#     assert len(model.map_implicit_key) == 2
-#
-#     assert 'test1' in model.map_implicit_key
-#     assert model.map_implicit_key['test1'] == 'test1'
-#
-#     assert 'test2' in el.map_implicit_key
-#     assert el.map_implicit_key['test2'] == 'test2'
-#
+
+def test_load_element_map_key_implicit():
+    test_xml = '''
+        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:map_implicit_key id="test1">test1</test:map_implicit_key>
+        <test:map_implicit_key id="test2">test2</test:map_implicit_key>
+        </test:MapElementFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, MapElementFixture)
+
+    assert hasattr(model, 'map_implicit_key')
+    assert len(model.map_implicit_key) == 2
+
+    assert 'test1' in model.map_implicit_key
+    assert model.map_implicit_key['test1'] == 'test1'
+
+    assert 'test2' in model.map_implicit_key
+    assert model.map_implicit_key['test2'] == 'test2'
+
 # def test_load_element_map_value_nil():
 #     test_xml = '''
 #         <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
