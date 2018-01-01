@@ -141,14 +141,14 @@ def test_load_attribute_required():
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
-# def test_load_attribute_in():
-#     test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" in_attribute="test" />'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, AttributeFixture)
-#     assert hasattr(model, 'in_test')
-#     assert model.in_test == 'test'
+def test_load_attribute_in():
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" in_attribute="test" />'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, AttributeFixture)
+    assert hasattr(model, 'in_test')
+    assert model.in_test == 'test'
 #
 # def test_load_attribute_dash():
 #     test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" dash-attribute="test" />'
