@@ -260,33 +260,33 @@ def test_load_element_wildcard_not_in():
     assert isinstance(model._elements[1], EnclosedFixture2)
     assert model._elements[0].get_value() == 'test1'
     assert model._elements[1].get_value() == 'test2'
-#
-# def test_load_element_wildcard_in():
-#     test_xml = '''
-#         <test:WildcardElementInFixture xmlns:test2="http://jaymes.biz/test2" xmlns:test="http://jaymes.biz/test">
-#         <test:wildcard_element>test1</test:wildcard_element>
-#         <test2:wildcard_element>test2</test2:wildcard_element>
-#         </test:WildcardElementInFixture>
-#         '''
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     assert isinstance(model, WildcardElementInFixture)
-#
-#     assert hasattr(model, 'test_elements')
-#     assert isinstance(model.test_elements, ModelList)
-#     assert len(model.test_elements) == 1
-#
-#     assert hasattr(model, 'elements')
-#     assert isinstance(model.elements, ModelList)
-#     assert len(model.elements) == 1
-#
-#     assert isinstance(model.test_elements[0], EnclosedFixture)
-#     assert model.test_elements[0].get_value() == 'test1'
-#
-#     assert isinstance(model.elements[0], EnclosedFixture2)
-#     assert model.elements[0].get_value() == 'test2'
+
+def test_load_element_wildcard_in():
+    test_xml = '''
+        <test:WildcardElementInFixture xmlns:test2="http://jaymes.biz/test2" xmlns:test="http://jaymes.biz/test">
+        <test:wildcard_element>test1</test:wildcard_element>
+        <test2:wildcard_element>test2</test2:wildcard_element>
+        </test:WildcardElementInFixture>
+        '''
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    assert isinstance(model, WildcardElementInFixture)
+
+    assert hasattr(model, 'test_elements')
+    assert isinstance(model.test_elements, list)
+    assert len(model.test_elements) == 1
+
+    assert hasattr(model, 'elements')
+    assert isinstance(model.elements, list)
+    assert len(model.elements) == 1
+
+    assert isinstance(model.test_elements[0], EnclosedFixture)
+    assert model.test_elements[0].get_value() == 'test1'
+
+    assert isinstance(model.elements[0], EnclosedFixture2)
+    assert model.elements[0].get_value() == 'test2'
 #
 # def test_load_element_append_nil():
 #     test_xml = '''
