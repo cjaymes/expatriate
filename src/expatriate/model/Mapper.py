@@ -17,37 +17,23 @@
 
 import logging
 
-from .Mapper import Mapper
-
 logger = logging.getLogger(__name__)
 
-class ContentMapper(Mapper):
-    '''
-        **kwargs**
+class Mapper(object):
+    def __init__(self, **kwargs):
+        self._kwargs = kwargs
 
-        enum
-            Enumeration the attribute's value must be from
-        pattern
-            Pattern which the value must match.
-        type
-            Type against which a value must validate
-
-        min
-            The minimum value of the content. Can be numeric or None (the
-            default).
-        max
-            The maximum value of the content. Can be numeric or None (the
-            default).
-    '''
+    def __str__(self):
+        return self.__class__.__name__ + ' ' + str(self._kwargs)
 
     def initialize(self, model):
-        from .Model import Model
-        pass
+        raise NotImplementedError
+
+    def matches(self, child):
+        raise NotImplementedError
 
     def parse_in(self, model, child):
-        from .Model import Model
-        pass
+        raise NotImplementedError
 
     def validate(self, model):
-        from .Model import Model
-        pass
+        raise NotImplementedError

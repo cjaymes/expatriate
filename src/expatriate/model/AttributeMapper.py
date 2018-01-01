@@ -19,10 +19,11 @@ import importlib
 import logging
 
 from .exceptions import *
+from .Mapper import Mapper
 
 logger = logging.getLogger(__name__)
 
-class AttributeMapper:
+class AttributeMapper(Mapper):
     '''
         Decorator to map xml elements to model children
 
@@ -67,7 +68,7 @@ class AttributeMapper:
         if 'local_name' not in kwargs:
             raise DecoratorException('Attributes need at least local_name defined')
 
-        self._kwargs = kwargs
+        super().__init__(**kwargs)
 
     def _get_attr_name(self):
         if 'into' in self._kwargs:

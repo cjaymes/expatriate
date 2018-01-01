@@ -19,10 +19,11 @@ import importlib
 import logging
 
 from .exceptions import *
+from .Mapper import Mapper
 
 logger = logging.getLogger(__name__)
 
-class ElementMapper:
+class ElementMapper(Mapper):
     '''
         **kwargs**
 
@@ -76,13 +77,12 @@ class ElementMapper:
             If True, the element can be nil (from the xsi spec). False
             specifies that it cannot (the default).
     '''
+
     def __init__(self, **kwargs):
         if 'local_name' not in kwargs:
             raise DecoratorException('Attributes need at least local_name defined')
 
-        self._kwargs = kwargs
-
-
+        super().__init__(**kwargs)
 
     def _get_attr_name(self):
         from .Model import Model
