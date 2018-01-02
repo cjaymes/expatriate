@@ -47,3 +47,6 @@ class MaximumElementException(Exception):
 
 class EnumerationException(Exception):
     pass
+
+class PatternException(Exception):
+    pass

@@ -791,15 +791,15 @@ def test_load_attribute_value_not_in_enum():
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
-#
-# def test_load_attribute_value_matches_pattern():
-#     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:PatternValue>Bravo12</test:PatternValue></test:RootFixture>'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, RootFixture)
-#     assert hasattr(model, 'PatternValue')
-#     assert model.PatternValue.get_value() == 'Bravo12'
+
+def test_load_attribute_value_matches_pattern():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:PatternValue>Bravo12</test:PatternValue></test:RootFixture>'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, RootFixture)
+    assert hasattr(model, 'PatternValue')
+    assert model.PatternValue == 'Bravo12'
 #
 # def test_load_attribute_value_not_matches_pattern():
 #     with pytest.raises(ValueError):

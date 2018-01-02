@@ -21,7 +21,7 @@ from expatriate.model.types import *
 from .EnclosedFixture import EnclosedFixture
 
 @element(local_name='EnclosedFixture', cls=EnclosedFixture, min=0)
-@element(local_name='EnumValue', cls=EnclosedFixture, min=0, enum=['alpha', 'bravo', 'charlie'])
-@element(local_name='PatternValue', cls=EnclosedFixture, min=0, pattern=r'[a-zA-Z]{5}[0-9]{2}')
+@element(local_name='EnumValue', min=0, enum=['alpha', 'bravo', 'charlie'])
+@element(local_name='PatternValue', min=0, pattern=r'[a-zA-Z]{5}[0-9]{2}')
 class RootFixture(Model):
     pass

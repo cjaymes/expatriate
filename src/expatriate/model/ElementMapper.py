@@ -17,6 +17,7 @@
 
 import importlib
 import logging
+import re
 
 from .exceptions import *
 from .Mapper import Mapper
@@ -301,9 +302,9 @@ class ElementMapper(Mapper):
 
             logger.debug('Mapped ' + str(key) + ' to ' + str(value) + ' in ' + name)
 
-        elif 'class' in self._kwargs:
+        elif 'cls' in self._kwargs:
             logger.debug(str(model) + ' parsing ' + str(el) + ' element as '
-                + str(self._kwargs['class']))
+                + str(self._kwargs['cls']))
 
             if el.is_nil():
                 # check we can accept nil
@@ -353,6 +354,20 @@ class ElementMapper(Mapper):
             setattr(model, name, value)
 
             logger.debug('Set enum attribute ' + str(name) + ' to '
+                + str(value) + ' in ' + str(model))
+
+        elif 'pattern' in self._kwargs:
+            logger.debug(str(model) + ' parsing ' + str(el)
+                + ' elements from pattern ' + str(self._kwargs['pattern']))
+
+            value = el.get_string_value()
+            if re.match(self._kwargs['pattern'], value) is None:
+                raise PatternException(str(el)
+                    + ' value must match ' + str(self._kwargs['pattern']))
+
+            setattr(model, name, value)
+
+            logger.debug('Set pattern attribute ' + str(name) + ' to '
                 + str(value) + ' in ' + str(model))
 
         else:
