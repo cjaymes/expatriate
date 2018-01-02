@@ -135,26 +135,29 @@ class ElementMapper(Mapper):
     def find_reference_in(self, ref, model):
         from .Model import Model
 
+
         name = self._get_attr_name()
         attr = getattr(model, name)
 
-        if (
-            self._kwargs['local_name'] == Model.ANY_LOCAL_NAME
-            or 'list' in self._kwargs
-        ):
+        logger.debug('Looking for reference ' + ref + ' in ' + name + ' of ' + str(model))
+
+        if isinstance(attr, list):
             for child in attr:
                 try:
                     return child.find_reference(ref)
                 except ReferenceException:
                     pass
-        elif 'dict' in self._kwargs:
+        elif isinstance(attr, dict):
             for child in attr.values():
                 try:
                     return child.find_reference(ref)
                 except ReferenceException:
                     pass
-        else:
-            value = None
+        elif isinstance(attr, Model):
+            return attr.find_reference(ref)
+
+        raise ReferenceException('Could not find reference ' + ref
+                + ' within ' + str(model) + '.' + name)
 
     def matches(self, el):
         from .Model import Model

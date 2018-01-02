@@ -556,16 +556,17 @@ def test_str_name():
     root = RootFixture()
     root.name = 'test'
     assert str(root) == ('RootFixture name: test')
-#
-# def test_references():
-#     root = RootFixture()
-#     enc = EnclosedFixture()
-#     enc._parent = root
-#     enc.id = 'reftest1'
-#     assert root.find_reference('reftest1') == enc
-#
-#     with pytest.raises(ReferenceException):
-#         root.find_reference('test1')
+
+def test_references():
+    root = RootFixture()
+    #TODO need to add to a attr mapper knows about
+    enc = EnclosedFixture()
+    enc.id = 'reftest1'
+    root.EnclosedFixture = enc
+    assert root.find_reference('reftest1') == enc
+
+    with pytest.raises(ReferenceException):
+        root.find_reference('test1')
 #
 # def test_tag_name():
 #     root = RootFixture()

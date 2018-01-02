@@ -399,6 +399,8 @@ class Model(object):
         find child that matches reference *ref*
         '''
 
+        logger.debug('Matching reference ' + ref + ' against ' + str(self))
+
         try:
             if self.id == ref:
                 return self
