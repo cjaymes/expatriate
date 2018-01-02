@@ -800,10 +800,10 @@ def test_load_attribute_value_matches_pattern():
     assert isinstance(model, RootFixture)
     assert hasattr(model, 'PatternValue')
     assert model.PatternValue == 'Bravo12'
-#
-# def test_load_attribute_value_not_matches_pattern():
-#     with pytest.raises(ValueError):
-#         test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:PatternValue>delta</test:PatternValue></test:RootFixture>'
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
+
+def test_load_attribute_value_not_matches_pattern():
+    with pytest.raises(PatternException):
+        test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:PatternValue>delta</test:PatternValue></test:RootFixture>'
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
