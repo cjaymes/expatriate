@@ -568,16 +568,6 @@ def test_references():
     with pytest.raises(ReferenceException):
         root.find_reference('test1')
 #
-# def test_tag_name():
-#     root = RootFixture()
-#     assert root.tag_name == 'RootFixture'
-#
-# def test_xmlns():
-#     root = RootFixture()
-#     assert root.xmlns == 'http://jaymes.biz/test'
-#
-# # NOTE: from_xml is tested via Model.load
-#
 # def test_to_xml_root_enclosed():
 #     el = RootFixture()
 #     el.EnclosedFixture = EnclosedFixture(tag_name='EnclosedFixture')
@@ -785,15 +775,15 @@ def test_references():
 #     print(test_xml)
 #     print(out_xml)
 #     assert out_xml == test_xml
-#
-# def test_load_attribute_value_in_enum():
-#     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>bravo</test:EnumValue></test:RootFixture>'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#     assert isinstance(model, RootFixture)
-#     assert hasattr(model, 'EnumValue')
-#     assert model.EnumValue.get_value() == 'bravo'
+
+def test_load_attribute_value_in_enum():
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>bravo</test:EnumValue></test:RootFixture>'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+    assert isinstance(model, RootFixture)
+    assert hasattr(model, 'EnumValue')
+    assert model.EnumValue == 'bravo'
 #
 # def test_load_attribute_value_not_in_enum():
 #     with pytest.raises(ValueError):
