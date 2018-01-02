@@ -784,13 +784,13 @@ def test_load_attribute_value_in_enum():
     assert isinstance(model, RootFixture)
     assert hasattr(model, 'EnumValue')
     assert model.EnumValue == 'bravo'
-#
-# def test_load_attribute_value_not_in_enum():
-#     with pytest.raises(ValueError):
-#         test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>delta</test:EnumValue></test:RootFixture>'
-#         doc = expatriate.Document()
-#         doc.parse(test_xml)
-#         model = Model.load(None, doc.root_element)
+
+def test_load_attribute_value_not_in_enum():
+    with pytest.raises(EnumerationException):
+        test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>delta</test:EnumValue></test:RootFixture>'
+        doc = expatriate.Document()
+        doc.parse(test_xml)
+        model = Model.load(None, doc.root_element)
 #
 # def test_load_attribute_value_matches_pattern():
 #     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:PatternValue>Bravo12</test:PatternValue></test:RootFixture>'
