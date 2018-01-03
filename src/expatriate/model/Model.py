@@ -68,6 +68,7 @@ class Model(object):
     _element_mappers = {}
     _element_mapper_order = {}
     _content_mappers = {}
+    _ns_count = 0
 
     @staticmethod
     def element_to_class(model_package, el):
@@ -296,7 +297,7 @@ class Model(object):
 
         # instantiate an instance of the class & load it
         inst = class_()
-        inst.from_xml(parent, el)
+        inst.parse(parent, el)
 
         return inst
 
@@ -417,7 +418,7 @@ class Model(object):
         raise ReferenceException('Could not find reference ' + ref
             + ' within ' + str(self))
 
-    def from_xml(self, parent, el):
+    def parse(self, parent, el):
         '''
         create model instance from xml element *el*
         '''
@@ -459,7 +460,7 @@ class Model(object):
         for mapper in self._get_content_mappers():
             mapper.validate(self)
 
-    def to_xml(self, local_name, namespace=None):
+    def produce(self, local_name, namespace=None, prefix=None):
         '''
         generate xml representation of the model
         '''
@@ -467,10 +468,15 @@ class Model(object):
         logger.debug(str(self) + ' to xml')
         if namespace is None:
             namespace = Model.package_to_namespace(self.get_package())
-        if namespace is None:
-            raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
+            if namespace is None:
+                raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
+        else:
+            if prefix is None:
+                prefix = 'ns' + str(Model._ns_count)
+                Model._ns_count += 1
+                logger.info('Prefix for namespace ' + str(namespace) + ' is undefined; using generated: ' + prefix)
 
-        el = expatriate.Element(local_name, namespace=namespace)
+        el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
 
         for mapper in self._get_attribute_mappers():
             mapper.produce_in(el, self)
@@ -642,7 +648,7 @@ class Model(object):
     #             raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
     #
     #         # TODO nillable
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'list' in el_def:
     #         if 'namespace' in el_def:
@@ -660,14 +666,14 @@ class Model(object):
     #                 # wrap value in xs element
     #                 class_ = el_def['type']
     #                 child = class_(namespace=namespace, local_name=local_name, value=child)
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #         elif 'class' in el_def:
     #             if child is None:
     #                 sub_el = expatriate.Element(local_name, namespace=namespace)
     #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
     #                 el.append(sub_el)
     #             else:
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #
     #         else:
     #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
@@ -709,7 +715,7 @@ class Model(object):
     #                 el.append(sub_el)
     #             else:
     #                 setattr(child, key_name, self._children_keys[child_index])
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #
     #         else:
     #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
@@ -718,7 +724,7 @@ class Model(object):
     #         if child is None:
     #             return
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'type' in el_def:
     #         if child is None:
@@ -732,7 +738,7 @@ class Model(object):
     #         class_ = el_def['type']
     #         child = class_(namespace=namespace, local_name=local_name, value=child)
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'enum' in el_def:
     #         if child is None:
@@ -748,7 +754,7 @@ class Model(object):
     #         local_name = el_def['local_name']
     #         child = String(namespace=namespace, local_name=local_name, value=child)
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     else:
     #         raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')

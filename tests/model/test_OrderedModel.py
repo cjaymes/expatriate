@@ -68,7 +68,7 @@ Model.register_namespace('fixtures.test2', 'http://jaymes.biz/test2')
 #     doc.parse(test_xml)
 #     model = Model.load(None, doc.root_element)
 #
-#     out_xml = model.to_xml()
+#     out_xml = model.produce()
 #     print(test_xml)
 #     print(out_xml)
 #     assert out_xml == test_xml

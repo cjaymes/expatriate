@@ -209,6 +209,11 @@ class Element(Parent, Subscriber):
         s = '<' + self.name
         for k, v in self.attributes.items():
             s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'
+
+        if self._parent is None:
+            # generate xmlns attrs
+            pass
+
         if len(self.children) == 0:
             s += '/>'
         else:
@@ -269,7 +274,7 @@ class Element(Parent, Subscriber):
         except UnknownNamespaceException:
             # if the namespace hasn't been defined, attr doesn't exist either
             return False
-        
+
         name = prefix + ':nil'
         if name in self.attributes and self.attributes[name] == 'true':
             return True

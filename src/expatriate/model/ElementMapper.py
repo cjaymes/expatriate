@@ -487,7 +487,7 @@ class ElementMapper(Mapper):
     #             raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
     #
     #         # TODO nillable
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'list' in el_def:
     #         if 'namespace' in el_def:
@@ -505,14 +505,14 @@ class ElementMapper(Mapper):
     #                 # wrap value in xs element
     #                 class_ = el_def['type']
     #                 child = class_(namespace=namespace, local_name=local_name, value=child)
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #         elif 'class' in el_def:
     #             if child is None:
     #                 sub_el = expatriate.Element(local_name, namespace=namespace)
     #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
     #                 el.append(sub_el)
     #             else:
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #
     #         else:
     #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
@@ -554,7 +554,7 @@ class ElementMapper(Mapper):
     #                 el.append(sub_el)
     #             else:
     #                 setattr(child, key_name, self._children_keys[child_index])
-    #                 el.append(child.to_xml())
+    #                 el.append(child.produce())
     #
     #         else:
     #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
@@ -563,7 +563,7 @@ class ElementMapper(Mapper):
     #         if child is None:
     #             return
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'type' in el_def:
     #         if child is None:
@@ -577,7 +577,7 @@ class ElementMapper(Mapper):
     #         class_ = el_def['type']
     #         child = class_(namespace=namespace, local_name=local_name, value=child)
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     elif 'enum' in el_def:
     #         if child is None:
@@ -593,7 +593,7 @@ class ElementMapper(Mapper):
     #         local_name = el_def['local_name']
     #         child = String(namespace=namespace, local_name=local_name, value=child)
     #
-    #         el.append(child.to_xml())
+    #         el.append(child.produce())
     #
     #     else:
     #         raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')

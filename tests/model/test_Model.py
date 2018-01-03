@@ -568,183 +568,183 @@ def test_references():
     with pytest.raises(ReferenceException):
         root.find_reference('test1')
 
-def test_to_xml_root_enclosed():
+def test_produce_root_enclosed():
     model = RootFixture()
     model.EnclosedFixture = EnclosedFixture()
-    assert model.to_xml(namespace='http://jaymes.biz/test', local_name='RootFixture') == \
+    assert model.produce('RootFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
         b'<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture /></test:RootFixture>'
 #
-# def test_to_xml_required_attribute():
+# def test_produce_required_attribute():
 #     el = RequiredAttributeFixture()
 #     with pytest.raises(RequiredAttributeException):
-#         el.to_xml()
+#         el.produce()
 #     el.required_attribute = 'test'
-#     assert el.to_xml() == \
+#     assert el.produce() == \
 #         b'<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
 #
-# def test_to_xml_attributes():
+# def test_produce_attributes():
 #     el = AttributeFixture()
 #     el.in_test = 'test'
 #     el.dash_attribute = 'test'
 #     el.default_attribute = 'not default'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:AttributeFixture xmlns:test="http://jaymes.biz/test"')
 #     assert b'dash-attribute="test" ' in xml
 #     assert b'default_attribute="not default" ' in xml
 #     assert b'in_attribute="test" ' in xml
 #
 #     el.in_test = None
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert b'in_attribute=' not in xml
 #
 #     el.default_attribute = 'test'
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert b'default_attribute="test" ' not in xml
 #
-# def test_to_xml_min_max():
+# def test_produce_min_max():
 #     el = MinMaxElementFixture()
 #     for i in range(0, 3):
 #         el.min.append(EnclosedFixture(tag_name='min'))
 #     for i in range(0, 2):
 #         el.max.append(EnclosedFixture(tag_name='max'))
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test"')
 #     assert xml.count(b'<test:min') == 3
 #     assert xml.count(b'<test:max') == 2
 #
 #     del el.min[0]
 #     with pytest.raises(MinimumElementException):
-#         el.to_xml()
+#         el.produce()
 #
 #     el.min.append(EnclosedFixture())
 #     el.max.append(EnclosedFixture())
 #     with pytest.raises(MaximumElementException):
-#         el.to_xml()
+#         el.produce()
 #
-# def test_to_xml_wildcard_not_in():
+# def test_produce_wildcard_not_in():
 #     el = WildcardElementNotInFixture()
 #     el._elements.append(EnclosedFixture(tag_name='wildcard_element'))
 #     el._elements.append(EnclosedFixture2(tag_name='wildcard_element'))
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:WildcardElementNotInFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:test2="http://jaymes.biz/test2"' in xml
 #     assert b'<test:wildcard_element' in xml
 #     assert b'<test2:wildcard_element' in xml
 #
-# def test_to_xml_wildcard_in():
+# def test_produce_wildcard_in():
 #     el = WildcardElementInFixture()
 #     el.test_elements.append(EnclosedFixture(tag_name='wildcard_element'))
 #     el.elements.append(EnclosedFixture2(tag_name='wildcard_element'))
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:WildcardElementInFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:test2="http://jaymes.biz/test2"' in xml
 #     assert b'<test:wildcard_element' in xml
 #     assert b'<test2:wildcard_element' in xml
 #
-# def test_to_xml_append_nil():
+# def test_produce_append_nil():
 #     el = AppendElementFixture()
 #     el.append_nil.append(None)
 #     el.append_nil.append(EnclosedFixture(value='test', tag_name='append_nil'))
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:AppendElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
 #     assert b'<test:append_nil xsi:nil="true" />' in xml
 #     assert b'<test:append_nil>test</test:append_nil>' in xml
 #
-# def test_to_xml_append_type():
+# def test_produce_append_type():
 #     el = AppendElementFixture()
 #     el.append_type.append(1.1)
 #     el.append_type.append(1.2)
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:AppendElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:append_type>1.1</test:append_type>' in xml
 #     assert b'<test:append_type>1.2</test:append_type>' in xml
 #
-# def test_to_xml_append_class():
+# def test_produce_append_class():
 #     el = AppendElementFixture()
 #     el.append_class.append(EnclosedFixture(value='test1', tag_name='append_class'))
 #     el.append_class.append(EnclosedFixture(value='test2', tag_name='append_class'))
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:AppendElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:append_class>test1</test:append_class>' in xml
 #     assert b'<test:append_class>test2</test:append_class>' in xml
 #
-# def test_to_xml_map_key_explicit():
+# def test_produce_map_key_explicit():
 #     el = MapElementFixture()
 #     el.map_explicit_key['test1'] = 'test1'
 #     el.map_explicit_key['test2'] = 'test2'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:map_explicit_key key="test1">test1</test:map_explicit_key>' in xml
 #     assert b'<test:map_explicit_key key="test2">test2</test:map_explicit_key>' in xml
 #
-# def test_to_xml_map_key_implicit():
+# def test_produce_map_key_implicit():
 #     el = MapElementFixture()
 #     el.map_implicit_key['test1'] = 'test1'
 #     el.map_implicit_key['test2'] = 'test2'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:map_implicit_key id="test1">test1</test:map_implicit_key>' in xml
 #     assert b'<test:map_implicit_key id="test2">test2</test:map_implicit_key>' in xml
 #
-# def test_to_xml_map_value_nil():
+# def test_produce_map_value_nil():
 #     el = MapElementFixture()
 #     el.map_value_nil['test1'] = None
 #     el.map_value_nil['test2'] = 'test2'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
 #     assert b'<test:map_value_nil id="test1" xsi:nil="true" />' in xml
 #     assert b'<test:map_value_nil id="test2">test2</test:map_value_nil>' in xml
 #
-# def test_to_xml_map_value_attr():
+# def test_produce_map_value_attr():
 #     el = MapElementFixture()
 #     el.map_value_attr['test1'] = 'test1'
 #     el.map_value_attr['test2'] = 'test2'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:map_value_attr id="test1" value="test1" />' in xml
 #     assert b'<test:map_value_attr id="test2" value="test2" />' in xml
 #
-# def test_to_xml_map_value_type():
+# def test_produce_map_value_type():
 #     el = MapElementFixture()
 #     el.map_value_type['test1'] = 'test1'
 #     el.map_value_type['test2'] = 'test2'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:map_value_type id="test1">test1</test:map_value_type>' in xml
 #     assert b'<test:map_value_type id="test2">test2</test:map_value_type>' in xml
 #
-# def test_to_xml_map_value_class():
+# def test_produce_map_value_class():
 #     el = MapElementFixture()
 #     el.map_value_class['test1'] = MappableElementFixture(value='text1', tag_name='map_value_class')
 #     el.map_value_class['test1'].tag = 'blue'
 #     el.map_value_class['test2'] = MappableElementFixture(value='text2', tag_name='map_value_class')
 #     el.map_value_class['test2'].tag = 'red'
 #
-#     xml = el.to_xml()
+#     xml = el.produce()
 #     assert xml.startswith(b'<test:MapElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'<test:map_value_class id="test1" tag="blue">text1</test:map_value_class>' in xml
