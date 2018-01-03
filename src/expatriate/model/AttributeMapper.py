@@ -165,3 +165,72 @@ class AttributeMapper(Mapper):
             and model._attribute_counts[name] > 0
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')
+
+    def produce_in(self, el, model):
+        pass
+    #     if local_name == Model.ANY_LOCAL_NAME:
+    #         return
+    #
+    #     if 'into' in at_def:
+    #         value_name = at_def['into']
+    #     else:
+    #         value_name = local_name.replace('-', '_')
+    #
+    #     if not hasattr(self, value_name):
+    #         if 'required' in at_def and at_def['required']:
+    #             raise RequiredAttributeException(str(self)
+    #                 + ' must assign required attribute ' + local_name)
+    #         elif 'prohibited' in at_def and at_def['prohibited']:
+    #             logger.debug('Skipping prohibited attribute ' + local_name)
+    #             return
+    #         else:
+    #             logger.debug('Skipping undefined attribute ' + local_name)
+    #             return
+    #     else:
+    #         if 'prohibited' in at_def and at_def['prohibited']:
+    #             raise ProhibitedAttributeException(str(self)
+    #                 + ' must not assign prohibited attribute '
+    #                 + local_name)
+    #         value = getattr(self, value_name)
+    #
+    #     # TODO nillable for attrs?
+    #     if value is None:
+    #         if 'required' in at_def and at_def['required']:
+    #             raise RequiredAttributeException(str(self)
+    #                 + ' must assign required attribute ' + local_name)
+    #         else:
+    #             logger.debug(str(self) + ' Skipping unassigned attribute '
+    #                 + local_name)
+    #             return
+    #
+    #     if 'default' in at_def and value == at_def['default']:
+    #         logger.debug('Skipping attribute ' + local_name
+    #             + '; remains at default ' + str(at_def['default']))
+    #         return
+    #
+    #     # # if model's namespace doesn't match attribute's, then we need to include it
+    #     # if namespace is not None and self.namespace != namespace:
+    #     #     attr_name = name
+    #
+    #     if 'type' in at_def:
+    #         logger.debug(str(self) + ' Producing ' + str(value) + ' as '
+    #             + at_def['type'] + ' type')
+    #         type_ = at_def['type']()
+    #         v = type_.produce_value(value)
+    #
+    #         el.set(attr_name, v)
+    #
+    #     elif 'enum' in at_def:
+    #         if value not in at_def['enum']:
+    #             raise EnumerationException(str(self) + '.' + name
+    #                 + ' attribute must be one of ' + str(at_def['enum'])
+    #                 + ': ' + str(value))
+    #         el.set(attr_name, value)
+    #
+    #     else:
+    #         # otherwise, we default to producing as string
+    #         logger.debug(str(self) + ' Producing ' + str(value)
+    #             + ' as String type')
+    #         type_ = StringType()
+    #         v = type_.produce_value(value)
+    #         el.set(attr_name, v)

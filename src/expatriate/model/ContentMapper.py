@@ -48,3 +48,6 @@ class ContentMapper(Mapper):
     def validate(self, model):
         from .Model import Model
         pass
+
+    def produce_in(self, el, model):
+        pass

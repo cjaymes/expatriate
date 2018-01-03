@@ -478,9 +478,8 @@ class Model(object):
         for mapper in self._get_element_mappers():
             mapper.produce_in(el, self)
 
-    #     for (namespace, local_name), at_def in self._get_attribute_mappers().items():
-    #         value = self._produce_attribute(el, namespace, local_name, at_def)
-    #
+        return el
+
     #     for (namespace, local_name), el_def in self._get_element_mappers().items():
     #         if el_def['local_name'] == Model.ANY_LOCAL_NAME:
     #             if 'into' in el_def:
