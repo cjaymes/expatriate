@@ -53,7 +53,7 @@ def test_namespace_registration():
 
     Model.unregister_namespace('scap.model.derp')
 
-    with pytest.raises(UnregisteredNamespaceException):
+    with pytest.raises(UnknownNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
 def test_get_model_namespace():
@@ -79,14 +79,14 @@ def test_package_to_namespace():
     assert Model.package_to_namespace('fixtures.test') == 'http://jaymes.biz/test'
     assert Model.package_to_namespace('fixtures.test2') == 'http://jaymes.biz/test2'
 
-    with pytest.raises(UnregisteredNamespaceException):
+    with pytest.raises(UnknownNamespaceException):
         Model.package_to_namespace('scap.model.derp')
 
 def test_namespace_to_package():
     assert Model.namespace_to_package('http://jaymes.biz/test') == 'fixtures.test'
     assert Model.namespace_to_package('http://jaymes.biz/test2') == 'fixtures.test2'
 
-    with pytest.raises(UnregisteredNamespaceException):
+    with pytest.raises(UnknownNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
 def test_element_to_class():
@@ -109,7 +109,7 @@ def test_load_root_model():
     model = Model.load(None, doc.root_element)
     assert isinstance(model, RootFixture)
 
-    with pytest.raises(UnregisteredNamespaceException):
+    with pytest.raises(UnknownNamespaceException):
         test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/derp" />'
         doc = expatriate.Document()
         doc.parse(test_xml)
@@ -567,12 +567,12 @@ def test_references():
 
     with pytest.raises(ReferenceException):
         root.find_reference('test1')
-#
-# def test_to_xml_root_enclosed():
-#     el = RootFixture()
-#     el.EnclosedFixture = EnclosedFixture(tag_name='EnclosedFixture')
-#     assert el.to_xml() == \
-#         b'<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture /></test:RootFixture>'
+
+def test_to_xml_root_enclosed():
+    model = RootFixture()
+    model.EnclosedFixture = EnclosedFixture()
+    assert model.to_xml(namespace='http://jaymes.biz/test', local_name='RootFixture') == \
+        b'<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture /></test:RootFixture>'
 #
 # def test_to_xml_required_attribute():
 #     el = RequiredAttributeFixture()
