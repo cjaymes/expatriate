@@ -20,7 +20,7 @@ import re
 import xml.parsers.expat
 
 from .CharacterData import CharacterData
-from .ChildBearing import ChildBearing
+from .Parent import Parent
 from .Comment import Comment
 from .Element import Element
 from .Node import Node
@@ -31,7 +31,7 @@ from .exceptions import *
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class Document(ChildBearing):
+class Document(Parent):
     @staticmethod
     def ordered_first(nodeset):
         if len(nodeset) == 0:

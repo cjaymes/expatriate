@@ -17,7 +17,7 @@
 
 import logging
 
-from .ChildBearing import ChildBearing
+from .Parent import Parent
 from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
@@ -29,7 +29,7 @@ from publishsubscribe import Subscriber
 
 logger = logging.getLogger(__name__)
 
-class Element(ChildBearing, Subscriber):
+class Element(Parent, Subscriber):
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super().__init__(parent=parent)
 

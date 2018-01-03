@@ -23,9 +23,9 @@ from .exceptions import *
 
 logger = logging.getLogger(__name__)
 
-class ChildBearing(Node):
+class Parent(Node):
     def __init__(self, parent=None):
-        super(ChildBearing, self).__init__(parent=parent)
+        super(Parent, self).__init__(parent=parent)
         self.children = []
 
     def spawn_character_data(self, data):
@@ -155,4 +155,4 @@ class ChildBearing(Node):
             if el is not None:
                 return el
 
-        return super(ChildBearing, self).find_by_id(id_)
+        return super(Parent, self).find_by_id(id_)
