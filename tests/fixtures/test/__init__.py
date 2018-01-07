@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+PREFIX = 'test'
+
 ELEMENT_MAP = {
     ('http://jaymes.biz/test', 'RootFixture'): 'RootFixture',
     ('http://jaymes.biz/test', 'AttributeFixture'): 'AttributeFixture',
