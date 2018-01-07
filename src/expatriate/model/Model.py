@@ -102,19 +102,6 @@ class Model(object):
         return class_
 
     @classmethod
-    def _get_model_namespace(cls):
-        '''
-        determine a model's namespace from a class
-        '''
-        namespace = None
-
-        # determine from package
-        if namespace is None:
-            namespace = Model.package_to_namespace(cls.get_package())
-
-        return namespace
-
-    @classmethod
     def _get_attribute_mappers(cls):
         '''
         get all the attribute definitions for a model class
