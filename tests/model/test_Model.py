@@ -56,10 +56,6 @@ def test_namespace_registration():
     with pytest.raises(UnknownNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
-def test_get_model_namespace():
-    assert RootFixture._get_model_namespace() == 'http://jaymes.biz/test'
-    assert EnclosedFixture2._get_model_namespace() == 'http://jaymes.biz/test2'
-
 def test_is_nil():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />'
     doc = expatriate.Document()
@@ -89,11 +85,13 @@ def test_namespace_to_package():
     with pytest.raises(UnknownNamespaceException):
         Model.namespace_to_package('http://jaymes.biz/derp')
 
-def test_element_to_class():
+#TODO test_namespace_to_prefix
+
+def test_class_for_element():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
     doc = expatriate.Document()
     doc.parse(test_xml)
-    assert Model.element_to_class('fixtures.test', doc.root_element) == RootFixture
+    assert Model.class_for_element(doc.root_element) == RootFixture
 
 def test_get_value():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test">test</test:RootFixture>'

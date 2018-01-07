@@ -177,7 +177,7 @@ class ElementMapper(Mapper):
 
         return matches
 
-    def element_to_class(self, model, el):
+    def class_for_element(self, el, model):
         from .Model import Model
 
         if el.namespace is None:
@@ -186,7 +186,7 @@ class ElementMapper(Mapper):
             model_package = Model.namespace_to_package(el.namespace)
 
         if self.get_local_name() == Model.ANY_LOCAL_NAME:
-            return Model.element_to_class(model_package, el)
+            return Model.class_for_element(el)
         elif 'cls' in self._kwargs:
             class_ = self._kwargs['cls']
             if isinstance(class_, tuple):

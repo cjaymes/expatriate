@@ -71,10 +71,12 @@ class Model(object):
     _ns_count = 0
 
     @staticmethod
-    def element_to_class(model_package, el):
+    def class_for_element(el):
         '''
-        discover the model package and model name corresponding to an element
+        load the model class corresponding to an element
         '''
+
+        model_package = Model.namespace_to_package(el.namespace)
         try:
             pkg_mod = importlib.import_module(model_package)
         except:
@@ -246,6 +248,35 @@ class Model(object):
 
         return Model.__namespace_to_package[namespace]
 
+    @staticmethod
+    def namespace_to_prefix(namespace):
+        '''
+        find package corresponding to namespace
+        '''
+        logger.debug('Looking for xml prefix for xml namespace ' + str(namespace))
+
+        prefix = None
+
+        try:
+            pkg_mod = importlib.import_module(Model.namespace_to_package(namespace))
+        except:
+            raise UnknownNamespaceException('Unable to determine prefix mapping for '
+                + namespace + ' namespace')
+
+        try:
+            prefix = pkg_mod.PREFIX
+        except AttributeError:
+            prefix = 'ns' + str(Model._ns_count)
+            Model._ns_count += 1
+
+            logger.info(pkg_mod.__name__
+                + ' does not define PREFIX; generated: ' + prefix)
+        except:
+            raise UnknownNamespaceException('Unable to determine prefix for '
+                + namespace + ' namespace')
+
+        return prefix
+
     @classmethod
     def get_package(cls):
         return cls.__module__.rpartition('.')[0]
@@ -263,8 +294,7 @@ class Model(object):
                     'Unable to determine namespace without fully qualified element ('
                     + str(el) + ') and parent model')
 
-            model_package = Model.namespace_to_package(el.namespace)
-            class_ = Model.element_to_class(model_package, el)
+            class_ = Model.class_for_element(el)
         else:
             logger.debug('Checking ' + parent.__class__.__name__
                 + ' for element ' + str(el))
@@ -273,7 +303,7 @@ class Model(object):
                 if mapper.matches(el):
                     logger.debug(str(el) + ' matched ' + str(mapper)
                         + ' in ' + parent.__class__.__name__)
-                    class_ = mapper.element_to_class(parent, el)
+                    class_ = mapper.class_for_element(el, parent)
                     break
             else:
                 raise ElementMappingException(parent.__class__.__name__
@@ -458,10 +488,8 @@ class Model(object):
             if namespace is None:
                 raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
         else:
-            if prefix is None:
-                prefix = 'ns' + str(Model._ns_count)
-                Model._ns_count += 1
-                logger.info('Prefix for namespace ' + str(namespace) + ' is undefined; using generated: ' + prefix)
+            if prefix is not None:
+                prefix = Model.namespace_to_prefix(namespace)
 
         el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
 
