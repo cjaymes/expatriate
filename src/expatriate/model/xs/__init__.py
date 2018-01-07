@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+NAMESPACE = 'http://www.w3.org/2001/XMLSchema'
+PREFIX = 'xs'
+
 ELEMENT_MAP = {
     ('http://www.w3.org/2001/XMLSchema', 'schema'): 'SchemaElement',
 }
