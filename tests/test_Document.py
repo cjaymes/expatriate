@@ -333,3 +333,8 @@ def test_order_sort():
     doc.parse('<node><node/><node/><node/></node>')
 
     assert Document.order_sort([doc.root_element[2], doc.root_element[1], doc.root_element[0]]) == [doc.root_element[0], doc.root_element[1], doc.root_element[2]]
+
+def test_produce_no_decl():
+    doc = Document()
+    doc.parse('<Document/>')
+    assert doc.produce(xml_decl=False) == b'<Document/>'
