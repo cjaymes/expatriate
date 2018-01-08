@@ -57,6 +57,12 @@ class Model(object):
         'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty': 'expatriate.model.xs.hfp',
         'http://www.w3.org/2001/XMLSchema-instance': 'expatriate.model.xs.i',
     }
+    __namespace_to_prefix = {
+        'http://www.w3.org/XML/1998/namespace': 'xml',
+        'http://www.w3.org/2001/XMLSchema': 'xs',
+        'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty': 'xshfp',
+        'http://www.w3.org/2001/XMLSchema-instance': 'xsi',
+    }
     __package_to_namespace = {
         'expatriate.model.xml': 'http://www.w3.org/XML/1998/namespace',
         'expatriate.model.xs': 'http://www.w3.org/2001/XMLSchema',
@@ -201,12 +207,13 @@ class Model(object):
         return cls._content_mappers[cls.__name__]
 
     @staticmethod
-    def register_namespace(model_package, namespace):
+    def register_namespace(model_package, namespace, prefix=None):
         '''
         register a namespace for use
         '''
         Model.__namespace_to_package[namespace] = model_package
         Model.__package_to_namespace[model_package] = namespace
+        Model.__namespace_to_prefix[namespace] = prefix
 
     @staticmethod
     def unregister_namespace(model_package):
@@ -222,6 +229,7 @@ class Model(object):
 
         del Model.__package_to_namespace[model_package]
         del Model.__namespace_to_package[namespace]
+        del Model.__namespace_to_prefix[namespace]
 
     @staticmethod
     def package_to_namespace(model_package):
@@ -258,19 +266,13 @@ class Model(object):
         prefix = None
 
         try:
-            pkg_mod = importlib.import_module(Model.namespace_to_package(namespace))
-        except:
-            raise UnknownNamespaceException('Unable to determine prefix mapping for '
-                + namespace + ' namespace')
-
-        try:
-            prefix = pkg_mod.PREFIX
-        except AttributeError:
+            prefix = Model.__namespace_to_prefix[namespace]
+        except KeyError:
             prefix = 'ns' + str(Model._ns_count)
             Model._ns_count += 1
 
             logger.info(pkg_mod.__name__
-                + ' does not define PREFIX; generated: ' + prefix)
+                + ' did not register prefix; generated: ' + prefix)
         except:
             raise UnknownNamespaceException('Unable to determine prefix for '
                 + namespace + ' namespace')

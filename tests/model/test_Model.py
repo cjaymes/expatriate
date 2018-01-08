@@ -43,11 +43,11 @@ from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
 
 logging.basicConfig(level=logging.DEBUG)
 
-Model.register_namespace('fixtures.test', 'http://jaymes.biz/test')
-Model.register_namespace('fixtures.test2', 'http://jaymes.biz/test2')
+Model.register_namespace('fixtures.test', 'http://jaymes.biz/test', 'test')
+Model.register_namespace('fixtures.test2', 'http://jaymes.biz/test2', 'test2')
 
 def test_namespace_registration():
-    Model.register_namespace('scap.model.derp', 'http://jaymes.biz/derp')
+    Model.register_namespace('scap.model.derp', 'http://jaymes.biz/derp', 'derp')
 
     Model.namespace_to_package('http://jaymes.biz/derp') == 'scap.model.derp'
 
