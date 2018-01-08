@@ -565,13 +565,13 @@ def test_references():
 
     with pytest.raises(ReferenceException):
         root.find_reference('test1')
-#
+
 # def test_produce_root_enclosed():
 #     model = RootFixture()
 #     model.EnclosedFixture = EnclosedFixture()
 #     assert model.produce('RootFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
 #         '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture /></test:RootFixture>'
-
+#
 # def test_produce_required_attribute():
 #     el = RequiredAttributeFixture()
 #     with pytest.raises(RequiredAttributeException):

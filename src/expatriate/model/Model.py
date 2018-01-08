@@ -493,12 +493,24 @@ class Model(object):
             if prefix is None:
                 prefix = Model.namespace_to_prefix(namespace)
 
+        at_mappers = self._get_attribute_mappers()
+        for mapper in at_mappers:
+            mapper.validate(self)
+
+        el_mappers = self._get_element_mappers()
+        for mapper in el_mappers:
+            mapper.validate(self)
+
+        content_mappers = self._get_content_mappers()
+        for mapper in content_mappers:
+            mapper.validate(self)
+
         el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
 
-        for mapper in self._get_attribute_mappers():
+        for mapper in at_mappers:
             mapper.produce_in(el, self)
 
-        for mapper in self._get_element_mappers():
+        for mapper in el_mappers:
             mapper.produce_in(el, self)
 
         return el

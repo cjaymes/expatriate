@@ -136,7 +136,6 @@ class ElementMapper(Mapper):
     def find_reference_in(self, ref, model):
         from .Model import Model
 
-
         name = self._get_attr_name()
         attr = getattr(model, name)
 
@@ -387,10 +386,12 @@ class ElementMapper(Mapper):
             or 'list' in self._kwargs
             or self.get_local_name() == Model.ANY_LOCAL_NAME
         ):
+            count = len(getattr(model, name))
             # dicts and lists default to no max
             max_ = None
         else:
             max_ = 1
+            count = 1
 
         # if there's an explicit min/max definition, use that
         if 'min' in self._kwargs:
@@ -399,201 +400,139 @@ class ElementMapper(Mapper):
             max_ = self._kwargs['max']
 
         # check that we have the min & max of those elements
-        if min_ != 0 and model._element_counts[name] < min_:
+        if min_ != 0 and count < min_:
             raise MinimumElementException(str(model)
                 + ' must have at least ' + str(min_) + ' '
                 + str((self.get_namespace(), self.get_local_name()))
                 + ' elements')
 
-        if max_ is not None and model._element_counts[name] > max_:
+        if max_ is not None and count > max_:
             raise MaximumElementException(str(model)
                 + ' may have at most ' + str(max_) + ' '
                 + str((self.get_namespace(), self.get_local_name()))
                 + ' elements')
 
     def produce_in(self, el, model):
+        name = self._get_attr_name()
+        attr = getattr(model, name)
+
         pass
-    #         if el_def['local_name'] == Model.ANY_LOCAL_NAME:
-    #             if 'into' in el_def:
-    #                 lst = getattr(self, el_def['into'])
-    #             else:
-    #                 lst = getattr(self, '_elements')
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(lst):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(lst)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #         elif 'list' in el_def:
-    #             lst = getattr(self, el_def['list'])
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(lst):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(lst)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #         elif 'dict' in el_def:
-    #             dct = getattr(self, el_def['dict'])
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(dct):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min']) + ' '
-    #                     + el_def['local_name'] + ' elements; '
-    #                     + str(len(dct)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(dct)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(dct)) + ' found')
-    #     child = self._children_values[child_index]
-    #     el_def = self._children_el_defs[child_index]
-    #
-    #     logger.debug(str(self) + ' producing ' + str(child) + ' according to ' + str(el_def))
-    #     if el_def['local_name'] == Model.ANY_LOCAL_NAME:
-    #         if 'type' in el_def and child.local_name is None:
-    #             raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
-    #
-    #         # TODO nillable
-    #         el.append(child.produce())
-    #
-    #     elif 'list' in el_def:
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #
-    #         if 'type' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 # wrap value in xs element
-    #                 class_ = el_def['type']
-    #                 child = class_(namespace=namespace, local_name=local_name, value=child)
-    #                 el.append(child.produce())
-    #         elif 'class' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 el.append(child.produce())
-    #
-    #         else:
-    #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
-    #
-    #     elif 'dict' in el_def:
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #
-    #         # TODO: implement key_element as well
-    #         key_name = 'id'
-    #         if 'key' in el_def:
-    #             key_name = el_def['key']
-    #
-    #         if 'type' in el_def:
-    #             sub_el = expatriate.Element(local_name, namespace=namespace)
-    #             sub_el.set(key_name, self._children_keys[child_index])
-    #             if 'value_attr' in el_def:
-    #                 if child is None:
-    #                     raise ValueError(str(self) + ' Cannot have none for a value_attr: ' + el_def['dict'] + '[' + self._children_keys[child_index] + ']')
-    #                 type_ = el_def['type']()
-    #                 value = type_.produce_value(child)
-    #                 sub_el.set(el_def['value_attr'], value)
-    #             else:
-    #                 if child is None:
-    #                     sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 else:
-    #                     type_ = el_def['type']()
-    #                     sub_el.text = type_.produce_value(child)
-    #             el.append(sub_el)
-    #
-    #         elif 'class' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set(key_name, self._children_keys[child_index])
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 setattr(child, key_name, self._children_keys[child_index])
-    #                 el.append(child.produce())
-    #
-    #         else:
-    #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
-    #
-    #     elif 'class' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         el.append(child.produce())
-    #
-    #     elif 'type' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #         class_ = el_def['type']
-    #         child = class_(namespace=namespace, local_name=local_name, value=child)
-    #
-    #         el.append(child.produce())
-    #
-    #     elif 'enum' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         if child not in el_def['enum']:
-    #             raise EnumerationException(str(namespace, local_name) + ' value must be one of ' + str(el_def['enum']))
-    #
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #         child = String(namespace=namespace, local_name=local_name, value=child)
-    #
-    #         el.append(child.produce())
-    #
-    #     else:
-    #         raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')
+        # child = self._children_values[child_index]
+        # self._kwargs = self._children_self._kwargss[child_index]
+        #
+        # logger.debug(str(self) + ' producing ' + str(child) + ' according to ' + str(self._kwargs))
+        # if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
+        #     if 'type' in self._kwargs and child.local_name is None:
+        #         raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
+        #
+        #     # TODO nillable
+        #     el.append(child.produce())
+        #
+        # elif 'list' in self._kwargs:
+        #     if 'namespace' in self._kwargs:
+        #         namespace = self._kwargs['namespace']
+        #     else:
+        #         namespace = self.namespace
+        #     local_name = self._kwargs['local_name']
+        #
+        #     if 'type' in self._kwargs:
+        #         if child is None:
+        #             sub_el = expatriate.Element(local_name, namespace=namespace)
+        #             sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
+        #             el.append(sub_el)
+        #         else:
+        #             # wrap value in xs element
+        #             class_ = self._kwargs['type']
+        #             child = class_(namespace=namespace, local_name=local_name, value=child)
+        #             el.append(child.produce())
+        #     elif 'class' in self._kwargs:
+        #         if child is None:
+        #             sub_el = expatriate.Element(local_name, namespace=namespace)
+        #             sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
+        #             el.append(sub_el)
+        #         else:
+        #             el.append(child.produce())
+        #
+        #     else:
+        #         raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
+        #
+        # elif 'dict' in self._kwargs:
+        #     if 'namespace' in self._kwargs:
+        #         namespace = self._kwargs['namespace']
+        #     else:
+        #         namespace = self.namespace
+        #     local_name = self._kwargs['local_name']
+        #
+        #     # TODO: implement key_element as well
+        #     key_name = 'id'
+        #     if 'key' in self._kwargs:
+        #         key_name = self._kwargs['key']
+        #
+        #     if 'type' in self._kwargs:
+        #         sub_el = expatriate.Element(local_name, namespace=namespace)
+        #         sub_el.set(key_name, self._children_keys[child_index])
+        #         if 'value_attr' in self._kwargs:
+        #             if child is None:
+        #                 raise ValueError(str(self) + ' Cannot have none for a value_attr: ' + self._kwargs['dict'] + '[' + self._children_keys[child_index] + ']')
+        #             type_ = self._kwargs['type']()
+        #             value = type_.produce_value(child)
+        #             sub_el.set(self._kwargs['value_attr'], value)
+        #         else:
+        #             if child is None:
+        #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
+        #             else:
+        #                 type_ = self._kwargs['type']()
+        #                 sub_el.text = type_.produce_value(child)
+        #         el.append(sub_el)
+        #
+        #     elif 'class' in self._kwargs:
+        #         if child is None:
+        #             sub_el = expatriate.Element(local_name, namespace=namespace)
+        #             sub_el.set(key_name, self._children_keys[child_index])
+        #             sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
+        #             el.append(sub_el)
+        #         else:
+        #             setattr(child, key_name, self._children_keys[child_index])
+        #             el.append(child.produce())
+        #
+        #     else:
+        #         raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
+        #
+        # elif 'class' in self._kwargs:
+        #     if child is None:
+        #         return
+        #
+        #     el.append(child.produce())
+        #
+        # elif 'type' in self._kwargs:
+        #     if child is None:
+        #         return
+        #
+        #     if 'namespace' in self._kwargs:
+        #         namespace = self._kwargs['namespace']
+        #     else:
+        #         namespace = self.namespace
+        #     local_name = self._kwargs['local_name']
+        #     class_ = self._kwargs['type']
+        #     child = class_(namespace=namespace, local_name=local_name, value=child)
+        #
+        #     el.append(child.produce())
+        #
+        # elif 'enum' in self._kwargs:
+        #     if child is None:
+        #         return
+        #
+        #     if child not in self._kwargs['enum']:
+        #         raise EnumerationException(str(namespace, local_name) + ' value must be one of ' + str(self._kwargs['enum']))
+        #
+        #     if 'namespace' in self._kwargs:
+        #         namespace = self._kwargs['namespace']
+        #     else:
+        #         namespace = self.namespace
+        #     local_name = self._kwargs['local_name']
+        #     child = String(namespace=namespace, local_name=local_name, value=child)
+        #
+        #     el.append(child.produce())
+        #
+        # else:
+        #     raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')
