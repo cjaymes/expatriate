@@ -338,3 +338,7 @@ def test_produce_no_decl():
     doc = Document()
     doc.parse('<Document/>')
     assert doc.produce(xml_decl=False) == b'<Document/>'
+
+def test_get_type():
+    n = Document()
+    assert n.get_type() == 'root'

@@ -31,3 +31,7 @@ def test_no_parent():
     assert el.prefix is None
     assert el.attributes == {}
     assert el.parent is None
+
+def test_get_type():
+    n = Element('test')
+    assert n.get_type() == 'element'

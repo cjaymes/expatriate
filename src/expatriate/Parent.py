@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Parent(Node):
     def __init__(self, parent=None):
-        super(Parent, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.children = []
 
     def spawn_character_data(self, data):

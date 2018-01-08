@@ -60,7 +60,7 @@ class Document(Parent):
         return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
 
     def __init__(self, encoding=None, skip_whitespace=True):
-        super(Document, self).__init__()
+        super().__init__()
         self.version = None
         self.encoding = encoding
         self.standalone = None

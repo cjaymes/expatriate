@@ -37,13 +37,13 @@ class Node(object):
         self._parent = parent
 
     def prefix_to_namespace(self, prefix):
-        if self._parent is not None:
+        if isinstance(self._parent, Node):
             return self._parent.prefix_to_namespace(prefix)
         else:
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
     def namespace_to_prefix(self, namespace_uri):
-        if self._parent is not None:
+        if isinstance(self._parent, Node):
             return self._parent.namespace_to_prefix(namespace_uri)
         else:
             raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))

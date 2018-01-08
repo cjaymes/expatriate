@@ -15,27 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+import pytest
 import logging
 
-from .Node import Node
+from expatriate import *
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
-class ProcessingInstruction(Node):
-    def __init__(self, target, data, parent=None):
-        super().__init__(parent=parent)
-
-        self.target = target
-        self.data = data
-
-    def produce(self):
-        return '<?' + self.target + ' ' + self.data + '?>'
-
-    def get_type(self):
-        return 'processing instruction'
-
-    def get_string_value(self):
-        return self.data
-
-    def get_expanded_name(self):
-        return (None, self.target)
+def test_get_type():
+    n = CharacterData('test')
+    assert n.get_type() == 'text'
