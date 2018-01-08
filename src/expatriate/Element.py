@@ -30,8 +30,6 @@ from publishsubscribe import Subscriber
 logger = logging.getLogger(__name__)
 
 class Element(Parent, Subscriber):
-    _ns_count = 0
-
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super().__init__(parent=parent)
 
@@ -158,7 +156,7 @@ class Element(Parent, Subscriber):
         for k, v in self._attributes.items():
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
-                if prefix in self._prefix_to_namespace.keys():
+                if prefix in self._prefix_to_namespace:
                     raise PrefixRedefineException('Prefix ' + prefix + ' has already been used but is being redefined')
                 self._prefix_to_namespace[prefix] = v
                 self._namespace_to_prefixes[v] = prefix
@@ -169,11 +167,8 @@ class Element(Parent, Subscriber):
                 logger.debug('Added prefix None for uri ' + v)
 
         # now that we've parsed the namespace attributes, we can figure out missing info
-        if self._prefix is None and None in self._prefix_to_namespace:
+        if self._namespace is None and self._prefix is None and None in self._prefix_to_namespace:
             self._namespace = self._prefix_to_namespace[None]
-
-        if self._prefix is None and self._namespace is not None:
-            self._prefix = self.namespace_to_prefix(self._namespace)
         elif self._namespace is None and self._prefix is not None:
             self._namespace = self.prefix_to_namespace(self._prefix)
 
@@ -197,13 +192,6 @@ class Element(Parent, Subscriber):
 
         if namespace in self._namespace_to_prefixes:
             return self._namespace_to_prefixes[namespace]
-        elif self._parent is None:
-            prefix = 'ns' + str(Element._ns_count)
-            Element._ns_count += 1
-
-            self.attributes['xmlns:' + prefix] = namespace
-
-            return prefix
         else:
             return super().namespace_to_prefix(namespace)
 

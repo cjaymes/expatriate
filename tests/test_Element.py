@@ -38,7 +38,7 @@ def test_produce_no_ns_no_prefix():
 
 def test_produce_ns_no_prefix():
     el = Element('test', namespace='http://jaymes.biz/test')
-    assert el.produce() == '<ns0:test xmlns:ns0="http://jaymes.biz/test"/>'
+    assert el.produce() == '<test xmlns="http://jaymes.biz/test"/>'
 
 def test_produce_ns_prefix():
     el = Element('test', namespace='http://jaymes.biz/test', prefix='test')
