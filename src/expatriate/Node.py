@@ -37,13 +37,21 @@ class Node(object):
         self._parent = parent
 
     def prefix_to_namespace(self, prefix):
-        if isinstance(self._parent, Node):
+        if prefix == 'xmlns':
+            return 'http://www.w3.org/2000/xmlns/'
+        elif prefix == 'xml':
+            return 'http://www.w3.org/XML/1998/namespace'
+        elif isinstance(self._parent, Node):
             return self._parent.prefix_to_namespace(prefix)
         else:
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
     def namespace_to_prefix(self, namespace_uri):
-        if isinstance(self._parent, Node):
+        if namespace_uri == 'http://www.w3.org/2000/xmlns/':
+            return 'xmlns'
+        elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':
+            return 'xml'
+        elif isinstance(self._parent, Node):
             return self._parent.namespace_to_prefix(namespace_uri)
         else:
             raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))

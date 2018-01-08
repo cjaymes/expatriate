@@ -32,6 +32,18 @@ def test_no_parent():
     assert el.attributes == {}
     assert el.parent is None
 
+def test_produce_no_ns_no_prefix():
+    el = Element('test')
+    assert el.produce() == '<test/>'
+
+def test_produce_ns_no_prefix():
+    el = Element('test', namespace='http://jaymes.biz/test')
+    assert el.produce() == '<ns0:test xmlns:ns0="http://jaymes.biz/test"/>'
+
+def test_produce_ns_prefix():
+    el = Element('test', namespace='http://jaymes.biz/test', prefix='test')
+    assert el.produce() == '<test:test xmlns:test="http://jaymes.biz/test"/>'
+
 def test_get_type():
     n = Element('test')
     assert n.get_type() == 'element'

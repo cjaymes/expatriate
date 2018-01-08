@@ -69,12 +69,12 @@ class Model(object):
         'expatriate.model.xs.hfp': 'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty',
         'expatriate.model.xs.i': 'http://www.w3.org/2001/XMLSchema-instance',
     }
+    _ns_count = 0
 
     _attribute_mappers = {}
     _element_mappers = {}
     _element_mapper_order = {}
     _content_mappers = {}
-    _ns_count = 0
 
     @staticmethod
     def class_for_element(el):
@@ -490,7 +490,7 @@ class Model(object):
             if namespace is None:
                 raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
         else:
-            if prefix is not None:
+            if prefix is None:
                 prefix = Model.namespace_to_prefix(namespace)
 
         el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)

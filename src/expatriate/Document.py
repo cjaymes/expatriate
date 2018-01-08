@@ -224,19 +224,3 @@ class Document(Parent):
 
     def get_document_order(self):
         return 0
-
-    def prefix_to_namespace(self, prefix):
-        if prefix == 'xmlns':
-            return 'http://www.w3.org/2000/xmlns/'
-        elif prefix == 'xml':
-            return 'http://www.w3.org/XML/1998/namespace'
-        else:
-            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
-
-    def namespace_to_prefix(self, namespace_uri):
-        if namespace_uri == 'http://www.w3.org/2000/xmlns/':
-            return 'xmlns'
-        elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':
-            return 'xml'
-        else:
-            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))

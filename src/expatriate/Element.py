@@ -30,6 +30,8 @@ from publishsubscribe import Subscriber
 logger = logging.getLogger(__name__)
 
 class Element(Parent, Subscriber):
+    _ns_count = 0
+
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super().__init__(parent=parent)
 
@@ -183,24 +185,27 @@ class Element(Parent, Subscriber):
             self.namespace_nodes[prefix] = n
 
     def prefix_to_namespace(self, prefix):
-        logger.debug('Resolving prefix: ' + str(prefix))
-        if prefix == 'xmlns':
-            return 'http://www.w3.org/2000/xmlns/'
-        elif prefix in self._prefix_to_namespace:
+        logger.debug(str(self) + ' resolving prefix: ' + str(prefix))
+
+        if prefix in self._prefix_to_namespace:
             return self._prefix_to_namespace[prefix]
-        elif prefix is None:
-            return None
         else:
-            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
+            return super().prefix_to_namespace(prefix)
 
     def namespace_to_prefix(self, namespace):
-        logger.debug('Resolving namespace: ' + str(namespace))
-        if namespace == 'http://www.w3.org/2000/xmlns/':
-            return 'xmlns'
-        elif namespace in self._namespace_to_prefixes:
+        logger.debug(str(self) + ' resolving namespace: ' + str(namespace))
+
+        if namespace in self._namespace_to_prefixes:
             return self._namespace_to_prefixes[namespace]
+        elif self._parent is None:
+            prefix = 'ns' + str(Element._ns_count)
+            Element._ns_count += 1
+
+            self.attributes['xmlns:' + prefix] = namespace
+
+            return prefix
         else:
-            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace))
+            return super().namespace_to_prefix(namespace)
 
     def escape_attribute(self, text):
         return self.escape(text).replace('"', '&quot;')
@@ -210,9 +215,19 @@ class Element(Parent, Subscriber):
         for k, v in self.attributes.items():
             s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'
 
-        if self._parent is None:
-            # generate xmlns attrs
-            pass
+        if (
+            self._parent is None
+            and self._namespace is not None
+            and self._prefix not in self._prefix_to_namespace
+            and (
+                (self._prefix is not None and 'xmlns:' + self._prefix not in self.attributes)
+                or (self._prefix is None and 'xmlns' not in self.attributes)
+            )
+        ):
+            if self._prefix is None:
+                s += ' xmlns="' + self._namespace + '"'
+            else:
+                s += ' xmlns:' + self._prefix + '="' + self._namespace + '"'
 
         if len(self.children) == 0:
             s += '/>'
