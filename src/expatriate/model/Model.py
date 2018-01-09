@@ -358,19 +358,18 @@ class Model(Subscriber):
         for mapper in self._get_content_mappers():
             mapper.initialize(self)
 
-    def data_added(self, publisher, additions):
+    def data_added(self, publisher, id_, item):
         ''' Receive notification from a Publisher when data has been added '''
-        for i in additions:
-            self._children.append(publisher[i])
+        self._children.append(item)
 
-    def data_updated(self, publisher, updates):
+    def data_updated(self, publisher, id_, old_item, new_item):
         ''' Receive notification from a Publisher when data has been updated '''
-        pass
+        self._children.remove(old_item)
+        self._children.append(new_item)
 
-    def data_deleted(self, publisher, deletions):
+    def data_deleted(self, publisher, id_, item):
         ''' Receive notification from a Publisher when data has been deleted '''
-        for i in additions:
-            self._children.append(publisher[i])
+        self._children.remove(item)
 
     def is_nil(self):
         '''
