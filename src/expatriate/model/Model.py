@@ -21,6 +21,7 @@ import logging
 import os.path
 import re
 import sys
+import itertools
 
 from publishsubscribe import Subscriber
 
@@ -181,7 +182,10 @@ class Model(Subscriber):
 
         # have to insert at the front because decorators are applied in reverse
         # order
-        cls._element_mapper_order[cls.__name__].insert(0, (mapper.get_namespace(), mapper.get_local_name()))
+        cls._element_mapper_order[cls.__name__].insert(
+            0,
+            (mapper.get_namespace(), mapper.get_local_name())
+        )
 
     @classmethod
     def _add_content_mapper(cls, kwargs):
@@ -343,9 +347,12 @@ class Model(Subscriber):
     def __init__(self):
         self._parent = None
         self._children = []
+        self._content = []
 
-        # initialize attribute values
-        for mapper in self._get_attribute_mappers():
+        at_mappers = self._get_attribute_mappers()
+        el_mappers = self._get_element_mappers()
+        content_mappers = self._get_content_mappers()
+        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.initialize(self)
 
     def __setattr__(self, name, value):
@@ -353,12 +360,7 @@ class Model(Subscriber):
         setattr override to keep track of indexes etc.
         '''
 
-        for mapper in self._get_attribute_mappers():
-            if mapper.get_attr_name() == name:
-                mapper.setattr(self, name, value)
-                return
-
-        for mapper in self._get_element_mappers():
+        for mapper in itertools.chain(self._get_attribute_mappers(), self._get_element_mappers()):
             if mapper.get_attr_name() == name:
                 mapper.setattr(self, name, value)
                 return
@@ -491,13 +493,10 @@ class Model(Subscriber):
             else:
                 self._content.append(child.get_string_value())
 
-        for mapper in self._get_attribute_mappers():
-            mapper.validate(self)
-
-        for mapper in self._get_element_mappers():
-            mapper.validate(self)
-
-        for mapper in self._get_content_mappers():
+        at_mappers = self._get_attribute_mappers()
+        el_mappers = self._get_element_mappers()
+        content_mappers = self._get_content_mappers()
+        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
     def produce(self, local_name, namespace=None, prefix=None):
@@ -515,23 +514,14 @@ class Model(Subscriber):
                 prefix = Model.namespace_to_prefix(namespace)
 
         at_mappers = self._get_attribute_mappers()
-        for mapper in at_mappers:
-            mapper.validate(self)
-
         el_mappers = self._get_element_mappers()
-        for mapper in el_mappers:
-            mapper.validate(self)
-
         content_mappers = self._get_content_mappers()
-        for mapper in content_mappers:
+        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
         el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
 
-        for mapper in at_mappers:
-            mapper.produce_in(el, self)
-
-        for mapper in el_mappers:
+        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.produce_in(el, self)
 
         return el
