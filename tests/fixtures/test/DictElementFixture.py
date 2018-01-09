@@ -18,8 +18,13 @@
 from expatriate.model.Model import Model
 from expatriate.model.decorators import *
 from expatriate.model.types import *
+from .DictValueElementFixture import DictValueElementFixture
 
-@attribute(local_name='id')
-@attribute(local_name='tag')
-class MappableElementFixture(Model):
+@element(local_name='dict_explicit_key', dict='dict_explicit_key', dict_key='key', type=StringType, min=0)
+@element(local_name='dict_implicit_key', dict='dict_implicit_key', type=StringType, min=0)
+@element(local_name='dict_value_nil', dict='dict_value_nil', nillable=True, type=StringType, min=0)
+@element(local_name='dict_value_attr', dict='dict_value_attr', dict_value='value', type=StringType, min=0)
+@element(local_name='dict_value_type', dict='dict_value_type', type=StringType, min=0)
+@element(local_name='dict_value_class', dict='dict_value_class', cls=DictValueElementFixture, min=0)
+class DictElementFixture(Model):
     pass

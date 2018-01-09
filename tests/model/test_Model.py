@@ -32,9 +32,9 @@ from fixtures.test.AttributeFixture import AttributeFixture
 from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
 from fixtures.test.WildcardElementNotInFixture import WildcardElementNotInFixture
 from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
-from fixtures.test.AppendElementFixture import AppendElementFixture
-from fixtures.test.MapElementFixture import MapElementFixture
-from fixtures.test.MappableElementFixture import MappableElementFixture
+from fixtures.test.ListElementFixture import ListElementFixture
+from fixtures.test.DictElementFixture import DictElementFixture
+from fixtures.test.DictValueElementFixture import DictValueElementFixture
 from fixtures.test.InitFixture import InitFixture
 from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
 from fixtures.test.InheritingFixture import InheritingFixture
@@ -286,211 +286,211 @@ def test_load_element_wildcard_in():
     assert isinstance(model.elements[0], EnclosedFixture2)
     assert model.elements[0].get_value() == 'test2'
 
-def test_load_element_append_nil():
+def test_load_element_list_nil():
     test_xml = '''
-        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:append_nil xsi:nil="true" />
-        <test:append_nil>test2</test:append_nil>
-        </test:AppendElementFixture>
+        <test:ListElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:list_nil xsi:nil="true" />
+        <test:list_nil>test2</test:list_nil>
+        </test:ListElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, AppendElementFixture)
+    assert isinstance(model, ListElementFixture)
 
-    assert hasattr(model, 'append_nil')
-    assert isinstance(model.append_nil, list)
-    assert len(model.append_nil) == 2
+    assert hasattr(model, 'list_nil')
+    assert isinstance(model.list_nil, list)
+    assert len(model.list_nil) == 2
 
-    assert model.append_nil[0] is None
+    assert model.list_nil[0] is None
 
-    assert isinstance(model.append_nil[1], EnclosedFixture)
-    assert model.append_nil[1].get_value() == 'test2'
+    assert isinstance(model.list_nil[1], EnclosedFixture)
+    assert model.list_nil[1].get_value() == 'test2'
 
-def test_load_element_append_type():
+def test_load_element_list_type():
     test_xml = '''
-        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
-        <test:append_type>1.1</test:append_type>
-        <test:append_type>1.2</test:append_type>
-        </test:AppendElementFixture>
+        <test:ListElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:list_type>1.1</test:list_type>
+        <test:list_type>1.2</test:list_type>
+        </test:ListElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, AppendElementFixture)
+    assert isinstance(model, ListElementFixture)
 
-    assert hasattr(model, 'append_type')
-    assert isinstance(model.append_type, list)
-    assert len(model.append_type) == 2
+    assert hasattr(model, 'list_type')
+    assert isinstance(model.list_type, list)
+    assert len(model.list_type) == 2
 
-    assert isinstance(model.append_type[0], float)
-    assert model.append_type[0] == 1.1
+    assert isinstance(model.list_type[0], float)
+    assert model.list_type[0] == 1.1
 
-    assert isinstance(model.append_type[1], float)
-    assert model.append_type[1] == 1.2
+    assert isinstance(model.list_type[1], float)
+    assert model.list_type[1] == 1.2
 
-def test_load_element_append_class():
+def test_load_element_list_class():
     test_xml = '''
-        <test:AppendElementFixture xmlns:test="http://jaymes.biz/test">
-        <test:append_class>test1</test:append_class>
-        <test:append_class>test2</test:append_class>
-        </test:AppendElementFixture>
+        <test:ListElementFixture xmlns:test="http://jaymes.biz/test">
+        <test:list_class>test1</test:list_class>
+        <test:list_class>test2</test:list_class>
+        </test:ListElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, AppendElementFixture)
+    assert isinstance(model, ListElementFixture)
 
-    assert hasattr(model, 'append_class')
-    assert isinstance(model.append_class, list)
-    assert len(model.append_class) == 2
+    assert hasattr(model, 'list_class')
+    assert isinstance(model.list_class, list)
+    assert len(model.list_class) == 2
 
-    assert isinstance(model.append_class[0], EnclosedFixture)
-    assert model.append_class[0].get_value() == 'test1'
+    assert isinstance(model.list_class[0], EnclosedFixture)
+    assert model.list_class[0].get_value() == 'test1'
 
-    assert isinstance(model.append_class[1], EnclosedFixture)
-    assert model.append_class[1].get_value() == 'test2'
+    assert isinstance(model.list_class[1], EnclosedFixture)
+    assert model.list_class[1].get_value() == 'test2'
 
-def test_load_element_map_key_explicit():
+def test_load_element_dict_key_explicit():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_explicit_key key="test1">test1</test:map_explicit_key>
-        <test:map_explicit_key key="test2">test2</test:map_explicit_key>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_explicit_key key="test1">test1</test:dict_explicit_key>
+        <test:dict_explicit_key key="test2">test2</test:dict_explicit_key>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_explicit_key')
-    assert len(model.map_explicit_key) == 2
+    assert hasattr(model, 'dict_explicit_key')
+    assert len(model.dict_explicit_key) == 2
 
-    assert 'test1' in model.map_explicit_key
-    assert model.map_explicit_key['test1'] == 'test1'
+    assert 'test1' in model.dict_explicit_key
+    assert model.dict_explicit_key['test1'] == 'test1'
 
-    assert 'test2' in model.map_explicit_key
-    assert model.map_explicit_key['test2'] == 'test2'
+    assert 'test2' in model.dict_explicit_key
+    assert model.dict_explicit_key['test2'] == 'test2'
 
-def test_load_element_map_key_implicit():
+def test_load_element_dict_key_implicit():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_implicit_key id="test1">test1</test:map_implicit_key>
-        <test:map_implicit_key id="test2">test2</test:map_implicit_key>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_implicit_key id="test1">test1</test:dict_implicit_key>
+        <test:dict_implicit_key id="test2">test2</test:dict_implicit_key>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_implicit_key')
-    assert len(model.map_implicit_key) == 2
+    assert hasattr(model, 'dict_implicit_key')
+    assert len(model.dict_implicit_key) == 2
 
-    assert 'test1' in model.map_implicit_key
-    assert model.map_implicit_key['test1'] == 'test1'
+    assert 'test1' in model.dict_implicit_key
+    assert model.dict_implicit_key['test1'] == 'test1'
 
-    assert 'test2' in model.map_implicit_key
-    assert model.map_implicit_key['test2'] == 'test2'
+    assert 'test2' in model.dict_implicit_key
+    assert model.dict_implicit_key['test2'] == 'test2'
 
-def test_load_element_map_value_nil():
+def test_load_element_dict_value_nil():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_value_nil id="test1" xsi:nil="true"/>
-        <test:map_value_nil id="test2">test2</test:map_value_nil>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_value_nil id="test1" xsi:nil="true"/>
+        <test:dict_value_nil id="test2">test2</test:dict_value_nil>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_value_nil')
-    assert len(model.map_value_nil) == 2
+    assert hasattr(model, 'dict_value_nil')
+    assert len(model.dict_value_nil) == 2
 
-    assert 'test1' in model.map_value_nil
-    assert model.map_value_nil['test1'] == None
+    assert 'test1' in model.dict_value_nil
+    assert model.dict_value_nil['test1'] == None
 
-    assert 'test2' in model.map_value_nil
-    assert model.map_value_nil['test2'] == 'test2'
+    assert 'test2' in model.dict_value_nil
+    assert model.dict_value_nil['test2'] == 'test2'
 
-def test_load_element_map_value_attr():
+def test_load_element_dict_value_attr():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_value_attr id="test1" value="test1"/>
-        <test:map_value_attr id="test2" value="test2"/>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_value_attr id="test1" value="test1"/>
+        <test:dict_value_attr id="test2" value="test2"/>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_value_attr')
-    assert len(model.map_value_attr) == 2
+    assert hasattr(model, 'dict_value_attr')
+    assert len(model.dict_value_attr) == 2
 
-    assert 'test1' in model.map_value_attr
-    assert model.map_value_attr['test1'] == 'test1'
+    assert 'test1' in model.dict_value_attr
+    assert model.dict_value_attr['test1'] == 'test1'
 
-    assert 'test2' in model.map_value_attr
-    assert model.map_value_attr['test2'] == 'test2'
+    assert 'test2' in model.dict_value_attr
+    assert model.dict_value_attr['test2'] == 'test2'
 
-def test_load_element_map_value_type():
+def test_load_element_dict_value_type():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_value_type id="test1">test1</test:map_value_type>
-        <test:map_value_type id="test2">test2</test:map_value_type>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_value_type id="test1">test1</test:dict_value_type>
+        <test:dict_value_type id="test2">test2</test:dict_value_type>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_value_type')
-    assert len(model.map_value_type) == 2
+    assert hasattr(model, 'dict_value_type')
+    assert len(model.dict_value_type) == 2
 
-    assert 'test1' in model.map_value_type
-    assert model.map_value_type['test1'] == 'test1'
+    assert 'test1' in model.dict_value_type
+    assert model.dict_value_type['test1'] == 'test1'
 
-    assert 'test2' in model.map_value_type
-    assert model.map_value_type['test2'] == 'test2'
+    assert 'test2' in model.dict_value_type
+    assert model.dict_value_type['test2'] == 'test2'
 
-def test_load_element_map_value_class():
+def test_load_element_dict_value_class():
     test_xml = '''
-        <test:MapElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:map_value_class id="test1" tag="blue">text1</test:map_value_class>
-        <test:map_value_class id="test2" tag="red">text2</test:map_value_class>
-        </test:MapElementFixture>
+        <test:DictElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <test:dict_value_class id="test1" tag="blue">text1</test:dict_value_class>
+        <test:dict_value_class id="test2" tag="red">text2</test:dict_value_class>
+        </test:DictElementFixture>
         '''
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
 
-    assert isinstance(model, MapElementFixture)
+    assert isinstance(model, DictElementFixture)
 
-    assert hasattr(model, 'map_value_class')
-    assert len(model.map_value_class) == 2
+    assert hasattr(model, 'dict_value_class')
+    assert len(model.dict_value_class) == 2
 
-    assert 'test1' in model.map_value_class
-    assert isinstance(model.map_value_class['test1'], MappableElementFixture)
-    assert model.map_value_class['test1'].id == 'test1'
-    assert model.map_value_class['test1'].tag == 'blue'
-    assert model.map_value_class['test1'].get_value() == 'text1'
+    assert 'test1' in model.dict_value_class
+    assert isinstance(model.dict_value_class['test1'], DictValueElementFixture)
+    assert model.dict_value_class['test1'].id == 'test1'
+    assert model.dict_value_class['test1'].tag == 'blue'
+    assert model.dict_value_class['test1'].get_value() == 'text1'
 
-    assert 'test2' in model.map_value_class
-    assert isinstance(model.map_value_class['test2'], MappableElementFixture)
-    assert model.map_value_class['test2'].id == 'test2'
-    assert model.map_value_class['test2'].tag == 'red'
-    assert model.map_value_class['test2'].get_value() == 'text2'
+    assert 'test2' in model.dict_value_class
+    assert isinstance(model.dict_value_class['test2'], DictValueElementFixture)
+    assert model.dict_value_class['test2'].id == 'test2'
+    assert model.dict_value_class['test2'].tag == 'red'
+    assert model.dict_value_class['test2'].get_value() == 'text2'
 
 def test_initialization():
     init = InitFixture()
@@ -645,108 +645,108 @@ def test_references():
 #     assert b'<test:wildcard_element' in xml
 #     assert b'<test2:wildcard_element' in xml
 #
-# def test_produce_append_nil():
-#     el = AppendElementFixture()
-#     el.append_nil.append(None)
-#     el.append_nil.append(EnclosedFixture(value='test', tag_name='append_nil'))
+# def test_produce_list_nil():
+#     el = ListElementFixture()
+#     el.list_nil.append(None)
+#     el.list_nil.append(EnclosedFixture(value='test', tag_name='list_nil'))
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:AppendElementFixture')
+#     assert xml.startswith(b'<test:ListElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
-#     assert b'<test:append_nil xsi:nil="true" />' in xml
-#     assert b'<test:append_nil>test</test:append_nil>' in xml
+#     assert b'<test:list_nil xsi:nil="true" />' in xml
+#     assert b'<test:list_nil>test</test:list_nil>' in xml
 #
-# def test_produce_append_type():
-#     el = AppendElementFixture()
-#     el.append_type.append(1.1)
-#     el.append_type.append(1.2)
+# def test_produce_list_type():
+#     el = ListElementFixture()
+#     el.list_type.append(1.1)
+#     el.list_type.append(1.2)
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:AppendElementFixture')
+#     assert xml.startswith(b'<test:ListElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:append_type>1.1</test:append_type>' in xml
-#     assert b'<test:append_type>1.2</test:append_type>' in xml
+#     assert b'<test:list_type>1.1</test:list_type>' in xml
+#     assert b'<test:list_type>1.2</test:list_type>' in xml
 #
-# def test_produce_append_class():
-#     el = AppendElementFixture()
-#     el.append_class.append(EnclosedFixture(value='test1', tag_name='append_class'))
-#     el.append_class.append(EnclosedFixture(value='test2', tag_name='append_class'))
+# def test_produce_list_class():
+#     el = ListElementFixture()
+#     el.list_class.append(EnclosedFixture(value='test1', tag_name='list_class'))
+#     el.list_class.append(EnclosedFixture(value='test2', tag_name='list_class'))
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:AppendElementFixture')
+#     assert xml.startswith(b'<test:ListElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:append_class>test1</test:append_class>' in xml
-#     assert b'<test:append_class>test2</test:append_class>' in xml
+#     assert b'<test:list_class>test1</test:list_class>' in xml
+#     assert b'<test:list_class>test2</test:list_class>' in xml
 #
-# def test_produce_map_key_explicit():
-#     el = MapElementFixture()
-#     el.map_explicit_key['test1'] = 'test1'
-#     el.map_explicit_key['test2'] = 'test2'
+# def test_produce_dict_key_explicit():
+#     el = DictElementFixture()
+#     el.dict_explicit_key['test1'] = 'test1'
+#     el.dict_explicit_key['test2'] = 'test2'
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
+#     assert xml.startswith(b'<test:DictElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:map_explicit_key key="test1">test1</test:map_explicit_key>' in xml
-#     assert b'<test:map_explicit_key key="test2">test2</test:map_explicit_key>' in xml
+#     assert b'<test:dict_explicit_key key="test1">test1</test:dict_explicit_key>' in xml
+#     assert b'<test:dict_explicit_key key="test2">test2</test:dict_explicit_key>' in xml
 #
-# def test_produce_map_key_implicit():
-#     el = MapElementFixture()
-#     el.map_implicit_key['test1'] = 'test1'
-#     el.map_implicit_key['test2'] = 'test2'
+# def test_produce_dict_key_implicit():
+#     el = DictElementFixture()
+#     el.dict_implicit_key['test1'] = 'test1'
+#     el.dict_implicit_key['test2'] = 'test2'
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
+#     assert xml.startswith(b'<test:DictElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:map_implicit_key id="test1">test1</test:map_implicit_key>' in xml
-#     assert b'<test:map_implicit_key id="test2">test2</test:map_implicit_key>' in xml
+#     assert b'<test:dict_implicit_key id="test1">test1</test:dict_implicit_key>' in xml
+#     assert b'<test:dict_implicit_key id="test2">test2</test:dict_implicit_key>' in xml
 #
-# def test_produce_map_value_nil():
-#     el = MapElementFixture()
-#     el.map_value_nil['test1'] = None
-#     el.map_value_nil['test2'] = 'test2'
+# def test_produce_dict_value_nil():
+#     el = DictElementFixture()
+#     el.dict_value_nil['test1'] = None
+#     el.dict_value_nil['test2'] = 'test2'
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
+#     assert xml.startswith(b'<test:DictElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
-#     assert b'<test:map_value_nil id="test1" xsi:nil="true" />' in xml
-#     assert b'<test:map_value_nil id="test2">test2</test:map_value_nil>' in xml
+#     assert b'<test:dict_value_nil id="test1" xsi:nil="true" />' in xml
+#     assert b'<test:dict_value_nil id="test2">test2</test:dict_value_nil>' in xml
 #
-# def test_produce_map_value_attr():
-#     el = MapElementFixture()
-#     el.map_value_attr['test1'] = 'test1'
-#     el.map_value_attr['test2'] = 'test2'
-#
-#     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
-#     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:map_value_attr id="test1" value="test1" />' in xml
-#     assert b'<test:map_value_attr id="test2" value="test2" />' in xml
-#
-# def test_produce_map_value_type():
-#     el = MapElementFixture()
-#     el.map_value_type['test1'] = 'test1'
-#     el.map_value_type['test2'] = 'test2'
+# def test_produce_dict_value_attr():
+#     el = DictElementFixture()
+#     el.dict_value_attr['test1'] = 'test1'
+#     el.dict_value_attr['test2'] = 'test2'
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
+#     assert xml.startswith(b'<test:DictElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:map_value_type id="test1">test1</test:map_value_type>' in xml
-#     assert b'<test:map_value_type id="test2">test2</test:map_value_type>' in xml
+#     assert b'<test:dict_value_attr id="test1" value="test1" />' in xml
+#     assert b'<test:dict_value_attr id="test2" value="test2" />' in xml
 #
-# def test_produce_map_value_class():
-#     el = MapElementFixture()
-#     el.map_value_class['test1'] = MappableElementFixture(value='text1', tag_name='map_value_class')
-#     el.map_value_class['test1'].tag = 'blue'
-#     el.map_value_class['test2'] = MappableElementFixture(value='text2', tag_name='map_value_class')
-#     el.map_value_class['test2'].tag = 'red'
+# def test_produce_dict_value_type():
+#     el = DictElementFixture()
+#     el.dict_value_type['test1'] = 'test1'
+#     el.dict_value_type['test2'] = 'test2'
 #
 #     xml = el.produce()
-#     assert xml.startswith(b'<test:MapElementFixture')
+#     assert xml.startswith(b'<test:DictElementFixture')
 #     assert b'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert b'<test:map_value_class id="test1" tag="blue">text1</test:map_value_class>' in xml
-#     assert b'<test:map_value_class id="test2" tag="red">text2</test:map_value_class>' in xml
+#     assert b'<test:dict_value_type id="test1">test1</test:dict_value_type>' in xml
+#     assert b'<test:dict_value_type id="test2">test2</test:dict_value_type>' in xml
+#
+# def test_produce_dict_value_class():
+#     el = DictElementFixture()
+#     el.dict_value_class['test1'] = DictValueElementFixture(value='text1', tag_name='dict_value_class')
+#     el.dict_value_class['test1'].tag = 'blue'
+#     el.dict_value_class['test2'] = DictValueElementFixture(value='text2', tag_name='dict_value_class')
+#     el.dict_value_class['test2'].tag = 'red'
+#
+#     xml = el.produce()
+#     assert xml.startswith(b'<test:DictElementFixture')
+#     assert b'xmlns:test="http://jaymes.biz/test"' in xml
+#     assert b'<test:dict_value_class id="test1" tag="blue">text1</test:dict_value_class>' in xml
+#     assert b'<test:dict_value_class id="test2" tag="red">text2</test:dict_value_class>' in xml
 
 def test_load_attribute_value_in_enum():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>bravo</test:EnumValue></test:RootFixture>'
@@ -779,3 +779,8 @@ def test_load_attribute_value_not_matches_pattern():
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
+
+def test_dict_children():
+    model = DictElementFixture()
+    model.dict_value_type['test'] = 'test'
+    assert model._children == ['test']

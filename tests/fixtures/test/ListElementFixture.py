@@ -15,9 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from scap.model.xlink.Simple import Simple
+from expatriate.model.Model import Model
 from expatriate.model.decorators import *
 from expatriate.model.types import *
+from .EnclosedFixture import EnclosedFixture
 
-class XLinkFixture(Simple):
+@element(local_name='list_nil', list='list_nil', nillable=True, cls=EnclosedFixture, min=0)
+@element(local_name='list_type', list='list_type', type=DecimalType, min=0)
+@element(local_name='list_class', list='list_class', cls=EnclosedFixture, min=0)
+class ListElementFixture(Model):
     pass

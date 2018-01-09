@@ -32,9 +32,6 @@ from fixtures.test.AttributeFixture import AttributeFixture
 from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
 from fixtures.test.WildcardElementNotInFixture import WildcardElementNotInFixture
 from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
-from fixtures.test.AppendElementFixture import AppendElementFixture
-from fixtures.test.MapElementFixture import MapElementFixture
-from fixtures.test.MappableElementFixture import MappableElementFixture
 from fixtures.test.InitFixture import InitFixture
 from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
 from fixtures.test.InheritingFixture import InheritingFixture
