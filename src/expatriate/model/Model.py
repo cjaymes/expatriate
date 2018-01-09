@@ -16,12 +16,13 @@
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
 import expatriate
-import publishsubscribe
 import importlib
 import logging
 import os.path
 import re
 import sys
+
+from publishsubscribe import Subscriber
 
 from .decorators import *
 from .exceptions import *
@@ -39,7 +40,7 @@ logger = logging.getLogger(__name__)
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='schemaLocation', type=('expatriate.model.xs.AnyUriType', 'AnyUriType'), into='_xsi_schemaLocation')
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='noNamespaceSchemaLocation', type=('expatriate.model.xs.AnyUriType', 'AnyUriType'), into='_xsi_noNamespaceSchemaLocation')
 @content()
-class Model(object):
+class Model(Subscriber):
     ANY_NAMESPACE = '*'
     ANY_LOCAL_NAME = '*'
 
@@ -341,6 +342,7 @@ class Model(object):
 
     def __init__(self):
         self._parent = None
+        self._children = []
 
         # initialize attribute values
         for mapper in self._get_attribute_mappers():
@@ -355,6 +357,20 @@ class Model(object):
         self._content = []
         for mapper in self._get_content_mappers():
             mapper.initialize(self)
+
+    def data_added(self, publisher, additions):
+        ''' Receive notification from a Publisher when data has been added '''
+        for i in additions:
+            self._children.append(publisher[i])
+
+    def data_updated(self, publisher, updates):
+        ''' Receive notification from a Publisher when data has been updated '''
+        pass
+
+    def data_deleted(self, publisher, deletions):
+        ''' Receive notification from a Publisher when data has been deleted '''
+        for i in additions:
+            self._children.append(publisher[i])
 
     def is_nil(self):
         '''

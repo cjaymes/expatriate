@@ -18,6 +18,7 @@
 import importlib
 import logging
 import re
+from publishsubscribe import PublishingDict, PublishingList
 
 from .exceptions import *
 from .Mapper import Mapper
@@ -109,11 +110,14 @@ class ElementMapper(Mapper):
         name = self._get_attr_name()
 
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
-            value = list()
+            value = PublishingList()
+            value.subscribe(model)
         elif 'list' in self._kwargs:
-            value = list()
+            value = PublishingList()
+            value.subscribe(model)
         elif 'dict' in self._kwargs:
-            value = dict()
+            value = PublishingDict()
+            value.subscribe(model)
         else:
             value = None
 
