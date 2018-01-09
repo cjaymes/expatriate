@@ -784,3 +784,8 @@ def test_dict_children():
     model = DictElementFixture()
     model.dict_value_type['test'] = 'test'
     assert model._children == ['test']
+
+def test_list_children():
+    model = ListElementFixture()
+    model.list_type.append(3.5)
+    assert model._children == [3.5]
