@@ -86,8 +86,6 @@ class AttributeMapper(Mapper):
 
         setattr(model, attr_name, default_value)
 
-        model._attribute_counts[attr_name] = 0
-
         logger.debug('Initialized ' + str(model) + ' attribute ' + attr_name
             + ' to default ' + str(default_value))
 
@@ -142,11 +140,9 @@ class AttributeMapper(Mapper):
 
         setattr(model, name, value)
 
-        model._attribute_counts[name] += 1
-
     def validate(self, model):
         name = self._get_attr_name()
-        logger.debug('Validating attribute ' + str(self._kwargs) + ' count: ' + str(model._attribute_counts[name]))
+        logger.debug('Validating attribute ' + str(self._kwargs))
 
         name = self._kwargs['local_name']
 
@@ -154,7 +150,10 @@ class AttributeMapper(Mapper):
         if (
             'required' in self._kwargs
             and self._kwargs['required']
-            and model._attribute_counts[name] <= 0
+            and (
+                not hasattr(model, name)
+                or getattr(model, name) is None
+            )
         ):
             raise RequiredAttributeException(str(model) + ' must define ' + name + ' attribute')
 
@@ -162,7 +161,7 @@ class AttributeMapper(Mapper):
         if (
             'prohibited' in self._kwargs
             and self._kwargs['prohibited']
-            and model._attribute_counts[name] > 0
+            and hasattr(model, name)
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')
 

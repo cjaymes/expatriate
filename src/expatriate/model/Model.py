@@ -16,6 +16,7 @@
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
 import expatriate
+import publishsubscribe
 import importlib
 import logging
 import os.path
@@ -340,8 +341,6 @@ class Model(object):
 
     def __init__(self):
         self._parent = None
-        self._attribute_counts = {}
-        self._element_counts = {}
 
         # initialize attribute values
         for mapper in self._get_attribute_mappers():

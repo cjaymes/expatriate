@@ -122,8 +122,6 @@ class ElementMapper(Mapper):
             logger.debug('Initializing ' + str(self) + ' '+ name + ' to ' + str(value))
             setattr(model, name, value)
 
-        model._element_counts[name] = 0
-
     def get_namespace(self):
         if 'namespace' in self._kwargs:
             return self._kwargs['namespace']
@@ -373,8 +371,6 @@ class ElementMapper(Mapper):
             raise UnknownElementException(str(model) + ' could not parse '
                 + str(el) + ' element')
 
-        model._element_counts[name] += 1
-
     def validate(self, model):
         from .Model import Model
 
@@ -416,11 +412,7 @@ class ElementMapper(Mapper):
         name = self._get_attr_name()
         attr = getattr(model, name)
 
-        pass
-        # child = self._children_values[child_index]
-        # self._kwargs = self._children_self._kwargss[child_index]
-        #
-        # logger.debug(str(self) + ' producing ' + str(child) + ' according to ' + str(self._kwargs))
+        logger.debug(str(self) + ' producing ' + str(model) + ' according to ' + str(self._kwargs))
         # if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
         #     if 'type' in self._kwargs and child.local_name is None:
         #         raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
