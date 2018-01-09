@@ -37,3 +37,6 @@ class Mapper(object):
 
     def validate(self, model):
         raise NotImplementedError
+
+    def produce_in(self, el, model):
+        raise NotImplementedError

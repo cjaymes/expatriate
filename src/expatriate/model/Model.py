@@ -348,15 +348,22 @@ class Model(Subscriber):
         for mapper in self._get_attribute_mappers():
             mapper.initialize(self)
 
-        # initialize elements; if subclass defined the corresponding attribute,
-        # we don't re-define
-        for mapper in self._get_element_mappers():
-            mapper.initialize(self)
+    def __setattr__(self, name, value):
+        '''
+        setattr override to keep track of indexes etc.
+        '''
 
-        # initialize content
-        self._content = []
-        for mapper in self._get_content_mappers():
-            mapper.initialize(self)
+        for mapper in self._get_attribute_mappers():
+            if mapper.get_attr_name() == name:
+                mapper.setattr(self, name, value)
+                return
+
+        for mapper in self._get_element_mappers():
+            if mapper.get_attr_name() == name:
+                mapper.setattr(self, name, value)
+                return
+
+        object.__setattr__(self, name, value)
 
     def data_added(self, publisher, id_, item):
         ''' Receive notification from a Publisher when data has been added '''

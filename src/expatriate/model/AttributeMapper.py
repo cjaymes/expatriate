@@ -70,14 +70,14 @@ class AttributeMapper(Mapper):
 
         super().__init__(**kwargs)
 
-    def _get_attr_name(self):
+    def get_attr_name(self):
         if 'into' in self._kwargs:
             return self._kwargs['into']
         else:
             return self._kwargs['local_name'].replace('-', '_')
 
     def initialize(self, model):
-        attr_name = self._get_attr_name()
+        attr_name = self.get_attr_name()
 
         if 'default' in self._kwargs:
             default_value = self._kwargs['default']
@@ -118,7 +118,7 @@ class AttributeMapper(Mapper):
     def parse_in(self, model, attr):
         logger.debug('Parsing attribute ' + attr.name + ' using kwargs: ' + str(self._kwargs))
 
-        name = self._get_attr_name()
+        name = self.get_attr_name()
         value = attr.value
 
         if 'enum' in self._kwargs and value not in self._kwargs['enum']:
@@ -141,7 +141,7 @@ class AttributeMapper(Mapper):
         setattr(model, name, value)
 
     def validate(self, model):
-        name = self._get_attr_name()
+        name = self.get_attr_name()
         logger.debug('Validating attribute ' + str(self._kwargs))
 
         name = self._kwargs['local_name']
@@ -164,6 +164,9 @@ class AttributeMapper(Mapper):
             and hasattr(model, name)
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')
+
+    def setattr(self, model, name, value):
+        object.__setattr__(model, name, value)
 
     def produce_in(self, el, model):
         pass

@@ -86,7 +86,7 @@ class ElementMapper(Mapper):
 
         super().__init__(**kwargs)
 
-    def _get_attr_name(self):
+    def get_attr_name(self):
         from .Model import Model
 
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
@@ -107,7 +107,7 @@ class ElementMapper(Mapper):
     def initialize(self, model):
         from .Model import Model
 
-        name = self._get_attr_name()
+        name = self.get_attr_name()
 
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
             value = PublishingList()
@@ -138,7 +138,7 @@ class ElementMapper(Mapper):
     def find_reference_in(self, ref, model):
         from .Model import Model
 
-        name = self._get_attr_name()
+        name = self.get_attr_name()
         attr = getattr(model, name)
 
         logger.debug('Looking for reference ' + ref + ' in ' + name + ' of ' + str(model))
@@ -202,7 +202,7 @@ class ElementMapper(Mapper):
 
         logger.debug('Parsing element ' + el.name + ' using kwargs: ' + str(self._kwargs))
 
-        name = self._get_attr_name()
+        name = self.get_attr_name()
 
         if 'ignore' in self._kwargs and self._kwargs['ignore'] == True:
             logger.debug('Ignoring ' + name + ' element in ' + str(model))
@@ -378,7 +378,7 @@ class ElementMapper(Mapper):
     def validate(self, model):
         from .Model import Model
 
-        name = self._get_attr_name()
+        name = self.get_attr_name()
 
         min_ = 1
         if (
@@ -412,8 +412,11 @@ class ElementMapper(Mapper):
                 + str((self.get_namespace(), self.get_local_name()))
                 + ' elements')
 
+    def setattr(self, model, name, value):
+        object.__setattr__(model, name, value)
+
     def produce_in(self, el, model):
-        name = self._get_attr_name()
+        name = self.get_attr_name()
         attr = getattr(model, name)
 
         logger.debug(str(self) + ' producing ' + str(model) + ' according to ' + str(self._kwargs))
