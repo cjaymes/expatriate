@@ -633,24 +633,24 @@ def test_produce_wildcard_not_in():
     assert '<test:wildcard_element' in xml
     assert '<test2:wildcard_element' in xml
 
-# def test_produce_wildcard_in():
-#     model = WildcardElementInFixture()
-#     model.test_elements.append(EnclosedFixture(tag_name='wildcard_element'))
-#     model.elements.append(EnclosedFixture2(tag_name='wildcard_element'))
-#
-#     xml = model.produce()
-#     assert xml.startswith('<test:WildcardElementInFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert 'xmlns:test2="http://jaymes.biz/test2"' in xml
-#     assert '<test:wildcard_element' in xml
-#     assert '<test2:wildcard_element' in xml
-#
+def test_produce_wildcard_in():
+    model = WildcardElementInFixture(local_name='WildcardElementInFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.test_elements.append(EnclosedFixture(local_name='wildcard_element'))
+    model.elements.append(EnclosedFixture2(local_name='wildcard_element'))
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:WildcardElementInFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert 'xmlns:test2="http://jaymes.biz/test2"' in xml
+    assert '<test:wildcard_element' in xml
+    assert '<test2:wildcard_element' in xml
+
 # def test_produce_list_nil():
 #     model = ListElementFixture()
 #     model.list_nil.append(None)
-#     model.list_nil.append(EnclosedFixture(value='test', tag_name='list_nil'))
+#     model.list_nil.append(EnclosedFixture(value='test', local_name='list_nil'))
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:ListElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
@@ -662,7 +662,7 @@ def test_produce_wildcard_not_in():
 #     model.list_type.append(1.1)
 #     model.list_type.append(1.2)
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:ListElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:list_type>1.1</test:list_type>' in xml
@@ -670,10 +670,10 @@ def test_produce_wildcard_not_in():
 #
 # def test_produce_list_class():
 #     model = ListElementFixture()
-#     model.list_class.append(EnclosedFixture(value='test1', tag_name='list_class'))
-#     model.list_class.append(EnclosedFixture(value='test2', tag_name='list_class'))
+#     model.list_class.append(EnclosedFixture(value='test1', local_name='list_class'))
+#     model.list_class.append(EnclosedFixture(value='test2', local_name='list_class'))
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:ListElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:list_class>test1</test:list_class>' in xml
@@ -684,7 +684,7 @@ def test_produce_wildcard_not_in():
 #     model.dict_explicit_key['test1'] = 'test1'
 #     model.dict_explicit_key['test2'] = 'test2'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:dict_explicit_key key="test1">test1</test:dict_explicit_key>' in xml
@@ -695,7 +695,7 @@ def test_produce_wildcard_not_in():
 #     model.dict_implicit_key['test1'] = 'test1'
 #     model.dict_implicit_key['test2'] = 'test2'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:dict_implicit_key id="test1">test1</test:dict_implicit_key>' in xml
@@ -706,7 +706,7 @@ def test_produce_wildcard_not_in():
 #     model.dict_value_nil['test1'] = None
 #     model.dict_value_nil['test2'] = 'test2'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
@@ -718,7 +718,7 @@ def test_produce_wildcard_not_in():
 #     model.dict_value_attr['test1'] = 'test1'
 #     model.dict_value_attr['test2'] = 'test2'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:dict_value_attr id="test1" value="test1" />' in xml
@@ -729,7 +729,7 @@ def test_produce_wildcard_not_in():
 #     model.dict_value_type['test1'] = 'test1'
 #     model.dict_value_type['test2'] = 'test2'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:dict_value_type id="test1">test1</test:dict_value_type>' in xml
@@ -737,39 +737,39 @@ def test_produce_wildcard_not_in():
 #
 # def test_produce_dict_value_class():
 #     model = DictElementFixture()
-#     model.dict_value_class['test1'] = DictValueElementFixture(value='text1', tag_name='dict_value_class')
+#     model.dict_value_class['test1'] = DictValueElementFixture(value='text1', local_name='dict_value_class')
 #     model.dict_value_class['test1'].tag = 'blue'
-#     model.dict_value_class['test2'] = DictValueElementFixture(value='text2', tag_name='dict_value_class')
+#     model.dict_value_class['test2'] = DictValueElementFixture(value='text2', local_name='dict_value_class')
 #     model.dict_value_class['test2'].tag = 'red'
 #
-#     xml = model.produce()
+#     xml = model.produce().produce()
 #     assert xml.startswith('<test:DictElementFixture')
 #     assert 'xmlns:test="http://jaymes.biz/test"' in xml
 #     assert '<test:dict_value_class id="test1" tag="blue">text1</test:dict_value_class>' in xml
 #     assert '<test:dict_value_class id="test2" tag="red">text2</test:dict_value_class>' in xml
 
 # def test_in_and_out():
-#     test_xml = b'<test:InitFixture xmlns:test="http://jaymes.biz/test" xmlns:test2="http://jaymes.biz/test2">' + \
-#         b'<test:list id="test1" />' + \
-#         b'<test:list id="test2" />' + \
-#         b'<test:list id="test3" />' + \
-#         b'<test:dict id="test4" />' + \
-#         b'<test:dict id="test5" />' + \
-#         b'<test:dict id="test6" />' + \
-#         b'<test:dict id="test7" />' + \
-#         b'<test:dict id="test8" />' + \
-#         b'<test:in_test id="test9" />' + \
-#         b'<test:dash-test id="test10" />' + \
-#         b'<test2:wildcard_element id="test11" />' + \
-#         b'<test:wildcard_element id="test12" />' + \
-#         b'<test:dict id="test13" />' + \
-#         b'<test:list id="test14" />' + \
-#         b'</test:InitFixture>'
+#     test_xml = '<test:InitFixture xmlns:test="http://jaymes.biz/test" xmlns:test2="http://jaymes.biz/test2">' + \
+#         '<test:list id="test1" />' + \
+#         '<test:list id="test2" />' + \
+#         '<test:list id="test3" />' + \
+#         '<test:dict id="test4" />' + \
+#         '<test:dict id="test5" />' + \
+#         '<test:dict id="test6" />' + \
+#         '<test:dict id="test7" />' + \
+#         '<test:dict id="test8" />' + \
+#         '<test:in_test id="test9" />' + \
+#         '<test:dash-test id="test10" />' + \
+#         '<test2:wildcard_element id="test11" />' + \
+#         '<test:wildcard_element id="test12" />' + \
+#         '<test:dict id="test13" />' + \
+#         '<test:list id="test14" />' + \
+#         '</test:InitFixture>'
 #     doc = expatriate.Document()
 #     doc.parse(test_xml)
 #     model = Model.load(None, doc.root_element)
 #
-#     out_xml = model.produce()
+#     out_xml = model.produce().produce()
 #     print(test_xml)
 #     print(out_xml)
 #     assert out_xml == test_xml
