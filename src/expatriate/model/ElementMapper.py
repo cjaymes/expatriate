@@ -413,13 +413,42 @@ class ElementMapper(Mapper):
                 + ' elements')
 
     def setattr(self, model, name, value):
-        object.__setattr__(model, name, value)
+        from .Model import Model
+
+        if not hasattr(model, '_initialized'):
+            object.__setattr__(model, name, value)
+            return
+
+        if (
+            'list' in self._kwargs
+            or self.get_local_name() == Model.ANY_LOCAL_NAME
+        ):
+            # wrap in PublishingList; updates are captured via Publisher
+            object.__setattr__(model, name, PublishingList(value))
+        elif 'dict' in self._kwargs:
+            # wrap in PublishingDict; updates are captured via Publisher
+            object.__setattr__(model, name, PublishingDict(value))
+        else:
+            old_value = getattr(model, name)
+            object.__setattr__(model, name, value)
+            if old_value is None and value is None:
+                pass
+            elif old_value is None and value is not None:
+                model.data_added(value, None, value)
+            elif old_value is not None and value is None:
+                model.data_deleted(value, None, value)
+            else: # old_value is not None and value is not None
+                model.data_updated(value, None, old_value, value)
 
     def produce_in(self, el, model):
+        from .Model import Model
+
         name = self.get_attr_name()
         attr = getattr(model, name)
 
-        logger.debug(str(self) + ' producing ' + str(model) + ' according to ' + str(self._kwargs))
+        logger.debug(str(self) + ' producing ' + str(model) + ' element '
+            + name  +' according to ' + str(self._kwargs))
+
         # if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
         #     if 'type' in self._kwargs and child.local_name is None:
         #         raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')

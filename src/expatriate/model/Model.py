@@ -75,7 +75,9 @@ class Model(Subscriber):
     _ns_count = 0
 
     _attribute_mappers = {}
+    _attribute_mapper_cache = {}
     _element_mappers = {}
+    _element_mapper_cache = {}
     _element_mapper_order = {}
     _content_mappers = {}
 
@@ -118,19 +120,20 @@ class Model(Subscriber):
         get all the attribute definitions for a model class
         '''
 
-        mappers = []
+        if cls.__name__ not in Model._attribute_mapper_cache:
+            mappers = []
 
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Adding attribute mappers from superclass '
-                        + cls_.__name__)
-                    mappers.extend(cls_._attribute_mappers[cls_.__name__])
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__
-                        + ' does not define attributes')
+            for cls_ in reversed(cls.__mro__):
+                if issubclass(cls_, Model):
+                    try:
+                        logger.debug('Adding attribute mappers from superclass '
+                            + cls_.__name__)
+                        mappers.extend(cls_._attribute_mappers[cls_.__name__])
+                    except KeyError:
+                        pass
+            Model._attribute_mapper_cache[cls.__name__] = mappers
 
-        return mappers
+        return Model._attribute_mapper_cache[cls.__name__]
 
     @classmethod
     def _add_attribute_mapper(cls, mapper):
@@ -150,19 +153,21 @@ class Model(Subscriber):
         get all the element definitions for a model class
         '''
 
-        mappers = []
+        if cls.__name__ not in Model._element_mapper_cache:
+            mappers = []
 
-        for cls_ in reversed(cls.__mro__):
-            if issubclass(cls_, Model):
-                try:
-                    logger.debug('Adding element mappers from superclass '
-                        + cls_.__name__)
-                    mappers.extend(cls_._element_mappers[cls_.__name__])
-                except KeyError:
-                    logger.debug('Class ' + cls_.__name__
-                        + ' does not define elements')
+            for cls_ in reversed(cls.__mro__):
+                if issubclass(cls_, Model):
+                    try:
+                        logger.debug('Adding element mappers from superclass '
+                            + cls_.__name__)
+                        mappers.extend(cls_._element_mappers[cls_.__name__])
+                    except KeyError:
+                        pass
 
-        return mappers
+            Model._element_mapper_cache[cls.__name__] = mappers
+
+        return Model._element_mapper_cache[cls.__name__]
 
     @classmethod
     def _add_element_mapper(cls, mapper):
@@ -354,31 +359,53 @@ class Model(Subscriber):
         content_mappers = self._get_content_mappers()
         for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.initialize(self)
+        self._initialized = True
 
     def __setattr__(self, name, value):
         '''
         setattr override to keep track of indexes etc.
         '''
 
-        for mapper in itertools.chain(self._get_attribute_mappers(), self._get_element_mappers()):
+        if not hasattr(self, '_initialized'):
+            object.__setattr__(self, name, value)
+            return
+
+        el_mappers = self._get_element_mappers()
+        for mapper in itertools.chain(el_mappers):
             if mapper.get_attr_name() == name:
                 mapper.setattr(self, name, value)
                 return
 
         object.__setattr__(self, name, value)
 
+    def _attr_name_from_publisher(self, publisher):
+        for k, v in self.__dict__.items():
+            if publisher == v:
+                return k
+        raise AttributeError('Attribute matching ' + str(publisher) + ' not found')
+
     def data_added(self, publisher, id_, item):
         ''' Receive notification from a Publisher when data has been added '''
-        self._children.append(item)
+        pub_name = self._attr_name_from_publisher(publisher)
+        self._children.append((pub_name, id_))
 
     def data_updated(self, publisher, id_, old_item, new_item):
         ''' Receive notification from a Publisher when data has been updated '''
-        self._children.remove(old_item)
-        self._children.append(new_item)
+        pass
 
     def data_deleted(self, publisher, id_, item):
         ''' Receive notification from a Publisher when data has been deleted '''
-        self._children.remove(item)
+        pub_name = self._attr_name_from_publisher(publisher)
+        self._children.remove((pub_name, id_))
+        if isinstance(publisher, list):
+            # need to update the list indexes
+            new_children = []
+            for attr_name, idx in self._children:
+                if pub_name == attr_name and isinstance(idx, int) and idx > id_:
+                    new_children.append((attr_name, idx -1))
+                else:
+                    new_children.append((attr_name, idx))
+            object.__setattr__(self, '_children', new_children)
 
     def is_nil(self):
         '''
@@ -525,276 +552,3 @@ class Model(Subscriber):
             mapper.produce_in(el, self)
 
         return el
-
-    #     for (namespace, local_name), el_def in self._get_element_mappers().items():
-    #         if el_def['local_name'] == Model.ANY_LOCAL_NAME:
-    #             if 'into' in el_def:
-    #                 lst = getattr(self, el_def['into'])
-    #             else:
-    #                 lst = getattr(self, '_elements')
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(lst):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(lst)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #         elif 'list' in el_def:
-    #             lst = getattr(self, el_def['list'])
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(lst):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(lst)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(lst)) + ' found')
-    #
-    #         elif 'dict' in el_def:
-    #             dct = getattr(self, el_def['dict'])
-    #
-    #             # check minimum element count
-    #             if 'min' in el_def and el_def['min'] > len(dct):
-    #                 raise MinimumElementException(str(self)
-    #                     + ' must have at least ' + str(el_def['min']) + ' '
-    #                     + el_def['local_name'] + ' elements; '
-    #                     + str(len(dct)) + ' found')
-    #
-    #             # check maximum element count
-    #             if (
-    #                 'max' in el_def
-    #                 and el_def['max'] is not None
-    #                 and el_def['max'] < len(dct)
-    #             ):
-    #                 raise MaximumElementException(str(self)
-    #                     + ' may have at most ' + str(el_def['max'])
-    #                     + ' ' + el_def['local_name'] + ' elements; '
-    #                     + str(len(dct)) + ' found')
-    #
-    #     for i in range(0, len(self._children_values)):
-    #         self._produce_child(i, el)
-    #
-    #     el.text = self.produce_value(self.get_value())
-    #
-    #     if self.tail is not None:
-    #         el.tail = str(self.tail)
-    #
-    #     return el
-    #
-    # def _produce_attribute(self, el, namespace, local_name, at_def):
-    #     '''
-    #     produce an attribute for xml
-    #     '''
-    #     if local_name == Model.ANY_LOCAL_NAME:
-    #         return
-    #
-    #     if 'into' in at_def:
-    #         value_name = at_def['into']
-    #     else:
-    #         value_name = local_name.replace('-', '_')
-    #
-    #     if not hasattr(self, value_name):
-    #         if 'required' in at_def and at_def['required']:
-    #             raise RequiredAttributeException(str(self)
-    #                 + ' must assign required attribute ' + local_name)
-    #         elif 'prohibited' in at_def and at_def['prohibited']:
-    #             logger.debug('Skipping prohibited attribute ' + local_name)
-    #             return
-    #         else:
-    #             logger.debug('Skipping undefined attribute ' + local_name)
-    #             return
-    #     else:
-    #         if 'prohibited' in at_def and at_def['prohibited']:
-    #             raise ProhibitedAttributeException(str(self)
-    #                 + ' must not assign prohibited attribute '
-    #                 + local_name)
-    #         value = getattr(self, value_name)
-    #
-    #     # TODO nillable for attrs?
-    #     if value is None:
-    #         if 'required' in at_def and at_def['required']:
-    #             raise RequiredAttributeException(str(self)
-    #                 + ' must assign required attribute ' + local_name)
-    #         else:
-    #             logger.debug(str(self) + ' Skipping unassigned attribute '
-    #                 + local_name)
-    #             return
-    #
-    #     if 'default' in at_def and value == at_def['default']:
-    #         logger.debug('Skipping attribute ' + local_name
-    #             + '; remains at default ' + str(at_def['default']))
-    #         return
-    #
-    #     # # if model's namespace doesn't match attribute's, then we need to include it
-    #     # if namespace is not None and self.namespace != namespace:
-    #     #     attr_name = name
-    #
-    #     if 'type' in at_def:
-    #         logger.debug(str(self) + ' Producing ' + str(value) + ' as '
-    #             + at_def['type'] + ' type')
-    #         type_ = at_def['type']()
-    #         v = type_.produce_value(value)
-    #
-    #         el.set(attr_name, v)
-    #
-    #     elif 'enum' in at_def:
-    #         if value not in at_def['enum']:
-    #             raise EnumerationException(str(self) + '.' + name
-    #                 + ' attribute must be one of ' + str(at_def['enum'])
-    #                 + ': ' + str(value))
-    #         el.set(attr_name, value)
-    #
-    #     else:
-    #         # otherwise, we default to producing as string
-    #         logger.debug(str(self) + ' Producing ' + str(value)
-    #             + ' as String type')
-    #         type_ = StringType()
-    #         v = type_.produce_value(value)
-    #         el.set(attr_name, v)
-    #
-    # def _produce_child(self, child_index, el):
-    #     '''
-    #     produce child element for xml
-    #     '''
-    #
-    #     child = self._children_values[child_index]
-    #     el_def = self._children_el_defs[child_index]
-    #
-    #     logger.debug(str(self) + ' producing ' + str(child) + ' according to ' + str(el_def))
-    #     if el_def['local_name'] == Model.ANY_LOCAL_NAME:
-    #         if 'type' in el_def and child.local_name is None:
-    #             raise ValueError('Unable to produce wildcard elements with only "type" in the model map, because local_name is not defined')
-    #
-    #         # TODO nillable
-    #         el.append(child.produce())
-    #
-    #     elif 'list' in el_def:
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #
-    #         if 'type' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 # wrap value in xs element
-    #                 class_ = el_def['type']
-    #                 child = class_(namespace=namespace, local_name=local_name, value=child)
-    #                 el.append(child.produce())
-    #         elif 'class' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 el.append(child.produce())
-    #
-    #         else:
-    #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
-    #
-    #     elif 'dict' in el_def:
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #
-    #         # TODO: implement key_element as well
-    #         key_name = 'id'
-    #         if 'key' in el_def:
-    #             key_name = el_def['key']
-    #
-    #         if 'type' in el_def:
-    #             sub_el = expatriate.Element(local_name, namespace=namespace)
-    #             sub_el.set(key_name, self._children_keys[child_index])
-    #             if 'value_attr' in el_def:
-    #                 if child is None:
-    #                     raise ValueError(str(self) + ' Cannot have none for a value_attr: ' + el_def['dict'] + '[' + self._children_keys[child_index] + ']')
-    #                 type_ = el_def['type']()
-    #                 value = type_.produce_value(child)
-    #                 sub_el.set(el_def['value_attr'], value)
-    #             else:
-    #                 if child is None:
-    #                     sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 else:
-    #                     type_ = el_def['type']()
-    #                     sub_el.text = type_.produce_value(child)
-    #             el.append(sub_el)
-    #
-    #         elif 'class' in el_def:
-    #             if child is None:
-    #                 sub_el = expatriate.Element(local_name, namespace=namespace)
-    #                 sub_el.set(key_name, self._children_keys[child_index])
-    #                 sub_el.set('{http://www.w3.org/2001/XMLSchema-instance}nil', 'true')
-    #                 el.append(sub_el)
-    #             else:
-    #                 setattr(child, key_name, self._children_keys[child_index])
-    #                 el.append(child.produce())
-    #
-    #         else:
-    #             raise ValueError('"class" or "type" must be defined for "list" and "dict" model mapping')
-    #
-    #     elif 'class' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         el.append(child.produce())
-    #
-    #     elif 'type' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #         class_ = el_def['type']
-    #         child = class_(namespace=namespace, local_name=local_name, value=child)
-    #
-    #         el.append(child.produce())
-    #
-    #     elif 'enum' in el_def:
-    #         if child is None:
-    #             return
-    #
-    #         if child not in el_def['enum']:
-    #             raise EnumerationException(str(namespace, local_name) + ' value must be one of ' + str(el_def['enum']))
-    #
-    #         if 'namespace' in el_def:
-    #             namespace = el_def['namespace']
-    #         else:
-    #             namespace = self.namespace
-    #         local_name = el_def['local_name']
-    #         child = String(namespace=namespace, local_name=local_name, value=child)
-    #
-    #         el.append(child.produce())
-    #
-    #     else:
-    #         raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')

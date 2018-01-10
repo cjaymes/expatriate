@@ -165,11 +165,14 @@ class AttributeMapper(Mapper):
         ):
             raise ProhibitedAttributeException(str(model) + ' must not define ' + name + ' attribute')
 
-    def setattr(self, model, name, value):
-        object.__setattr__(model, name, value)
-
     def produce_in(self, el, model):
-        pass
+        from .Model import Model
+        name = self.get_attr_name()
+        attr = getattr(model, name)
+
+        logger.debug(str(self) + ' producing ' + str(model) + ' attribute '
+            + name + ' according to ' + str(self._kwargs))
+
     #     if local_name == Model.ANY_LOCAL_NAME:
     #         return
     #

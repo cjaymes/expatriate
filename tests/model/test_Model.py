@@ -780,12 +780,26 @@ def test_load_attribute_value_not_matches_pattern():
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
-def test_dict_children():
+def test_children_dict():
     model = DictElementFixture()
     model.dict_value_type['test'] = 'test'
-    assert model._children == ['test']
+    assert model._children == [('dict_value_type', 'test')]
 
-def test_list_children():
+def test_children_list():
     model = ListElementFixture()
     model.list_type.append(3.5)
-    assert model._children == [3.5]
+    assert model._children == [('list_type', 0)]
+
+def test_children_list_ordering():
+    model = ListElementFixture()
+    model.list_type.append(1.1)
+    model.list_type.append(2.2)
+    model.list_type.append(3.3)
+    model.list_type.append(4.4)
+    model.list_type.remove(2.2)
+    assert model._children == [('list_type', 0), ('list_type', 1), ('list_type', 2)]
+
+def test_children_attr():
+    model = RootFixture()
+    model.EnclosedFixture = EnclosedFixture()
+    assert model._children == [('EnclosedFixture', None)]
