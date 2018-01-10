@@ -548,7 +548,16 @@ class Model(Subscriber):
 
         el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
 
-        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
+        for mapper in itertools.chain(at_mappers, content_mappers):
             mapper.produce_in(el, self)
+
+        for attr_name, id_ in self._children:
+            for mapper in el_mappers:
+                if attr_name == mapper.get_attr_name():
+                    mapper.produce_in(el, self, id_)
+                    break # for mapper...
+            else: # for mapper
+                raise ElementMappingException('Unable to map ' + str(self)
+                    + ' attribute ' + attr_name + str([id_]) + ' to element')
 
         return el

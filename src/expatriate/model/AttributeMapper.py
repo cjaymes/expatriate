@@ -31,7 +31,7 @@ class AttributeMapper(Mapper):
 
         namespace
             The xml namespace to match. It can also be * to match any namespace.
-            If not specified, it defaults to the parent element.
+            If not specified, it defaults to the parent element's namespace.
         local_name
             Required. The local name of the xml attribute we're matching. It can
             also be * to match any local name.
@@ -167,75 +167,49 @@ class AttributeMapper(Mapper):
 
     def produce_in(self, el, model):
         from .Model import Model
+
+        if 'prohibited' in self._kwargs and self._kwargs['prohibited']:
+            return
+
         name = self.get_attr_name()
-        attr = getattr(model, name)
+        value = getattr(model, name)
+
+        if value is None:
+            return
+        if 'default' in self._kwargs and value == self._kwargs['default']:
+            return
 
         logger.debug(str(self) + ' producing ' + str(model) + ' attribute '
             + name + ' according to ' + str(self._kwargs))
 
-    #     if local_name == Model.ANY_LOCAL_NAME:
-    #         return
-    #
-    #     if 'into' in at_def:
-    #         value_name = at_def['into']
-    #     else:
-    #         value_name = local_name.replace('-', '_')
-    #
-    #     if not hasattr(self, value_name):
-    #         if 'required' in at_def and at_def['required']:
-    #             raise RequiredAttributeException(str(self)
-    #                 + ' must assign required attribute ' + local_name)
-    #         elif 'prohibited' in at_def and at_def['prohibited']:
-    #             logger.debug('Skipping prohibited attribute ' + local_name)
-    #             return
-    #         else:
-    #             logger.debug('Skipping undefined attribute ' + local_name)
-    #             return
-    #     else:
-    #         if 'prohibited' in at_def and at_def['prohibited']:
-    #             raise ProhibitedAttributeException(str(self)
-    #                 + ' must not assign prohibited attribute '
-    #                 + local_name)
-    #         value = getattr(self, value_name)
-    #
-    #     # TODO nillable for attrs?
-    #     if value is None:
-    #         if 'required' in at_def and at_def['required']:
-    #             raise RequiredAttributeException(str(self)
-    #                 + ' must assign required attribute ' + local_name)
-    #         else:
-    #             logger.debug(str(self) + ' Skipping unassigned attribute '
-    #                 + local_name)
-    #             return
-    #
-    #     if 'default' in at_def and value == at_def['default']:
-    #         logger.debug('Skipping attribute ' + local_name
-    #             + '; remains at default ' + str(at_def['default']))
-    #         return
-    #
-    #     # # if model's namespace doesn't match attribute's, then we need to include it
-    #     # if namespace is not None and self.namespace != namespace:
-    #     #     attr_name = name
-    #
-    #     if 'type' in at_def:
-    #         logger.debug(str(self) + ' Producing ' + str(value) + ' as '
-    #             + at_def['type'] + ' type')
-    #         type_ = at_def['type']()
-    #         v = type_.produce_value(value)
-    #
-    #         el.set(attr_name, v)
-    #
-    #     elif 'enum' in at_def:
-    #         if value not in at_def['enum']:
-    #             raise EnumerationException(str(self) + '.' + name
-    #                 + ' attribute must be one of ' + str(at_def['enum'])
-    #                 + ': ' + str(value))
-    #         el.set(attr_name, value)
-    #
-    #     else:
-    #         # otherwise, we default to producing as string
-    #         logger.debug(str(self) + ' Producing ' + str(value)
-    #             + ' as String type')
-    #         type_ = StringType()
-    #         v = type_.produce_value(value)
-    #         el.set(attr_name, v)
+        if local_name == Model.ANY_LOCAL_NAME:
+            return
+
+
+        # if model's namespace doesn't match attribute's, then we need to include it
+        if 'namespace' in self._kwargs and self._kwargs['namespace'] != el.namespace:
+            prefix = el.namespace_to_prefix(self._kwargs['namespace'])
+            name = prefix + ':' + name
+
+        if 'type' in self._kwargs:
+            logger.debug(str(model) + ' Producing ' + str(value) + ' as '
+                + self._kwargs['type'] + ' type')
+            type_ = self._kwargs['type']()
+            v = type_.produce_value(value)
+
+            el.attributes[name] = v
+
+        elif 'enum' in self._kwargs:
+            if value not in self._kwargs['enum']:
+                raise EnumerationException(str(model) + '.' + name
+                    + ' attribute must be one of ' + str(self._kwargs['enum'])
+                    + ': ' + str(value))
+            el.attributes[name] = value
+
+        else:
+            # otherwise, we default to producing as string
+            logger.debug(str(model) + ' Producing ' + str(value)
+                + ' as String type')
+            type_ = StringType()
+            v = type_.produce_value(value)
+            el.attributes[name] = v

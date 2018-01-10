@@ -26,17 +26,24 @@ class Mapper(object):
     def __str__(self):
         return self.__class__.__name__ + ' ' + str(self._kwargs)
 
-    def initialize(self, model):
+    def _load_cls(self, cls_):
+        if isinstance(cls_, tuple):
+            mod = importlib.import_module(cls_[0])
+            return getattr(mod, cls_[1])
+        else:
+            return cls_
+
+    def initialize(self, *args, **kwargs):
         raise NotImplementedError
 
-    def matches(self, child):
+    def matches(self, *args, **kwargs):
         raise NotImplementedError
 
-    def parse_in(self, model, child):
+    def parse_in(self, *args, **kwargs):
         raise NotImplementedError
 
-    def validate(self, model):
+    def validate(self, *args, **kwargs):
         raise NotImplementedError
 
-    def produce_in(self, el, model):
+    def produce_in(self, *args, **kwargs):
         raise NotImplementedError
