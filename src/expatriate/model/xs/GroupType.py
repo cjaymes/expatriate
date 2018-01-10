@@ -32,19 +32,19 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='*', )
 @element(local_name='any', list='tags', cls=AnyElement, min=0, max=None)
 @element(local_name='element', list='tags',
-    cls=defer_class_load('scap.model.xs.ElementType', 'ElementType'),
+    cls=('scap.model.xs.ElementType', 'ElementType'),
         min=0, max=None)
 @element(local_name='group', list='tags',
-    cls=defer_class_load('scap.model.xs.GroupType', 'GroupType'),
+    cls=('scap.model.xs.GroupType', 'GroupType'),
     min=0, max=None)
 @element(local_name='all', list='tags',
-    cls=defer_class_load('scap.model.xs.AllType', 'AllType'),
+    cls=('scap.model.xs.AllType', 'AllType'),
     min=0, max=None)
 @element(local_name='choice', list='tags',
-    cls=defer_class_load('scap.model.xs.ChoiceElement', 'ChoiceElement'),
+    cls=('scap.model.xs.ChoiceElement', 'ChoiceElement'),
     min=0, max=None)
 @element(local_name='sequence', list='tags',
-    cls=defer_class_load('scap.model.xs.GroupType', 'GroupType'),
+    cls=('scap.model.xs.GroupType', 'GroupType'),
     min=0, max=None)
 class GroupType(AnnotatedType):
     pass

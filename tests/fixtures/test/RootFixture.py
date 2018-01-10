@@ -15,9 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from scap.model.xlink.Simple import Simple
+from expatriate.model.Model import Model
 from expatriate.model.decorators import *
 from expatriate.model.types import *
+from .EnclosedFixture import EnclosedFixture
 
-class XLinkFixture(Simple):
+@element(local_name='EnclosedFixture', cls=EnclosedFixture, min=0)
+@element(local_name='EnumValue', min=0, enum=['alpha', 'bravo', 'charlie'])
+@element(local_name='PatternValue', min=0, pattern=r'[a-zA-Z]{5}[0-9]{2}')
+class RootFixture(Model):
     pass

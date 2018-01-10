@@ -20,7 +20,7 @@ import re
 import xml.parsers.expat
 
 from .CharacterData import CharacterData
-from .ChildBearing import ChildBearing
+from .Parent import Parent
 from .Comment import Comment
 from .Element import Element
 from .Node import Node
@@ -31,7 +31,7 @@ from .exceptions import *
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class Document(ChildBearing):
+class Document(Parent):
     @staticmethod
     def ordered_first(nodeset):
         if len(nodeset) == 0:
@@ -60,7 +60,7 @@ class Document(ChildBearing):
         return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
 
     def __init__(self, encoding=None, skip_whitespace=True):
-        super(Document, self).__init__()
+        super().__init__()
         self.version = None
         self.encoding = encoding
         self.standalone = None
@@ -97,6 +97,9 @@ class Document(ChildBearing):
         # TODO check that we're the only thing left on the stack when isfinal
 
     def produce(self, xml_decl=True):
+        if self.encoding is None:
+            self.encoding = 'UTF-8'
+
         s = ''
         if xml_decl:
             s = '<?xml version="'
@@ -104,8 +107,6 @@ class Document(ChildBearing):
                 self.version = 1.0
             s += str(self.version)
             s += '"'
-            if self.encoding is None:
-                self.encoding = 'UTF-8'
             s += ' encoding="' + self.encoding + '"'
             if self.standalone is not None:
                 if self.standalone:
@@ -114,10 +115,10 @@ class Document(ChildBearing):
                     s += ' standalone="no"'
             s += '>'
 
-            for item in self.children:
-                s += item.produce()
+        for item in self.children:
+            s += item.produce()
 
-            return s.encode(self.encoding)
+        return s.encode(self.encoding)
 
     def _xml_decl_handler(self, version, encoding, standalone):
         logger.debug('_xml_decl_handler version: ' + str(version) + ' encoding: ' + str(encoding) + ' standalone: ' + str(standalone))
@@ -223,19 +224,3 @@ class Document(ChildBearing):
 
     def get_document_order(self):
         return 0
-
-    def prefix_to_namespace(self, prefix):
-        if prefix == 'xmlns':
-            return 'http://www.w3.org/2000/xmlns/'
-        elif prefix == 'xml':
-            return 'http://www.w3.org/XML/1998/namespace'
-        else:
-            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
-
-    def namespace_to_prefix(self, namespace_uri):
-        if namespace_uri == 'http://www.w3.org/2000/xmlns/':
-            return 'xmlns'
-        elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':
-            return 'xml'
-        else:
-            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace_uri))

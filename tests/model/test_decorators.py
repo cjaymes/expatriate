@@ -19,38 +19,34 @@ import pytest
 import logging
 
 from expatriate.model.decorators import *
+from expatriate.model.Model import Model
 
 logging.basicConfig(level=logging.DEBUG)
 
 def test_attribute():
     @attribute(namespace=None, local_name='local_name', type='type1')
     @attribute(namespace='http://jaymes.biz', local_name='xmlns_name', type='type2')
-    class AttrClass(object):
+    class AttrClass(Model):
         pass
 
-    assert hasattr(AttrClass, '_model_attribute_definitions')
+    assert hasattr(AttrClass, '_attribute_mappers')
 
-    assert (None, 'local_name') in AttrClass._model_attribute_definitions
-    assert AttrClass._model_attribute_definitions[(None, 'local_name')]['type'] == 'type1'
-
-    assert ('http://jaymes.biz', 'xmlns_name') in AttrClass._model_attribute_definitions
-    assert AttrClass._model_attribute_definitions[('http://jaymes.biz', 'xmlns_name')]['type'] == 'type2'
+    mapper_names = [(x.get_namespace(), x.get_local_name()) for x in AttrClass._get_attribute_mappers()]
+    assert (None, 'local_name') in mapper_names
+    assert ('http://jaymes.biz', 'xmlns_name') in mapper_names
 
 def test_element():
     @element(namespace=None, local_name='local_name', type='type1')
     @element(namespace='http://jaymes.biz', local_name='xmlns_name', type='type2')
-    class ElClass(object):
+    class ElClass(Model):
         pass
 
-    assert hasattr(ElClass, '_model_element_definitions')
+    assert hasattr(ElClass, '_element_mappers')
 
-    assert (None, 'local_name') in ElClass._model_element_definitions
-    assert ElClass._model_element_definitions[(None, 'local_name')]['type'] == 'type1'
+    mapper_names = [(x.get_namespace(), x.get_local_name()) for x in ElClass._get_element_mappers()]
 
-    assert ('http://jaymes.biz', 'xmlns_name') in ElClass._model_element_definitions
-    assert ElClass._model_element_definitions[('http://jaymes.biz', 'xmlns_name')]['type'] == 'type2'
+    assert (None, 'local_name') in mapper_names
 
-    assert ElClass._model_element_order[0] == (None, 'local_name')
-    assert ElClass._model_element_order[1] == ('http://jaymes.biz', 'xmlns_name')
+    assert ('http://jaymes.biz', 'xmlns_name') in mapper_names
 
 # TODO content

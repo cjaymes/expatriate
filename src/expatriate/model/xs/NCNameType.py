@@ -21,6 +21,7 @@ import re
 from expatriate.model.decorators import *
 
 from .NameType import NameType
+from . import i_, c_
 
 logger = logging.getLogger(__name__)
 

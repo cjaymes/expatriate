@@ -15,5 +15,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-class AttributeDefinition:
-    pass
+import logging
+
+logger = logging.getLogger(__name__)
+
+class Mapper(object):
+    def __init__(self, **kwargs):
+        self._kwargs = kwargs
+
+    def __str__(self):
+        return self.__class__.__name__ + ' ' + str(self._kwargs)
+
+    def initialize(self, model):
+        raise NotImplementedError
+
+    def matches(self, child):
+        raise NotImplementedError
+
+    def parse_in(self, model, child):
+        raise NotImplementedError
+
+    def validate(self, model):
+        raise NotImplementedError
+
+    def produce_in(self, el, model):
+        raise NotImplementedError

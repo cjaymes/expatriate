@@ -36,7 +36,6 @@ for m_finder, m_name, m_ispkg in pkgutil.iter_modules(path=pkg.__path__):
 logging.basicConfig(level=logging.DEBUG)
 
 # NOTE: this namespace is registered by default
-#Model.register_namespace('scap.model.xs', 'http://www.w3.org/2001/XMLSchema')
 
 def test_SevenPropertyModel_init():
     spm = SevenPropertyModel()

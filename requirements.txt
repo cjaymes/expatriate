@@ -1,1 +1,1 @@
-publishsubscribe==0.1
+publishsubscribe==0.3

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Namespace(Node):
     def __init__(self, prefix, uri, parent=None):
-        super(Namespace, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         self.prefix = prefix
         self.uri = uri

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class CharacterData(Node):
     def __init__(self, data, cdata_block=False, parent=None):
-        super(CharacterData, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         self.data = data
         self.cdata_block = cdata_block

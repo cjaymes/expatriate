@@ -23,9 +23,9 @@ from .exceptions import *
 
 logger = logging.getLogger(__name__)
 
-class ChildBearing(Node):
+class Parent(Node):
     def __init__(self, parent=None):
-        super(ChildBearing, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.children = []
 
     def spawn_character_data(self, data):
@@ -99,7 +99,9 @@ class ChildBearing(Node):
             n = x
             n._parent = self
         else:
-            raise ValueError('Children of ' + self.__class__.__name__ + ' must be subclass of Node; got: ' + x.__class__.__name__)
+            raise ValueError('Children of ' + self.__class__.__name__
+                + ' must be a simple type (str, int, float)'
+                + ' or a subclass of Node; got: ' + x.__class__.__name__)
 
         self.children.append(n)
 
@@ -153,4 +155,4 @@ class ChildBearing(Node):
             if el is not None:
                 return el
 
-        return super(ChildBearing, self).find_by_id(id_)
+        return super(Parent, self).find_by_id(id_)

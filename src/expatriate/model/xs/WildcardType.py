@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='*', )
 @element(local_name='annotation', list='tags', cls=AnnotationElement, min=0)
 @element(local_name='element', list='tags',
-    cls=defer_class_load('scap.model.xs.ElementType', 'ElementType'),
+    cls=('scap.model.xs.ElementType', 'ElementType'),
     min=0, max=None)
 class WildcardType(AnnotatedType):
     pass

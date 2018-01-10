@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 @attribute(local_name='memberTypes', type=QNameType)
 @element(local_name='simpleType', list='tags',
-    cls=defer_class_load('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
+    cls=('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
     min=0, max=None)
 class UnionElement(AnnotatedType):
     pass

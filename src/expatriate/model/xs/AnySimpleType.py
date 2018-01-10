@@ -23,6 +23,4 @@ from expatriate.model.decorators import *
 logger = logging.getLogger(__name__)
 
 class AnySimpleType(Model):
-    def __str__(self):
-        # using self.text instead of self.get_value to avoid stack overflow loop
-        return super(AnySimpleType, self).__str__() + ' = ' + str(self.text)
+    pass

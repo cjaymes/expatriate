@@ -27,7 +27,7 @@ from .UnionElement import UnionElement
 logger = logging.getLogger(__name__)
 
 @element(local_name='restriction', list='tags', cls=RestrictionType, min=0)
-@element(local_name='list', list='tags', cls=defer_class_load('scap.model.xs.ListElement', 'ListElement'), min=0)
+@element(local_name='list', list='tags', cls=('scap.model.xs.ListElement', 'ListElement'), min=0)
 @element(local_name='union', list='tags', cls=UnionElement, min=0)
 @attribute(local_name='final', enum=['#all', 'list', 'union', 'restriction'])
 @attribute(local_name='name', type=NCNameType)

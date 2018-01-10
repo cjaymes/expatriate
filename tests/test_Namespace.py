@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from expatriate.model.Model import Model
-from expatriate.model.decorators import *
-from expatriate.model.types import *
+import pytest
+import logging
 
-@attribute(local_name='id')
-@attribute(local_name='tag')
-class MappableElementFixture(Model):
-    pass
+from expatriate import *
+
+logging.basicConfig(level=logging.DEBUG)
+
+def test_get_type():
+    n = Namespace('test', 'test')
+    assert n.get_type() == 'namespace'

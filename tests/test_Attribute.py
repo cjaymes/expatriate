@@ -15,5 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-class ElementDefinition:
-    pass
+import pytest
+import logging
+
+from expatriate import *
+
+logging.basicConfig(level=logging.DEBUG)
+
+def test_get_type():
+    a = Attribute('test', 'test')
+    assert a.get_type() == 'attribute'

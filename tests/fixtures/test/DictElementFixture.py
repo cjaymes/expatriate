@@ -15,24 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
+from expatriate.model.Model import Model
 from expatriate.model.decorators import *
 from expatriate.model.types import *
+from .DictValueElementFixture import DictValueElementFixture
 
-from .AnnotatedType import AnnotatedType
-from .AttributeType import AttributeType
-from .WildcardType import WildcardType
-
-logger = logging.getLogger(__name__)
-
-@attribute(local_name='name', type=NCNameType)
-@attribute(local_name='ref', type=QNameType)
-@attribute(local_name='*', )
-@element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)
-@element(local_name='attributeGroup', list='tags',
-    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
-    min=0, max=None)
-@element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
-class AttributeGroupType(AnnotatedType):
+@element(local_name='dict_explicit_key', dict='dict_explicit_key', dict_key='key', type=StringType, min=0)
+@element(local_name='dict_implicit_key', dict='dict_implicit_key', type=StringType, min=0)
+@element(local_name='dict_value_nil', dict='dict_value_nil', nillable=True, type=StringType, min=0)
+@element(local_name='dict_value_attr', dict='dict_value_attr', dict_value='value', type=StringType, min=0)
+@element(local_name='dict_value_type', dict='dict_value_type', type=StringType, min=0)
+@element(local_name='dict_value_class', dict='dict_value_class', cls=DictValueElementFixture, min=0)
+class DictElementFixture(Model):
     pass

@@ -17,22 +17,37 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
-from .AnnotatedType import AnnotatedType
-from .AttributeType import AttributeType
-from .WildcardType import WildcardType
+from .Mapper import Mapper
+from ..Node import Node
 
 logger = logging.getLogger(__name__)
 
-@attribute(local_name='name', type=NCNameType)
-@attribute(local_name='ref', type=QNameType)
-@attribute(local_name='*', )
-@element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)
-@element(local_name='attributeGroup', list='tags',
-    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
-    min=0, max=None)
-@element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
-class AttributeGroupType(AnnotatedType):
-    pass
+class ContentMapper(Mapper):
+    '''
+        **kwargs**
+
+        enum
+            Enumeration the attribute's value must be from
+        pattern
+            Pattern which the value must match.
+        type
+            Type against which a value must validate
+
+        min
+            The minimum value of the content. Can be numeric or None (the
+            default).
+        max
+            The maximum value of the content. Can be numeric or None (the
+            default).
+    '''
+
+    def initialize(self, model):
+        from .Model import Model
+        model._content = []
+
+    def validate(self, model):
+        from .Model import Model
+        pass
+
+    def produce_in(self, el, model):
+        pass

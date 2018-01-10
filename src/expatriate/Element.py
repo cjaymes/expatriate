@@ -17,7 +17,7 @@
 
 import logging
 
-from .ChildBearing import ChildBearing
+from .Parent import Parent
 from .Node import Node
 from .Attribute import Attribute
 from .Namespace import Namespace
@@ -29,9 +29,9 @@ from publishsubscribe import Subscriber
 
 logger = logging.getLogger(__name__)
 
-class Element(ChildBearing, Subscriber):
+class Element(Parent, Subscriber):
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
-        super(Element, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         if attributes is None:
             self._attributes = PublishingDict({})
@@ -150,15 +150,13 @@ class Element(ChildBearing, Subscriber):
             self._prefix_to_namespace = {
                 'xml': 'http://www.w3.org/XML/1998/namespace',
             }
-            self._namespace_to_prefixes = {
-                'http://www.w3.org/XML/1998/namespace': 'xml',
-            }
+            self._namespace_to_prefixes = {v: k for k, v in self._prefix_to_namespace.items()}
 
         # check for prefix namespaces
         for k, v in self._attributes.items():
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
-                if prefix in self._prefix_to_namespace.keys():
+                if prefix in self._prefix_to_namespace:
                     raise PrefixRedefineException('Prefix ' + prefix + ' has already been used but is being redefined')
                 self._prefix_to_namespace[prefix] = v
                 self._namespace_to_prefixes[v] = prefix
@@ -169,11 +167,8 @@ class Element(ChildBearing, Subscriber):
                 logger.debug('Added prefix None for uri ' + v)
 
         # now that we've parsed the namespace attributes, we can figure out missing info
-        if self._prefix is None and None in self._prefix_to_namespace:
+        if self._namespace is None and self._prefix is None and None in self._prefix_to_namespace:
             self._namespace = self._prefix_to_namespace[None]
-
-        if self._prefix is None and self._namespace is not None:
-            self._prefix = self.namespace_to_prefix(self._namespace)
         elif self._namespace is None and self._prefix is not None:
             self._namespace = self.prefix_to_namespace(self._prefix)
 
@@ -185,24 +180,20 @@ class Element(ChildBearing, Subscriber):
             self.namespace_nodes[prefix] = n
 
     def prefix_to_namespace(self, prefix):
-        logger.debug('Resolving prefix: ' + str(prefix))
-        if prefix == 'xmlns':
-            return 'http://www.w3.org/2000/xmlns/'
-        elif prefix in self._prefix_to_namespace:
+        logger.debug(str(self) + ' resolving prefix: ' + str(prefix))
+
+        if prefix in self._prefix_to_namespace:
             return self._prefix_to_namespace[prefix]
-        elif prefix is None:
-            return None
         else:
-            raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
+            return super().prefix_to_namespace(prefix)
 
     def namespace_to_prefix(self, namespace):
-        logger.debug('Resolving namespace: ' + str(namespace))
-        if namespace == 'http://www.w3.org/2000/xmlns/':
-            return 'xmlns'
-        elif namespace in self._namespace_to_prefixes:
+        logger.debug(str(self) + ' resolving namespace: ' + str(namespace))
+
+        if namespace in self._namespace_to_prefixes:
             return self._namespace_to_prefixes[namespace]
         else:
-            raise UnknownNamespaceException('Unknown namespace uri: ' + str(namespace))
+            return super().namespace_to_prefix(namespace)
 
     def escape_attribute(self, text):
         return self.escape(text).replace('"', '&quot;')
@@ -211,6 +202,21 @@ class Element(ChildBearing, Subscriber):
         s = '<' + self.name
         for k, v in self.attributes.items():
             s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'
+
+        if (
+            self._parent is None
+            and self._namespace is not None
+            and self._prefix not in self._prefix_to_namespace
+            and (
+                (self._prefix is not None and 'xmlns:' + self._prefix not in self.attributes)
+                or (self._prefix is None and 'xmlns' not in self.attributes)
+            )
+        ):
+            if self._prefix is None:
+                s += ' xmlns="' + self._namespace + '"'
+            else:
+                s += ' xmlns:' + self._prefix + '="' + self._namespace + '"'
+
         if len(self.children) == 0:
             s += '/>'
         else:
@@ -264,3 +270,16 @@ class Element(ChildBearing, Subscriber):
         for c in self.children:
             do += c.get_node_count()
         return do
+
+    def is_nil(self):
+        try:
+            prefix = self.namespace_to_prefix('http://www.w3.org/2001/XMLSchema-instance')
+        except UnknownNamespaceException:
+            # if the namespace hasn't been defined, attr doesn't exist either
+            return False
+
+        name = prefix + ':nil'
+        if name in self.attributes and self.attributes[name] == 'true':
+            return True
+        else:
+            return False

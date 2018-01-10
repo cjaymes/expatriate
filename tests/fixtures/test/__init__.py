@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+PREFIX = 'test'
+
 ELEMENT_MAP = {
     ('http://jaymes.biz/test', 'RootFixture'): 'RootFixture',
     ('http://jaymes.biz/test', 'AttributeFixture'): 'AttributeFixture',
@@ -23,9 +25,8 @@ ELEMENT_MAP = {
     ('http://jaymes.biz/test', 'EnclosedFixture'): 'EnclosedFixture',
     ('http://jaymes.biz/test', 'WildcardElementNotInFixture'): 'WildcardElementNotInFixture',
     ('http://jaymes.biz/test', 'WildcardElementInFixture'): 'WildcardElementInFixture',
-    ('http://jaymes.biz/test', 'AppendElementFixture'): 'AppendElementFixture',
-    ('http://jaymes.biz/test', 'MapElementFixture'): 'MapElementFixture',
+    ('http://jaymes.biz/test', 'ListElementFixture'): 'ListElementFixture',
+    ('http://jaymes.biz/test', 'DictElementFixture'): 'DictElementFixture',
     ('http://jaymes.biz/test', 'InitFixture'): 'InitFixture',
     ('http://jaymes.biz/test', 'MinMaxElementFixture'): 'MinMaxElementFixture',
-    ('http://jaymes.biz/test', 'XLinkFixture'): 'XLinkFixture',
 }

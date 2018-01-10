@@ -20,8 +20,8 @@ from expatriate.model.decorators import *
 from expatriate.model.types import *
 from .EnclosedFixture import EnclosedFixture
 
-@element(local_name='append_nil', list='append_nil', nillable=True, cls=EnclosedFixture, min=0)
-@element(local_name='append_type', list='append_type', type=DecimalType, min=0)
-@element(local_name='append_class', list='append_class', cls=EnclosedFixture, min=0)
-class AppendElementFixture(Model):
+@element(local_name='list_nil', list='list_nil', nillable=True, cls=EnclosedFixture, min=0)
+@element(local_name='list_type', list='list_type', type=DecimalType, min=0)
+@element(local_name='list_class', list='list_class', cls=EnclosedFixture, min=0)
+class ListElementFixture(Model):
     pass
