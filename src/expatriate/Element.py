@@ -37,6 +37,7 @@ class Element(Parent, Subscriber):
             self._attributes = PublishingDict({})
         else:
             self._attributes = PublishingDict(attributes)
+        self._attributes.subscribe(self)
 
         self._prefix = prefix
         self._namespace = namespace
@@ -46,6 +47,8 @@ class Element(Parent, Subscriber):
         self._init_attributes()
 
         if namespace is not None and namespace not in self._namespace_to_prefixes:
+            logger.debug(str(self) + ' parent does not define namespace ' + namespace
+                + '; adding to attributes')
             if prefix is None:
                 self.attributes['xmlns'] = namespace
             else:
@@ -111,26 +114,23 @@ class Element(Parent, Subscriber):
         if self._parent is not None:
             self._prefix = self.namespace_to_prefix(namespace)
 
-    def data_added(self, publisher, addition):
-        logger.debug('Added attributes: ' + str(addition))
+    def data_added(self, publisher, id_, item):
+        logger.debug(str(self) + ' added attributes: ' + str(id_))
         self._init_attributes()
-        for k in addition:
-            if k.startswith('xmlns'):
-                self._init_namespaces()
+        if id_.startswith('xmlns'):
+            self._init_namespaces()
 
-    def data_updated(self, publisher, updates):
-        logger.debug('Updated attributes: ' + str(updates))
+    def data_updated(self, publisher, id_, old_item, new_item):
+        logger.debug(str(self) + ' updated attributes: ' + str(id_))
         self._init_attributes()
-        for k in updates:
-            if k.startswith('xmlns'):
-                self._init_namespaces()
+        if id_.startswith('xmlns'):
+            self._init_namespaces()
 
-    def data_deleted(self, publisher, deletion):
-        logger.debug('Deleted attributes: ' + str(deletion))
+    def data_deleted(self, publisher, id_, item):
+        logger.debug(str(self) + ' deleted attributes: ' + str(id_))
         self._init_attributes()
-        for k in deletion:
-            if k.startswith('xmlns'):
-                self._init_namespaces()
+        if id_.startswith('xmlns'):
+            self._init_namespaces()
 
     def _init_attributes(self):
         # create nodes for each of the attributes
@@ -163,14 +163,15 @@ class Element(Parent, Subscriber):
             if k.startswith('xmlns:'):
                 prefix = k.partition(':')[2]
                 if prefix in self._prefix_to_namespace:
-                    raise PrefixRedefineException('Prefix ' + prefix + ' has already been used but is being redefined')
+                    raise PrefixRedefineException('Prefix ' + prefix
+                        + ' has already been used but is being redefined')
                 self._prefix_to_namespace[prefix] = v
                 self._namespace_to_prefixes[v] = prefix
-                logger.debug('Added prefix ' + prefix + ' for uri ' + v)
+                logger.debug(str(self) + ' Added prefix ' + prefix + ' for uri ' + v)
             elif k.startswith('xmlns'):
                 self._prefix_to_namespace[None] = v
                 self._namespace_to_prefixes[v] = None
-                logger.debug('Added prefix None for uri ' + v)
+                logger.debug(str(self) + ' Added prefix None for uri ' + v)
 
         # now that we've parsed the namespace attributes, we can figure out missing info
         if self._namespace is None and self._prefix is None and None in self._prefix_to_namespace:
@@ -186,7 +187,8 @@ class Element(Parent, Subscriber):
             self.namespace_nodes[prefix] = n
 
     def prefix_to_namespace(self, prefix):
-        logger.debug(str(self) + ' resolving prefix: ' + str(prefix))
+        logger.debug(str(self) + ' resolving prefix: ' + str(prefix)
+            + ' using ' + str(self._prefix_to_namespace))
 
         if prefix in self._prefix_to_namespace:
             return self._prefix_to_namespace[prefix]
@@ -194,7 +196,8 @@ class Element(Parent, Subscriber):
             return super().prefix_to_namespace(prefix)
 
     def namespace_to_prefix(self, namespace):
-        logger.debug(str(self) + ' resolving namespace: ' + str(namespace))
+        logger.debug(str(self) + ' resolving namespace: ' + str(namespace)
+            + ' using ' + str(self._namespace_to_prefixes))
 
         if namespace in self._namespace_to_prefixes:
             return self._namespace_to_prefixes[namespace]
@@ -205,6 +208,10 @@ class Element(Parent, Subscriber):
         return self.escape(text).replace('"', '&quot;')
 
     def produce(self):
+        logger.debug(str(self) + ' producing xml: ' + self.name + ' attributes '
+            + str(self.attributes) + '; ' + str(len(self.children))
+            + ' children')
+
         s = '<' + self.name
         for k, v in self.attributes.items():
             s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'

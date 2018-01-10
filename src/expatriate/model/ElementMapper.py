@@ -449,6 +449,13 @@ class ElementMapper(Mapper):
         logger.debug(str(self) + ' producing ' + str(model) + ' element '
             + name  + str([id_]) + ' according to ' + str(self._kwargs))
 
+        if 'namespace' in self._kwargs:
+            namespace = self._kwargs['namespace']
+        else:
+            namespace = el.namespace
+        prefix = el.namespace_to_prefix(namespace)
+        local_name = self._kwargs['local_name']
+
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
             if 'type' in self._kwargs: # and undefined by child
                 raise ElementMappingException('Unable to produce wildcard '
@@ -456,28 +463,25 @@ class ElementMapper(Mapper):
                     + 'child element mapping is not defined')
 
             # TODO nillable
-            el.append(value.produce())
+            el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
         elif 'list' in self._kwargs:
-            if 'namespace' in self._kwargs:
-                namespace = self._kwargs['namespace']
-            else:
-                namespace = model.namespace
-            local_name = self._kwargs['local_name']
-
             if 'type' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace)
+                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                    sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'
                     el.append(sub_el)
                 else:
                     # wrap value in xs element
                     class_ = self._kwargs['type']
-                    child = class_(namespace=namespace, local_name=local_name, value=value)
-                    el.append(child.produce())
+                    child = class_()
+                    child.contents.append(value)
+                    el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
             elif 'cls' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace)
+                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                    sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'
                     el.append(sub_el)
                 elif not isinstance(value, self._load_cls(self._kwargs['cls'])):
@@ -485,19 +489,13 @@ class ElementMapper(Mapper):
                         + ' is not of the expected class: '
                         + str(self._kwargs['cls']))
                 else:
-                    el.append(value.produce())
+                    el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
             else:
                 raise ElementMappingException('"cls" or "type" must be '
                     + 'defined for "list" model mapping')
 
         elif 'dict' in self._kwargs:
-            if 'namespace' in self._kwargs:
-                namespace = self._kwargs['namespace']
-            else:
-                namespace = self.namespace
-            local_name = self._kwargs['local_name']
-
             # TODO: implement key_element as well
             if 'dict_key' in self._kwargs:
                 key_name = self._kwargs['dict_key']
@@ -505,7 +503,7 @@ class ElementMapper(Mapper):
                 key_name = 'id'
 
             if 'type' in self._kwargs:
-                sub_el = expatriate.Element(local_name, namespace=namespace)
+                sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                 sub_el.attributes[key_name] = id_
                 if 'dict_value' in self._kwargs:
                     if value is None:
@@ -513,25 +511,27 @@ class ElementMapper(Mapper):
                             + ' Cannot have none for a dict_value: '
                             + self._kwargs['dict'] + '[' + id_ + ']')
                     type_ = self._kwargs['type']()
-                    value = type_.produce_value(child)
+                    value = type_.produce_value(value)
                     sub_el.attributes[self._kwargs['dict_value']] = value
                 else:
                     if value is None:
+                        sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                         sub_el.attributes['xsi:nil'] = 'true'
                     else:
                         type_ = self._kwargs['type']()
-                        sub_el.contents.append(type_.produce_value(child))
+                        sub_el.contents.append(type_.produce_value(value))
                 el.append(sub_el)
 
             elif 'class' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace)
+                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                     sub_el.attributes[key_name] = id_
+                    sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'
                     el.append(sub_el)
                 else:
                     setattr(value, key_name, id_)
-                    el.append(value.produce())
+                    el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
             else:
                 raise ValueError('"class" or "type" must be defined for "dict" model mapping')
@@ -540,21 +540,17 @@ class ElementMapper(Mapper):
             if value is None:
                 return
 
-            el.append(value.produce())
+            el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
         elif 'type' in self._kwargs:
             if value is None:
                 return
 
-            if 'namespace' in self._kwargs:
-                namespace = self._kwargs['namespace']
-            else:
-                namespace = self.namespace
-            local_name = self._kwargs['local_name']
             class_ = self._kwargs['type']
-            child = class_(namespace=namespace, local_name=local_name, value=value)
+            child = class_()
+            child.contents.append(value)
 
-            el.append(child.produce())
+            el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
         elif 'enum' in self._kwargs:
             if value is None:
@@ -565,14 +561,10 @@ class ElementMapper(Mapper):
                     + ' value must be one of ' + str(self._kwargs['enum'])
                     + ': ' + str(value))
 
-            if 'namespace' in self._kwargs:
-                namespace = self._kwargs['namespace']
-            else:
-                namespace = self.namespace
-            local_name = self._kwargs['local_name']
-            child = String(namespace=namespace, local_name=local_name, value=value)
+            child = StringType()
+            child.contents.append(value)
 
-            el.append(child.produce())
+            el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
 
         else:
             raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')

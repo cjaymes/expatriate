@@ -526,7 +526,7 @@ class Model(Subscriber):
         for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
-    def produce(self, local_name, namespace=None, prefix=None):
+    def produce(self, local_name, namespace=None, prefix=None, parent_el=None):
         '''
         generate xml representation of the model
         '''
@@ -536,6 +536,8 @@ class Model(Subscriber):
             namespace = Model.package_to_namespace(self.get_package())
             if namespace is None:
                 raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
+            if prefix is None:
+                prefix = Model.namespace_to_prefix(namespace)
         else:
             if prefix is None:
                 prefix = Model.namespace_to_prefix(namespace)
@@ -546,7 +548,7 @@ class Model(Subscriber):
         for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
-        el = expatriate.Element(local_name, namespace=namespace, prefix=prefix)
+        el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=parent_el)
 
         for mapper in itertools.chain(at_mappers, content_mappers):
             mapper.produce_in(el, self)
