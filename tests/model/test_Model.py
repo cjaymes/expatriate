@@ -600,27 +600,27 @@ def test_produce_attributes():
     xml = model.produce('AttributeFixture', namespace='http://jaymes.biz/test', prefix='test')
     assert 'default_attribute="test" ' not in xml
 
-# def test_produce_min_max():
-#     model = MinMaxElementFixture()
-#     for i in range(0, 3):
-#         model.min.append(EnclosedFixture(tag_name='min'))
-#     for i in range(0, 2):
-#         model.max.append(EnclosedFixture(tag_name='max'))
-#
-#     xml = model.produce()
-#     assert xml.startswith('<test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test"')
-#     assert xml.count('<test:min') == 3
-#     assert xml.count('<test:max') == 2
-#
-#     del model.min[0]
-#     with pytest.raises(MinimumElementException):
-#         model.produce()
-#
-#     model.min.append(EnclosedFixture())
-#     model.max.append(EnclosedFixture())
-#     with pytest.raises(MaximumElementException):
-#         model.produce()
-#
+def test_produce_min_max():
+    model = MinMaxElementFixture()
+    for i in range(0, 3):
+        model.min.append(EnclosedFixture())
+    for i in range(0, 2):
+        model.max.append(EnclosedFixture())
+
+    xml = model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test').produce()
+    assert xml.startswith('<test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test"')
+    assert xml.count('<test:min') == 3
+    assert xml.count('<test:max') == 2
+
+    del model.min[0]
+    with pytest.raises(MinimumElementException):
+        model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+
+    model.min.append(EnclosedFixture())
+    model.max.append(EnclosedFixture())
+    with pytest.raises(MaximumElementException):
+        model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+
 # def test_produce_wildcard_not_in():
 #     model = WildcardElementNotInFixture()
 #     model._elements.append(EnclosedFixture(tag_name='wildcard_element'))
