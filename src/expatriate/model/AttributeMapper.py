@@ -188,15 +188,16 @@ class AttributeMapper(Mapper):
         else:
             namespace = el.namespace
         prefix = el.namespace_to_prefix(namespace)
-        local_name = self._kwargs['local_name']
 
-        if local_name == Model.ANY_LOCAL_NAME:
+        if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
             return
 
         # if model's namespace doesn't match attribute's, then we need to include it
         if 'namespace' in self._kwargs and self._kwargs['namespace'] != el.namespace:
             prefix = el.namespace_to_prefix(self._kwargs['namespace'])
-            name = prefix + ':' + name
+            attr_name = prefix + ':' + self._kwargs['local_name']
+        else:
+            attr_name = self._kwargs['local_name']
 
         if 'type' in self._kwargs:
             logger.debug(str(model) + ' Producing ' + str(value) + ' as '
@@ -204,14 +205,14 @@ class AttributeMapper(Mapper):
             type_ = self._kwargs['type']()
             v = type_.produce_value(value)
 
-            el.attributes[name] = v
+            el.attributes[attr_name] = v
 
         elif 'enum' in self._kwargs:
             if value not in self._kwargs['enum']:
                 raise EnumerationException(str(model) + '.' + name
                     + ' attribute must be one of ' + str(self._kwargs['enum'])
                     + ': ' + str(value))
-            el.attributes[name] = value
+            el.attributes[attr_name] = value
 
         else:
             # otherwise, we default to producing as string
@@ -219,4 +220,4 @@ class AttributeMapper(Mapper):
                 + ' as String type')
             type_ = StringType()
             v = type_.produce_value(value)
-            el.attributes[name] = v
+            el.attributes[attr_name] = v
