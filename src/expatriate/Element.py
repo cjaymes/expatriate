@@ -45,6 +45,12 @@ class Element(Parent, Subscriber):
         self._init_namespaces()
         self._init_attributes()
 
+        if namespace is not None and namespace not in self._namespace_to_prefixes:
+            if prefix is None:
+                self.attributes['xmlns'] = namespace
+            else:
+                self.attributes['xmlns:' + prefix] = namespace
+
     # redefine parent property
     @property
     def parent(self):
@@ -202,20 +208,6 @@ class Element(Parent, Subscriber):
         s = '<' + self.name
         for k, v in self.attributes.items():
             s += ' ' + self.escape(k) + '="' + self.escape_attribute(v) + '"'
-
-        if (
-            self._parent is None
-            and self._namespace is not None
-            and self._prefix not in self._prefix_to_namespace
-            and (
-                (self._prefix is not None and 'xmlns:' + self._prefix not in self.attributes)
-                or (self._prefix is None and 'xmlns' not in self.attributes)
-            )
-        ):
-            if self._prefix is None:
-                s += ' xmlns="' + self._namespace + '"'
-            else:
-                s += ' xmlns:' + self._prefix + '="' + self._namespace + '"'
 
         if len(self.children) == 0:
             s += '/>'
