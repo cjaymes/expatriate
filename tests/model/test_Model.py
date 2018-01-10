@@ -748,6 +748,32 @@ def test_produce_wildcard_not_in():
 #     assert '<test:dict_value_class id="test1" tag="blue">text1</test:dict_value_class>' in xml
 #     assert '<test:dict_value_class id="test2" tag="red">text2</test:dict_value_class>' in xml
 
+# def test_in_and_out():
+#     test_xml = b'<test:InitFixture xmlns:test="http://jaymes.biz/test" xmlns:test2="http://jaymes.biz/test2">' + \
+#         b'<test:list id="test1" />' + \
+#         b'<test:list id="test2" />' + \
+#         b'<test:list id="test3" />' + \
+#         b'<test:dict id="test4" />' + \
+#         b'<test:dict id="test5" />' + \
+#         b'<test:dict id="test6" />' + \
+#         b'<test:dict id="test7" />' + \
+#         b'<test:dict id="test8" />' + \
+#         b'<test:in_test id="test9" />' + \
+#         b'<test:dash-test id="test10" />' + \
+#         b'<test2:wildcard_element id="test11" />' + \
+#         b'<test:wildcard_element id="test12" />' + \
+#         b'<test:dict id="test13" />' + \
+#         b'<test:list id="test14" />' + \
+#         b'</test:InitFixture>'
+#     doc = expatriate.Document()
+#     doc.parse(test_xml)
+#     model = Model.load(None, doc.root_element)
+#
+#     out_xml = model.produce()
+#     print(test_xml)
+#     print(out_xml)
+#     assert out_xml == test_xml
+
 def test_load_attribute_value_in_enum():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>bravo</test:EnumValue></test:RootFixture>'
     doc = expatriate.Document()
