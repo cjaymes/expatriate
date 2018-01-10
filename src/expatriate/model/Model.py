@@ -80,6 +80,7 @@ class Model(Subscriber):
     _element_mapper_cache = {}
     _element_mapper_order = {}
     _content_mappers = {}
+    _content_mapper_cache = {}
 
     @staticmethod
     def class_for_element(el):
@@ -193,18 +194,16 @@ class Model(Subscriber):
         )
 
     @classmethod
-    def _add_content_mapper(cls, kwargs):
+    def _add_content_mapper(cls, mapper):
         '''
         add a model content definition for the class
         '''
 
-        logger.debug('Setting ' + str(cls) + ' content def to ' + str(kwargs))
-        cls.__content_mappers = kwargs
         if cls.__name__ not in cls._content_mappers:
             cls._content_mappers[cls.__name__] = []
 
-        logger.debug('Adding ' + str(cls) + ' content def: ' + str(kwargs))
-        cls._content_mappers[cls.__name__].append(kwargs)
+        # mappers come in reverse order, so we insert rather than append
+        cls._content_mappers[cls.__name__].insert(0, mapper)
 
     @classmethod
     def _get_content_mappers(cls):
@@ -212,10 +211,21 @@ class Model(Subscriber):
         get the model content definitions
         '''
 
-        if cls.__name__ not in cls._content_mappers:
-            return ()
+        if cls.__name__ not in Model._content_mapper_cache:
+            mappers = []
 
-        return cls._content_mappers[cls.__name__]
+            for cls_ in reversed(cls.__mro__):
+                if issubclass(cls_, Model):
+                    try:
+                        logger.debug('Adding content mappers from superclass '
+                            + cls_.__name__)
+                        mappers.extend(cls_._content_mappers[cls_.__name__])
+                    except KeyError:
+                        pass
+
+            Model._content_mapper_cache[cls.__name__] = mappers
+
+        return Model._content_mapper_cache[cls.__name__]
 
     @staticmethod
     def register_namespace(model_package, namespace, prefix=None):
@@ -349,10 +359,12 @@ class Model(Subscriber):
 
         raise ReferenceException('Could not find content for: ' + uri)
 
-    def __init__(self, local_name=None, namespace=None, prefix=None):
+    def __init__(self, local_name=None, namespace=None, prefix=None, value=None):
         self._parent = None
         self._children = []
-        self._content = []
+
+        if value is not None:
+            self._children.append((None, value))
 
         self._local_name = local_name
 
@@ -435,17 +447,28 @@ class Model(Subscriber):
         self._xsi_nil = True
         self.set_value(None)
 
+    def _get_content_children(self):
+        content = []
+        for attr_name, id_ in self._children:
+            if attr_name is None:
+                content.append(id_)
+        return content
+
     def get_value(self):
-        if len(self._content) == 0:
+        content = self._get_content_children()
+        if len(content) == 0:
             return None
         else:
-            return ''.join(self._content)
+            return ''.join(content)
 
     def set_value(self, value):
-        if value is None:
-            self._content = []
-        else:
-            self._content = [value]
+        new_children = []
+        for attr_name, id_ in self._children:
+            if attr_name is not None:
+                new_children.append((attr_name, id_))
+        self._children = new_children
+        if value is not None:
+            self._children.append((None, value))
 
     def parse_value(self, value):
         '''
@@ -533,7 +556,7 @@ class Model(Subscriber):
                     raise UnknownElementException('Unknown ' + str(self)
                         + ' child ' + str(child) + ' does not match any mappers')
             else:
-                self._content.append(child.get_string_value())
+                self._children.append((None, child.get_string_value()))
 
         at_mappers = self._get_attribute_mappers()
         el_mappers = self._get_element_mappers()
@@ -559,16 +582,20 @@ class Model(Subscriber):
 
         el = expatriate.Element(self._local_name, namespace=self._namespace, prefix=self._prefix, parent=parent_el)
 
-        for mapper in itertools.chain(at_mappers, content_mappers):
+        for mapper in at_mappers:
             mapper.produce_in(el, self)
 
         for attr_name, id_ in self._children:
-            for mapper in el_mappers:
-                if attr_name == mapper.get_attr_name():
+            if attr_name is None:
+                for mapper in content_mappers:
                     mapper.produce_in(el, self, id_)
-                    break # for mapper...
-            else: # for mapper
-                raise ElementMappingException('Unable to map ' + str(self)
-                    + ' attribute ' + attr_name + str([id_]) + ' to element')
+            else:
+                for mapper in el_mappers:
+                    if attr_name == mapper.get_attr_name():
+                        mapper.produce_in(el, self, id_)
+                        break # for mapper...
+                else: # for mapper
+                    raise ElementMappingException('Unable to map ' + str(self)
+                        + ' attribute ' + attr_name + str([id_]) + ' to element')
 
         return el

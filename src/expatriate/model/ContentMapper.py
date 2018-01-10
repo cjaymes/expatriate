@@ -16,6 +16,7 @@
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import expatriate
 
 from .Mapper import Mapper
 from ..Node import Node
@@ -43,11 +44,17 @@ class ContentMapper(Mapper):
 
     def initialize(self, model):
         from .Model import Model
-        model._content = []
+        pass
 
     def validate(self, model):
         from .Model import Model
         pass
 
-    def produce_in(self, el, model):
-        pass
+    def produce_in(self, el, model, id_):
+        from .Model import Model
+        logger.debug(str(self) + ' producing ' + str(id_) + ' in ' + str(el))
+        if isinstance(id_, str):
+            el.children.append(expatriate.CharacterData(id_))
+        else:
+            raise ElementMappingException('Cannot map content ' + str(id_)
+                + ' to xml character data')

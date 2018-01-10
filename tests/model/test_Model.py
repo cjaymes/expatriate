@@ -645,20 +645,19 @@ def test_produce_wildcard_in():
     assert '<test:wildcard_element' in xml
     assert '<test2:wildcard_element' in xml
 
-# def test_produce_list_nil():
-#     model = ListElementFixture()
-#     model.list_nil.append(None)
-#     model.list_nil.append(EnclosedFixture(value='test', local_name='list_nil'))
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:ListElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
-#     assert '<test:list_nil xsi:nil="true" />' in xml
-#     assert '<test:list_nil>test</test:list_nil>' in xml
-#
+def test_produce_list_nil():
+    model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.list_nil.append(None)
+    model.list_nil.append(EnclosedFixture(value='test', local_name='list_nil'))
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:ListElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:list_nil xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>' in xml
+    assert '<test:list_nil>test</test:list_nil>' in xml
+
 # def test_produce_list_type():
-#     model = ListElementFixture()
+#     model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.list_type.append(1.1)
 #     model.list_type.append(1.2)
 #
@@ -669,7 +668,7 @@ def test_produce_wildcard_in():
 #     assert '<test:list_type>1.2</test:list_type>' in xml
 #
 # def test_produce_list_class():
-#     model = ListElementFixture()
+#     model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.list_class.append(EnclosedFixture(value='test1', local_name='list_class'))
 #     model.list_class.append(EnclosedFixture(value='test2', local_name='list_class'))
 #
@@ -680,7 +679,7 @@ def test_produce_wildcard_in():
 #     assert '<test:list_class>test2</test:list_class>' in xml
 #
 # def test_produce_dict_key_explicit():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_explicit_key['test1'] = 'test1'
 #     model.dict_explicit_key['test2'] = 'test2'
 #
@@ -691,7 +690,7 @@ def test_produce_wildcard_in():
 #     assert '<test:dict_explicit_key key="test2">test2</test:dict_explicit_key>' in xml
 #
 # def test_produce_dict_key_implicit():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_implicit_key['test1'] = 'test1'
 #     model.dict_implicit_key['test2'] = 'test2'
 #
@@ -702,7 +701,7 @@ def test_produce_wildcard_in():
 #     assert '<test:dict_implicit_key id="test2">test2</test:dict_implicit_key>' in xml
 #
 # def test_produce_dict_value_nil():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_nil['test1'] = None
 #     model.dict_value_nil['test2'] = 'test2'
 #
@@ -714,7 +713,7 @@ def test_produce_wildcard_in():
 #     assert '<test:dict_value_nil id="test2">test2</test:dict_value_nil>' in xml
 #
 # def test_produce_dict_value_attr():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_attr['test1'] = 'test1'
 #     model.dict_value_attr['test2'] = 'test2'
 #
@@ -725,7 +724,7 @@ def test_produce_wildcard_in():
 #     assert '<test:dict_value_attr id="test2" value="test2" />' in xml
 #
 # def test_produce_dict_value_type():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_type['test1'] = 'test1'
 #     model.dict_value_type['test2'] = 'test2'
 #
@@ -736,7 +735,7 @@ def test_produce_wildcard_in():
 #     assert '<test:dict_value_type id="test2">test2</test:dict_value_type>' in xml
 #
 # def test_produce_dict_value_class():
-#     model = DictElementFixture()
+#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_class['test1'] = DictValueElementFixture(value='text1', local_name='dict_value_class')
 #     model.dict_value_class['test1'].tag = 'blue'
 #     model.dict_value_class['test2'] = DictValueElementFixture(value='text2', local_name='dict_value_class')

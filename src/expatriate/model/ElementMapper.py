@@ -18,6 +18,8 @@
 import importlib
 import logging
 import re
+import expatriate
+
 from publishsubscribe import PublishingDict, PublishingList
 
 from .exceptions import *
@@ -491,7 +493,7 @@ class ElementMapper(Mapper):
                     # wrap value in xs element
                     class_ = self._kwargs['type']
                     child = class_(local_name=local_name, namespace=namespace, prefix=prefix)
-                    child.contents.append(value)
+                    child.set_value(value)
                     el.append(child.produce(parent_el=el))
             elif 'cls' in self._kwargs:
                 if value is None:
@@ -534,7 +536,7 @@ class ElementMapper(Mapper):
                         sub_el.attributes['xsi:nil'] = 'true'
                     else:
                         type_ = self._kwargs['type']()
-                        sub_el.contents.append(type_.produce_value(value))
+                        sub_el.children.append(expatriate.CharacterData(type_.produce_value(value)))
                 el.append(sub_el)
 
             elif 'class' in self._kwargs:
@@ -563,7 +565,7 @@ class ElementMapper(Mapper):
 
             class_ = self._kwargs['type']
             child = class_(local_name=local_name, namespace=namespace, prefix=prefix)
-            child.contents.append(value)
+            child.set_value(value)
 
             el.append(child.produce(parent_el=el))
 
@@ -577,7 +579,7 @@ class ElementMapper(Mapper):
                     + ': ' + str(value))
 
             child = StringType(local_name=local_name, namespace=namespace, prefix=prefix)
-            child.contents.append(value)
+            child.set_value(value)
 
             el.append(child.produce(parent_el=el))
 
