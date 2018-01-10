@@ -167,6 +167,7 @@ class AttributeMapper(Mapper):
 
     def produce_in(self, el, model):
         from .Model import Model
+        from .xs.StringType import StringType
 
         if 'prohibited' in self._kwargs and self._kwargs['prohibited']:
             return
@@ -182,9 +183,15 @@ class AttributeMapper(Mapper):
         logger.debug(str(self) + ' producing ' + str(model) + ' attribute '
             + name + ' according to ' + str(self._kwargs))
 
+        if 'namespace' in self._kwargs:
+            namespace = self._kwargs['namespace']
+        else:
+            namespace = el.namespace
+        prefix = el.namespace_to_prefix(namespace)
+        local_name = self._kwargs['local_name']
+
         if local_name == Model.ANY_LOCAL_NAME:
             return
-
 
         # if model's namespace doesn't match attribute's, then we need to include it
         if 'namespace' in self._kwargs and self._kwargs['namespace'] != el.namespace:

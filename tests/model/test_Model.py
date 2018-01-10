@@ -572,14 +572,14 @@ def test_produce_root_enclosed():
     assert model.produce('RootFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
         '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture/></test:RootFixture>'
 
-# def test_produce_required_attribute():
-#     el = RequiredAttributeFixture()
-#     with pytest.raises(RequiredAttributeException):
-#         el.produce()
-#     el.required_attribute = 'test'
-#     assert el.produce() == \
-#         b'<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
-#
+def test_produce_required_attribute():
+    el = RequiredAttributeFixture()
+    with pytest.raises(RequiredAttributeException):
+        el.produce('RequiredAttributeFixture')
+    el.required_attribute = 'test'
+    assert el.produce('RequiredAttributeFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
+        '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test"/>'
+
 # def test_produce_attributes():
 #     el = AttributeFixture()
 #     el.in_test = 'test'
