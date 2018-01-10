@@ -349,10 +349,13 @@ class Model(Subscriber):
 
         raise ReferenceException('Could not find content for: ' + uri)
 
-    def __init__(self):
+    def __init__(self, local_name=None, namespace=None, prefix=None):
         self._parent = None
         self._children = []
         self._content = []
+        self._local_name = local_name
+        self._namespace = namespace
+        self._prefix = prefix
 
         at_mappers = self._get_attribute_mappers()
         el_mappers = self._get_element_mappers()

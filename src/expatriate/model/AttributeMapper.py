@@ -183,21 +183,30 @@ class AttributeMapper(Mapper):
         logger.debug(str(self) + ' producing ' + str(model) + ' attribute '
             + name + ' according to ' + str(self._kwargs))
 
-        if 'namespace' in self._kwargs:
+        if model._namespace is not None:
+            namespace = model._namespace
+        elif 'namespace' in self._kwargs:
             namespace = self._kwargs['namespace']
         else:
             namespace = el.namespace
-        prefix = el.namespace_to_prefix(namespace)
 
-        if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
+        if model._prefix is not None:
+            prefix = model._prefix
+        else:
+            prefix = el.namespace_to_prefix(namespace)
+
+        if model._local_name is not None:
+            local_name = model._local_name
+        elif self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
             return
+        else:
+            local_name = self._kwargs['local_name']
 
         # if model's namespace doesn't match attribute's, then we need to include it
         if 'namespace' in self._kwargs and self._kwargs['namespace'] != el.namespace:
-            prefix = el.namespace_to_prefix(self._kwargs['namespace'])
-            attr_name = prefix + ':' + self._kwargs['local_name']
+            attr_name = prefix + ':' + local_name
         else:
-            attr_name = self._kwargs['local_name']
+            attr_name = local_name
 
         if 'type' in self._kwargs:
             logger.debug(str(model) + ' Producing ' + str(value) + ' as '

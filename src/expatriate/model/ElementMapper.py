@@ -449,22 +449,34 @@ class ElementMapper(Mapper):
         logger.debug(str(self) + ' producing ' + str(model) + ' element '
             + name  + str([id_]) + ' according to ' + str(self._kwargs))
 
-        if 'namespace' in self._kwargs:
+        if hasattr(value, '_namespace') and value._namespace is not None:
+            namespace = value._namespace
+        elif 'namespace' in self._kwargs:
+            if self._kwargs['namespace'] == Model.ANY_NAMESPACE:
+                raise ElementMappingException(str(self) + ' cannot map '
+                    + str(model) + '.' + name + ' without a namespace override')
             namespace = self._kwargs['namespace']
         else:
             namespace = el.namespace
-        prefix = el.namespace_to_prefix(namespace)
-        local_name = self._kwargs['local_name']
+
+        if hasattr(value, '_prefix') and value._prefix is not None:
+            prefix = value._prefix
+        else:
+            prefix = el.namespace_to_prefix(namespace)
+
+        if hasattr(value, '_local_name') and value._local_name is not None:
+            local_name = value._local_name
+        else:
+            if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
+                raise ElementMappingException(str(self) + ' cannot map '
+                    + str(model) + '.' + name + ' without a local_name override')
+            local_name = self._kwargs['local_name']
 
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
-            if 'type' in self._kwargs: # and undefined by child
-                raise ElementMappingException('Unable to produce wildcard '
-                    + 'elements with only "type" in the model map, because '
-                    + 'child element mapping is not defined')
+            if value is None:
+                return
 
-            # TODO nillable
             el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
-
         elif 'list' in self._kwargs:
             if 'type' in self._kwargs:
                 if value is None:

@@ -621,18 +621,18 @@ def test_produce_min_max():
     with pytest.raises(MaximumElementException):
         model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 
-# def test_produce_wildcard_not_in():
-#     model = WildcardElementNotInFixture()
-#     model._elements.append(EnclosedFixture(tag_name='wildcard_element'))
-#     model._elements.append(EnclosedFixture2(tag_name='wildcard_element'))
-#
-#     xml = model.produce()
-#     assert xml.startswith('<test:WildcardElementNotInFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert 'xmlns:test2="http://jaymes.biz/test2"' in xml
-#     assert '<test:wildcard_element' in xml
-#     assert '<test2:wildcard_element' in xml
-#
+def test_produce_wildcard_not_in():
+    model = WildcardElementNotInFixture()
+    model._elements.append(EnclosedFixture(local_name='wildcard_element'))
+    model._elements.append(EnclosedFixture2(local_name='wildcard_element', namespace='http://jaymes.biz/test2', prefix='test2'))
+
+    xml = model.produce('WildcardElementNotInFixture', namespace='http://jaymes.biz/test', prefix='test').produce()
+    assert xml.startswith('<test:WildcardElementNotInFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert 'xmlns:test2="http://jaymes.biz/test2"' in xml
+    assert '<test:wildcard_element' in xml
+    assert '<test2:wildcard_element' in xml
+
 # def test_produce_wildcard_in():
 #     model = WildcardElementInFixture()
 #     model.test_elements.append(EnclosedFixture(tag_name='wildcard_element'))
