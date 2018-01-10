@@ -353,9 +353,21 @@ class Model(Subscriber):
         self._parent = None
         self._children = []
         self._content = []
+
         self._local_name = local_name
-        self._namespace = namespace
-        self._prefix = prefix
+
+        if namespace is not None:
+            self._namespace = namespace
+        else:
+            self._namespace = Model.package_to_namespace(self.get_package())
+            if self._namespace is None:
+                # make sure namespace is never None
+                raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
+
+        if prefix is not None:
+            self._prefix = prefix
+        else:
+            self._prefix = Model.namespace_to_prefix(self._namespace)
 
         at_mappers = self._get_attribute_mappers()
         el_mappers = self._get_element_mappers()
@@ -529,21 +541,12 @@ class Model(Subscriber):
         for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
-    def produce(self, local_name, namespace=None, prefix=None, parent_el=None):
+    def produce(self, parent_el=None):
         '''
         generate xml representation of the model
         '''
 
         logger.debug(str(self) + ' to xml')
-        if namespace is None:
-            namespace = Model.package_to_namespace(self.get_package())
-            if namespace is None:
-                raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
-            if prefix is None:
-                prefix = Model.namespace_to_prefix(namespace)
-        else:
-            if prefix is None:
-                prefix = Model.namespace_to_prefix(namespace)
 
         at_mappers = self._get_attribute_mappers()
         el_mappers = self._get_element_mappers()
@@ -551,7 +554,10 @@ class Model(Subscriber):
         for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
             mapper.validate(self)
 
-        el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=parent_el)
+        if self._local_name is None:
+            raise ElementMappingException('local_name must be defined by constructor or @element')
+
+        el = expatriate.Element(self._local_name, namespace=self._namespace, prefix=self._prefix, parent=parent_el)
 
         for mapper in itertools.chain(at_mappers, content_mappers):
             mapper.produce_in(el, self)

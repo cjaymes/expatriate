@@ -567,66 +567,66 @@ def test_references():
         root.find_reference('test1')
 
 def test_produce_root_enclosed():
-    model = RootFixture()
-    model.EnclosedFixture = EnclosedFixture()
-    assert model.produce('RootFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
+    model = RootFixture(local_name='RootFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.EnclosedFixture = EnclosedFixture(local_name='EnclosedFixture')
+    assert model.produce().produce() == \
         '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnclosedFixture/></test:RootFixture>'
 
 def test_produce_required_attribute():
-    model = RequiredAttributeFixture()
+    model = RequiredAttributeFixture(local_name='RequiredAttributeFixture', namespace='http://jaymes.biz/test', prefix='test')
     with pytest.raises(RequiredAttributeException):
-        model.produce('RequiredAttributeFixture')
+        model.produce()
     model.required_attribute = 'test'
-    assert model.produce('RequiredAttributeFixture', namespace='http://jaymes.biz/test', prefix='test').produce() == \
+    assert model.produce().produce() == \
         '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test"/>'
 
 def test_produce_attributes():
-    model = AttributeFixture()
+    model = AttributeFixture(local_name='AttributeFixture', namespace='http://jaymes.biz/test', prefix='test')
     model.in_test = 'test'
     model.dash_attribute = 'test'
     model.default_attribute = 'not default'
 
-    xml = model.produce('AttributeFixture', namespace='http://jaymes.biz/test', prefix='test').produce()
+    xml = model.produce().produce()
     assert xml.startswith('<test:AttributeFixture xmlns:test="http://jaymes.biz/test"')
     assert 'dash-attribute="test"' in xml
     assert 'default_attribute="not default"' in xml
     assert 'in_attribute="test"' in xml
 
     model.in_test = None
-    xml = model.produce('AttributeFixture', namespace='http://jaymes.biz/test', prefix='test')
+    xml = model.produce()
     assert 'in_attribute=' not in xml
 
     model.default_attribute = 'test'
-    xml = model.produce('AttributeFixture', namespace='http://jaymes.biz/test', prefix='test')
+    xml = model.produce()
     assert 'default_attribute="test" ' not in xml
 
 def test_produce_min_max():
-    model = MinMaxElementFixture()
+    model = MinMaxElementFixture(local_name='MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
     for i in range(0, 3):
-        model.min.append(EnclosedFixture())
+        model.min.append(EnclosedFixture(local_name='min'))
     for i in range(0, 2):
-        model.max.append(EnclosedFixture())
+        model.max.append(EnclosedFixture(local_name='max'))
 
-    xml = model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test').produce()
+    xml = model.produce().produce()
     assert xml.startswith('<test:MinMaxElementFixture xmlns:test="http://jaymes.biz/test"')
     assert xml.count('<test:min') == 3
     assert xml.count('<test:max') == 2
 
     del model.min[0]
     with pytest.raises(MinimumElementException):
-        model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+        model.produce()
 
     model.min.append(EnclosedFixture())
     model.max.append(EnclosedFixture())
     with pytest.raises(MaximumElementException):
-        model.produce('MinMaxElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+        model.produce()
 
 def test_produce_wildcard_not_in():
-    model = WildcardElementNotInFixture()
+    model = WildcardElementNotInFixture(local_name='WildcardElementNotInFixture', namespace='http://jaymes.biz/test', prefix='test')
     model._elements.append(EnclosedFixture(local_name='wildcard_element'))
     model._elements.append(EnclosedFixture2(local_name='wildcard_element', namespace='http://jaymes.biz/test2', prefix='test2'))
 
-    xml = model.produce('WildcardElementNotInFixture', namespace='http://jaymes.biz/test', prefix='test').produce()
+    xml = model.produce().produce()
     assert xml.startswith('<test:WildcardElementNotInFixture')
     assert 'xmlns:test="http://jaymes.biz/test"' in xml
     assert 'xmlns:test2="http://jaymes.biz/test2"' in xml

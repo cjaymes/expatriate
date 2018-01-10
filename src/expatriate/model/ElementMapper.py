@@ -472,11 +472,14 @@ class ElementMapper(Mapper):
                     + str(model) + '.' + name + ' without a local_name override')
             local_name = self._kwargs['local_name']
 
+        if local_name is None:
+            raise ElementMappingException('local_name must be defined by constructor or @element')
+
         if self._kwargs['local_name'] == Model.ANY_LOCAL_NAME:
             if value is None:
                 return
 
-            el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+            el.append(value.produce(parent_el=el))
         elif 'list' in self._kwargs:
             if 'type' in self._kwargs:
                 if value is None:
@@ -487,9 +490,9 @@ class ElementMapper(Mapper):
                 else:
                     # wrap value in xs element
                     class_ = self._kwargs['type']
-                    child = class_()
+                    child = class_(local_name=local_name, namespace=namespace, prefix=prefix)
                     child.contents.append(value)
-                    el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+                    el.append(child.produce(parent_el=el))
             elif 'cls' in self._kwargs:
                 if value is None:
                     sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
@@ -501,7 +504,7 @@ class ElementMapper(Mapper):
                         + ' is not of the expected class: '
                         + str(self._kwargs['cls']))
                 else:
-                    el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+                    el.append(value.produce(parent_el=el))
 
             else:
                 raise ElementMappingException('"cls" or "type" must be '
@@ -543,7 +546,7 @@ class ElementMapper(Mapper):
                     el.append(sub_el)
                 else:
                     setattr(value, key_name, id_)
-                    el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+                    el.append(value.produce(parent_el=el))
 
             else:
                 raise ValueError('"class" or "type" must be defined for "dict" model mapping')
@@ -552,17 +555,17 @@ class ElementMapper(Mapper):
             if value is None:
                 return
 
-            el.append(value.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+            el.append(value.produce(parent_el=el))
 
         elif 'type' in self._kwargs:
             if value is None:
                 return
 
             class_ = self._kwargs['type']
-            child = class_()
+            child = class_(local_name=local_name, namespace=namespace, prefix=prefix)
             child.contents.append(value)
 
-            el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+            el.append(child.produce(parent_el=el))
 
         elif 'enum' in self._kwargs:
             if value is None:
@@ -573,10 +576,10 @@ class ElementMapper(Mapper):
                     + ' value must be one of ' + str(self._kwargs['enum'])
                     + ': ' + str(value))
 
-            child = StringType()
+            child = StringType(local_name=local_name, namespace=namespace, prefix=prefix)
             child.contents.append(value)
 
-            el.append(child.produce(local_name, namespace=namespace, prefix=prefix, parent_el=el))
+            el.append(child.produce(parent_el=el))
 
         else:
             raise UnknownElementException(str(self) + ' could not produce ' + str(namespace, local_name) + ' element')
