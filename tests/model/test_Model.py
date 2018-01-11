@@ -700,18 +700,17 @@ def test_produce_dict_key_implicit():
     assert '<test:dict_implicit_key id="test1">test1</test:dict_implicit_key>' in xml
     assert '<test:dict_implicit_key id="test2">test2</test:dict_implicit_key>' in xml
 
-# def test_produce_dict_value_nil():
-#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
-#     model.dict_value_nil['test1'] = None
-#     model.dict_value_nil['test2'] = 'test2'
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:DictElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' in xml
-#     assert '<test:dict_value_nil id="test1" xsi:nil="true" />' in xml
-#     assert '<test:dict_value_nil id="test2">test2</test:dict_value_nil>' in xml
-#
+def test_produce_dict_value_nil():
+    model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.dict_value_nil['test1'] = None
+    model.dict_value_nil['test2'] = 'test2'
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:DictElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:dict_value_nil id="test1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>' in xml
+    assert '<test:dict_value_nil id="test2">test2</test:dict_value_nil>' in xml
+
 # def test_produce_dict_value_attr():
 #     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_attr['test1'] = 'test1'
