@@ -17,6 +17,7 @@
 
 from expatriate.model import *
 
+
 @attribute(local_name='id')
 @attribute(local_name='tag')
 class DictValueElementFixture(Model):

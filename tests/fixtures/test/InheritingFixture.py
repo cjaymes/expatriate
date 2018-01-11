@@ -17,8 +17,9 @@
 
 from expatriate.model import *
 
-from .RootFixture import RootFixture
 from .AttributeFixture import AttributeFixture
+from .RootFixture import RootFixture
+
 
 class InheritingFixture(RootFixture, AttributeFixture):
     pass

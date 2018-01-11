@@ -16,8 +16,8 @@
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import pytest
 
+import pytest
 from expatriate import *
 
 logging.basicConfig(level=logging.DEBUG)

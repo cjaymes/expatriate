@@ -19,6 +19,7 @@ from expatriate.model import *
 
 from .DictValueElementFixture import DictValueElementFixture
 
+
 @element(local_name='dict_explicit_key', dict='dict_explicit_key', dict_key='key', type=StringType, min=0)
 @element(local_name='dict_implicit_key', dict='dict_implicit_key', type=StringType, min=0)
 @element(local_name='dict_value_nil', dict='dict_value_nil', nillable=True, type=StringType, min=0)

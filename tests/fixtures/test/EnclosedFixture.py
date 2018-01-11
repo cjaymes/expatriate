@@ -17,6 +17,7 @@
 
 from expatriate.model import *
 
+
 @attribute(local_name='id', type=IdType)
 class EnclosedFixture(Model):
     pass

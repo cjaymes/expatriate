@@ -19,6 +19,7 @@ from expatriate.model import *
 
 from .EnclosedFixture import EnclosedFixture
 
+
 @element(local_name='list_nil', list='list_nil', nillable=True, cls=EnclosedFixture, min=0)
 @element(local_name='list_type', list='list_type', type=DecimalType, min=0)
 @element(local_name='list_class', list='list_class', cls=EnclosedFixture, min=0)

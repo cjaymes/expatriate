@@ -19,6 +19,7 @@ from expatriate.model import *
 
 from .EnclosedFixture import EnclosedFixture
 
+
 @attribute(local_name='attr')
 @attribute(local_name='in_attr', into='test_attr')
 @attribute(local_name='dash-attr')

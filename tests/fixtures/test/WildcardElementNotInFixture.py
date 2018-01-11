@@ -17,6 +17,7 @@
 
 from expatriate.model import *
 
+
 @element(namespace='http://jaymes.biz/test', local_name=Model.ANY_LOCAL_NAME)
 @element(namespace=Model.ANY_NAMESPACE, local_name=Model.ANY_LOCAL_NAME)
 class WildcardElementNotInFixture(Model):

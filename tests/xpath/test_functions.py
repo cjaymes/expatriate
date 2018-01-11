@@ -17,8 +17,8 @@
 
 import logging
 import math
-import pytest
 
+import pytest
 from expatriate import *
 
 logging.basicConfig(level=logging.DEBUG)

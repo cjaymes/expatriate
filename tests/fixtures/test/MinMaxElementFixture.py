@@ -19,6 +19,7 @@ from expatriate.model import *
 
 from .EnclosedFixture import EnclosedFixture
 
+
 @element(local_name='min', list='min', min=3, cls=EnclosedFixture)
 @element(local_name='max', list='max', min=0, max=2, cls=EnclosedFixture)
 class MinMaxElementFixture(Model):

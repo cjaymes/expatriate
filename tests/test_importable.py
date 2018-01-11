@@ -21,6 +21,7 @@ import sys
 
 import expatriate
 
+
 def iter_packages(pkg):
     if sys.platform != 'win32' and 'windows' in pkg.__name__.lower():
         # windows modules frequently fail to import on non-windows

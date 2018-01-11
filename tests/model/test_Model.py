@@ -15,28 +15,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
 import logging
-import expatriate
-import types
 import sys
+import types
 
+import expatriate
+import pytest
 from expatriate.model import *
-
-from fixtures.test.RootFixture import RootFixture
-from fixtures.test.EnclosedFixture import EnclosedFixture
+from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
 from fixtures.test.AttributeFixture import AttributeFixture
-from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
-from fixtures.test.WildcardElementNotInFixture import WildcardElementNotInFixture
-from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
-from fixtures.test.ListElementFixture import ListElementFixture
 from fixtures.test.DictElementFixture import DictElementFixture
 from fixtures.test.DictValueElementFixture import DictValueElementFixture
-from fixtures.test.InitFixture import InitFixture
-from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
+from fixtures.test.EnclosedFixture import EnclosedFixture
 from fixtures.test.InheritingFixture import InheritingFixture
-
-from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
+from fixtures.test.InitFixture import InitFixture
+from fixtures.test.ListElementFixture import ListElementFixture
+from fixtures.test.MinMaxElementFixture import MinMaxElementFixture
+from fixtures.test.RequiredAttributeFixture import RequiredAttributeFixture
+from fixtures.test.RootFixture import RootFixture
+from fixtures.test.WildcardElementInFixture import WildcardElementInFixture
+from fixtures.test.WildcardElementNotInFixture import \
+    WildcardElementNotInFixture
 
 logging.basicConfig(level=logging.DEBUG)
 

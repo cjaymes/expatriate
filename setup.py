@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from glob import glob
-from os.path import join
-from os.path import dirname
 import re
-from setuptools import find_packages
-from setuptools import setup
+from glob import glob
+from os.path import dirname, join
+
+from setuptools import find_packages, setup
 
 with open(join(dirname(__file__), 'VERSION.txt'), 'r') as f:
     VERSION = f.read().strip()

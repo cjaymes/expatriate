@@ -17,6 +17,7 @@
 
 from expatriate.model import *
 
+
 @attribute(local_name='required_attribute', required=True)
 class RequiredAttributeFixture(Model):
     pass

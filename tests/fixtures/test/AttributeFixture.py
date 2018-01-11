@@ -17,6 +17,7 @@
 
 from expatriate.model import *
 
+
 @attribute(local_name='in_attribute', into='in_test')
 @attribute(local_name='dash-attribute')
 @attribute(local_name='default_attribute', default='test')
