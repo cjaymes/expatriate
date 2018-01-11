@@ -294,7 +294,7 @@ class ElementMapper(Mapper):
                     type_ = self._kwargs['type']()
                     value = type_.parse_value(el.get_string_value())
                 else:
-                    # needs 'class' in self._kwargs
+                    # needs 'cls' in self._kwargs
                     value = Model.load(model, el)
 
             dict_[key] = value
@@ -539,7 +539,7 @@ class ElementMapper(Mapper):
                         sub_el.children.append(expatriate.CharacterData(type_.produce_value(value)))
                 el.append(sub_el)
 
-            elif 'class' in self._kwargs:
+            elif 'cls' in self._kwargs:
                 if value is None:
                     sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                     sub_el.attributes[key_name] = id_
