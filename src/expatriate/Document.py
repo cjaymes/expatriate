@@ -216,9 +216,15 @@ class Document(Parent):
         logger.debug('_not_standalone_handler data: ' + str(data))
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         return 'root'
 
     def get_string_value(self):
+        '''
+        Return the string value of the node
+        '''
         return self.root_element.get_string_value()
 
     def get_document_order(self):

@@ -77,12 +77,21 @@ class Attribute(Node):
         self._prefix = self.namespace_to_prefix(namespace)
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         return 'attribute'
 
     def get_string_value(self):
+        '''
+        Return the string value of the node
+        '''
         return self.value
 
     def get_expanded_name(self):
+        '''
+        Return the expanded name of the node
+        '''
         return (self.namespace, self.local_name)
 
     def __eq__(self, other):

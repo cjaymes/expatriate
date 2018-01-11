@@ -28,6 +28,9 @@ from .Parent import Parent
 logger = logging.getLogger(__name__)
 
 class Element(Parent, Subscriber):
+    '''
+    Class representing a XML element
+    '''
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super().__init__(parent=parent)
 
@@ -225,9 +228,15 @@ class Element(Parent, Subscriber):
         return s
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         return 'element'
 
     def get_string_value(self):
+        '''
+        Return the string value of the node
+        '''
         from .CharacterData import CharacterData
         s = ''
         for c in self.children:
@@ -238,6 +247,9 @@ class Element(Parent, Subscriber):
         return s
 
     def get_expanded_name(self):
+        '''
+        Return the expanded name of the node
+        '''
         return (self.namespace, self.local_name)
 
     def __str__(self):

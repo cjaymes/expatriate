@@ -35,12 +35,3 @@ class XPathSyntaxException(Exception):
 
 class ListenerException(Exception):
     pass
-
-__all__ = [
-    'PrefixRedefineException',
-    'NamespaceRedefineException',
-    'UnattachedElementException',
-    'UnknownNamespaceException',
-    'UnknownPrefixException',
-    'XPathSyntaxException',
-]

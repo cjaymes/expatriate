@@ -24,6 +24,9 @@ from .NonNegativeIntegerType import NonNegativeIntegerType
 logger = logging.getLogger(__name__)
 
 class AllNniType(NMTokenType):
+    '''
+    test
+    '''
     def parse_value(self, value):
         if value == 'unbounded':
             return value

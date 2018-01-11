@@ -407,6 +407,9 @@ class Node(object):
         return n
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         raise NotImplementedError('get_type has not been implemented in class ' + self.__class__.__name__)
 
     def escape(self, text):

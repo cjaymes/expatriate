@@ -37,9 +37,15 @@ class CharacterData(Node):
         return s
 
     def get_string_value(self):
+        '''
+        Return the string value of the node
+        '''
         return self.data
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         return 'text'
 
     def __eq__(self, other):

@@ -33,12 +33,21 @@ class Namespace(Node):
         object.__setattr__(self, name, value)
 
     def get_type(self):
+        '''
+        Return the type of the node
+        '''
         return 'namespace'
 
     def get_string_value(self):
+        '''
+        Return the string value of the node
+        '''
         return self.uri
 
     def get_expanded_name(self):
+        '''
+        Return the expanded name of the node
+        '''
         return (None, self.prefix)
 
     def get_document_order(self):
