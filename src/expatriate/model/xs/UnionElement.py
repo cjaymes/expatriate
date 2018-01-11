@@ -17,16 +17,15 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
+from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
 
 @attribute(local_name='memberTypes', type=QNameType)
 @element(local_name='simpleType', list='tags',
-    cls=('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
+    cls=('expatriate.model.xs.SimpleTypeType', 'SimpleTypeType'),
     min=0, max=None)
 class UnionElement(AnnotatedType):
     pass

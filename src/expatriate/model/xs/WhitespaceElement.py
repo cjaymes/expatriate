@@ -17,9 +17,7 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotationElement import AnnotationElement
 from .FacetType import FacetType
 

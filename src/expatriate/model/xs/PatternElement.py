@@ -17,11 +17,10 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotationElement import AnnotationElement
 from .FacetType import FacetType
+from .StringType import StringType
 
 logger = logging.getLogger(__name__)
 
@@ -32,4 +31,4 @@ class PatternElement(FacetType):
     def get_defs(self, schema, top_level):
         top_level.set_value_pattern(self.value)
 
-        return super(FacetType, self).get_defs(schema, top_level)
+        return super().get_defs(schema, top_level)

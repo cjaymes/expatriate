@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .UnsignedLongType import UnsignedLongType
 
 logger = logging.getLogger(__name__)
 
 class UnsignedIntType(UnsignedLongType):
     def parse_value(self, value):
-        value = super(UnsignedIntType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value > 4294967295:
             raise ValueError('xs:UnsignedInt cannot be > 4294967295')

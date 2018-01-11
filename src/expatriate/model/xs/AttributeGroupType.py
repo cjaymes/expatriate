@@ -17,21 +17,22 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
 from .AttributeType import AttributeType
+from .NCNameType import NCNameType
+from .QNameType import QNameType
 from .WildcardType import WildcardType
 
 logger = logging.getLogger(__name__)
 
 @attribute(local_name='name', type=NCNameType)
 @attribute(local_name='ref', type=QNameType)
-@attribute(local_name='*', )
-@element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)
+@attribute(local_name='*')
+@element(local_name='attribute', list='tags',
+    cls=('expatriate.model.xs.AttributeType', 'AttributeType'), min=0, max=None)
 @element(local_name='attributeGroup', list='tags',
-    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
+    cls=('expatriate.model.xs.AttributeGroupType', 'AttributeGroupType'),
     min=0, max=None)
 @element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
 class AttributeGroupType(AnnotatedType):

@@ -17,15 +17,13 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
 from .ChoiceElement import ChoiceElement
 from .FacetType import FacetType
 from .GroupType import GroupType
-from .GroupType import GroupType
 from .PatternElement import PatternElement
+from .QNameType import QNameType
 from .TotalDigitsElement import TotalDigitsElement
 from .WhitespaceElement import WhitespaceElement
 from .WildcardType import WildcardType
@@ -35,12 +33,12 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='base', type=QNameType)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=('scap.model.xs.AllType', 'AllType'),
+    cls=('expatriate.model.xs.AllType', 'AllType'),
     min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
 @element(local_name='simpleType', list='tags',
-    cls=('scap.model.xs.SimpleTypeType', 'SimpleTypeType'),
+    cls=('expatriate.model.xs.SimpleTypeType', 'SimpleTypeType'),
     min=0)
 @element(local_name='minExclusive', list='tags', cls=FacetType, min=0, max=None)
 @element(local_name='minInclusive', list='tags', cls=FacetType, min=0, max=None)
@@ -55,10 +53,10 @@ logger = logging.getLogger(__name__)
 @element(local_name='whiteSpace', list='tags', cls=WhitespaceElement, min=0, max=None)
 @element(local_name='pattern', list='tags', cls=PatternElement, min=0, max=None)
 @element(local_name='attribute', list='tags',
-    cls=('scap.model.xs.AttributeType', 'AttributeType'),
+    cls=('expatriate.model.xs.AttributeType', 'AttributeType'),
     min=0, max=None)
 @element(local_name='attributeGroup', list='tags',
-    cls=('scap.model.xs.AttributeGroupType', 'AttributeGroupType'),
+    cls=('expatriate.model.xs.AttributeGroupType', 'AttributeGroupType'),
     min=0, max=None)
 @element(local_name='anyAttribute', list='tags', cls=WildcardType, min=0)
 class RestrictionType(AnnotatedType):
@@ -69,4 +67,4 @@ class RestrictionType(AnnotatedType):
         top_level.set_super_module(base_ns)
         top_level.set_super_class(base_name)
 
-        return super(RestrictionType, self).get_defs(schema, top_level)
+        return super().get_defs(schema, top_level)

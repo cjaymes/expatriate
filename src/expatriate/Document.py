@@ -20,13 +20,12 @@ import re
 import xml.parsers.expat
 
 from .CharacterData import CharacterData
-from .Parent import Parent
 from .Comment import Comment
 from .Element import Element
-from .Node import Node
-from .ProcessingInstruction import ProcessingInstruction
-
 from .exceptions import *
+from .Node import Node
+from .Parent import Parent
+from .ProcessingInstruction import ProcessingInstruction
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

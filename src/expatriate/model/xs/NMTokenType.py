@@ -18,10 +18,9 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
-from .TokenType import TokenType
 from . import c_
+from ..decorators import *
+from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
 
@@ -31,4 +30,4 @@ class NMTokenType(TokenType):
         if not m:
             raise ValueError('xs:NMTOKEN must match \c+ ' + value)
 
-        return super(NMTokenType, self).parse_value(value)
+        return super().parse_value(value)

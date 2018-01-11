@@ -17,14 +17,13 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
 from .AttributeGroupType import AttributeGroupType
 from .AttributeType import AttributeType
 from .ChoiceElement import ChoiceElement
 from .GroupType import GroupType
+from .QNameType import QNameType
 from .WildcardType import WildcardType
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='base', type=QNameType, required=True)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=('scap.model.xs.AllType', 'AllType'),
+    cls=('expatriate.model.xs.AllType', 'AllType'),
     min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
@@ -47,4 +46,4 @@ class ExtensionType(AnnotatedType):
         top_level.set_super_module(base_ns)
         top_level.set_super_class(base_name)
 
-        return super(ExtensionType, self).get_defs(schema, top_level)
+        return super().get_defs(schema, top_level)

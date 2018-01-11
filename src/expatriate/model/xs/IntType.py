@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .LongType import LongType
 
 logger = logging.getLogger(__name__)
 
 class IntType(LongType):
     def parse_value(self, value):
-        value = super(IntType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value > 2147483647:
             raise ValueError('xs:int cannot be > 2147483647')

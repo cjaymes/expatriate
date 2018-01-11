@@ -17,11 +17,10 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
 from .AnnotationElement import AnnotationElement
+from .NamespaceListType import NamespaceListType
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='*', )
 @element(local_name='annotation', list='tags', cls=AnnotationElement, min=0)
 @element(local_name='element', list='tags',
-    cls=('scap.model.xs.ElementType', 'ElementType'),
+    cls=('expatriate.model.xs.ElementType', 'ElementType'),
     min=0, max=None)
 class WildcardType(AnnotatedType):
     pass

@@ -17,8 +17,7 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .NMTokenType import NMTokenType
 from .NonNegativeIntegerType import NonNegativeIntegerType
 

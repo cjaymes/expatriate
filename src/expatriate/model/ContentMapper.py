@@ -16,11 +16,12 @@
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+
 import expatriate
 
-from .Mapper import Mapper
 from ..Node import Node
 from .exceptions import *
+from .Mapper import Mapper
 
 logger = logging.getLogger(__name__)
 

@@ -17,22 +17,12 @@
 
 import logging
 
+from . import FACET_NAME_ENUMERATION
 from ..decorators import *
-from .AllNniType import AllNniType
-from .NonNegativeIntegerType import NonNegativeIntegerType
-from .WildcardType import WildcardType
+from ..Model import Model
 
 logger = logging.getLogger(__name__)
 
-@attribute(local_name='minOccurs', type=NonNegativeIntegerType, default=1)
-@attribute(local_name='maxOccurs', type=AllNniType, default=1)
-class AnyElement(WildcardType):
-    def get_defs(self, schema):
-        model_map = {'elements': [], 'attributes': {}}
-
-        tag = {'tag_name': '*', 'min': 0}
-        if self.namespace != '##any':
-            tag['namespace'] = self.namespace
-        model_map['elements'].append(tag)
-
-        return model_map
+@attribute(local_name='name', required=True, enum=FACET_NAME_ENUMERATION)
+class HasFacetElement(Model):
+    pass

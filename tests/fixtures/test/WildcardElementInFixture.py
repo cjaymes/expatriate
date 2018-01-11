@@ -15,9 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from expatriate.model.Model import Model
-from expatriate.model.decorators import *
-from expatriate.model.types import *
+from expatriate.model import *
 
 @element(namespace='http://jaymes.biz/test', local_name=Model.ANY_LOCAL_NAME, into='test_elements')
 @element(namespace=Model.ANY_NAMESPACE, local_name=Model.ANY_LOCAL_NAME, into='elements')

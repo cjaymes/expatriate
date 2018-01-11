@@ -17,12 +17,11 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnyTypeType import AnyTypeType
 from .AppinfoElement import AppinfoElement
 from .DocumentationElement import DocumentationElement
+from .IdType import IdType
 
 logger = logging.getLogger(__name__)
 

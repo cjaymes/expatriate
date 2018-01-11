@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .List import List
 from .TokenType import TokenType
 

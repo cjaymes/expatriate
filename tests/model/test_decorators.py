@@ -18,8 +18,7 @@
 import pytest
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.Model import Model
+from expatriate.model import *
 
 logging.basicConfig(level=logging.DEBUG)
 

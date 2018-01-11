@@ -15,17 +15,5 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
-from expatriate.model.Model import Model
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
-from . import PROPERTY_NAME_ENUMERATION
-
-logger = logging.getLogger(__name__)
-
-@attribute(local_name='name', required=True, enum=PROPERTY_NAME_ENUMERATION)
-@attribute(local_name='value', required=True, type=NormalizedStringType)
-class HasPropertyElement(Model):
-    pass
+ELEMENT_MAP = {
+}

@@ -18,11 +18,10 @@
 import logging
 import os
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotationElement import AnnotationElement
 from .AnyTypeType import AnyTypeType
+from .IdType import IdType
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ logger = logging.getLogger(__name__)
 @element(local_name='annotation', list='tags', cls=AnnotationElement, min=0)
 class AnnotatedType(AnyTypeType):
     def __init__(self, *args, **kwargs):
-        super(AnnotatedType, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._super_module = 'expatriate.model.Model'
         self._super_class = 'Model'

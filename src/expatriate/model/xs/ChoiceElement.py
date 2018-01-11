@@ -17,8 +17,7 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .GroupType import GroupType
 
 logger = logging.getLogger(__name__)

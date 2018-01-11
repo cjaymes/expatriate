@@ -17,9 +17,9 @@
 
 import logging
 
-from expatriate.model.Model import Model
-from expatriate.model.decorators import *
-from expatriate.model.types import *
+from ..decorators import *
+from ..Model import Model
+from .AnyUriType import AnyUriType
 
 logger = logging.getLogger(__name__)
 

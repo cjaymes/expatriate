@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .ShortType import ShortType
 
 logger = logging.getLogger(__name__)
 
 class ByteType(ShortType):
     def parse_value(self, value):
-        value = super(ByteType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value < -128:
             raise ValueError('xs:byte cannot be < -128')

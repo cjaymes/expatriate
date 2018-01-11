@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .IntegerType import IntegerType
 
 logger = logging.getLogger(__name__)
 
 class NonPositiveIntegerType(IntegerType):
     def parse_value(self, value):
-        value = super(NonPositiveIntegerType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value > 0:
             raise ValueError('xs:nonPositiveInteger cannot be > 0')

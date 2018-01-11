@@ -18,15 +18,19 @@
 import logging
 import os.path
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
 from . import FORM_CHOICE_ENUMERATION
+from ..decorators import *
+from .AllNniType import AllNniType
 from .AnnotatedType import AnnotatedType
+from .BooleanType import BooleanType
 from .ComplexTypeType import ComplexTypeType
-from .KeyRefElement import KeyRefElement
 from .KeybaseType import KeybaseType
+from .KeyRefElement import KeyRefElement
+from .NCNameType import NCNameType
+from .NonNegativeIntegerType import NonNegativeIntegerType
+from .QNameType import QNameType
 from .SimpleTypeType import SimpleTypeType
+from .StringType import StringType
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +52,7 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='form', enum=FORM_CHOICE_ENUMERATION)
 @attribute(local_name='minOccurs', type=NonNegativeIntegerType, default=1)
 @attribute(local_name='maxOccurs', type=AllNniType, default=1)
-@attribute(local_name='*', )
+@attribute(local_name='*')
 class ElementType(AnnotatedType):
     def stub(self, path, schema):
         class_name = ''.join(cap_first(w) for w in self.name.split('_'))
@@ -56,7 +60,7 @@ class ElementType(AnnotatedType):
             class_name = class_name + 'Element'
         schema.add_tag_mapping(self.name, class_name)
 
-        super(ElementType, self).stub(path, schema, class_name)
+        super().stub(path, schema, class_name)
 
     def get_defs(self, schema, top_level):
         if self.ref is not None:

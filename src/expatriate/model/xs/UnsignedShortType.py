@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .UnsignedIntType import UnsignedIntType
 
 logger = logging.getLogger(__name__)
 
 class UnsignedShortType(UnsignedIntType):
     def parse_value(self, value):
-        value = super(UnsignedShortType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value > 65535:
             raise ValueError('xs:UnsignedShort cannot be > 65535')

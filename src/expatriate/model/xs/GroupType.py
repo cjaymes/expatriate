@@ -17,11 +17,13 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
+from .AllNniType import AllNniType
 from .AnnotatedType import AnnotatedType
 from .AnyElement import AnyElement
+from .NCNameType import NCNameType
+from .NonNegativeIntegerType import NonNegativeIntegerType
+from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
 
@@ -32,19 +34,19 @@ logger = logging.getLogger(__name__)
 @attribute(local_name='*', )
 @element(local_name='any', list='tags', cls=AnyElement, min=0, max=None)
 @element(local_name='element', list='tags',
-    cls=('scap.model.xs.ElementType', 'ElementType'),
+    cls=('expatriate.model.xs.ElementType', 'ElementType'),
         min=0, max=None)
 @element(local_name='group', list='tags',
-    cls=('scap.model.xs.GroupType', 'GroupType'),
+    cls=('expatriate.model.xs.GroupType', 'GroupType'),
     min=0, max=None)
 @element(local_name='all', list='tags',
-    cls=('scap.model.xs.AllType', 'AllType'),
+    cls=('expatriate.model.xs.AllType', 'AllType'),
     min=0, max=None)
 @element(local_name='choice', list='tags',
-    cls=('scap.model.xs.ChoiceElement', 'ChoiceElement'),
+    cls=('expatriate.model.xs.ChoiceElement', 'ChoiceElement'),
     min=0, max=None)
 @element(local_name='sequence', list='tags',
-    cls=('scap.model.xs.GroupType', 'GroupType'),
+    cls=('expatriate.model.xs.GroupType', 'GroupType'),
     min=0, max=None)
 class GroupType(AnnotatedType):
     pass

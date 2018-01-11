@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+from .exceptions import *
 from .Attribute import Attribute
 from .CharacterData import CharacterData
 from .Comment import Comment
 from .Document import Document
 from .Element import Element
-from .exceptions import *
 from .Namespace import Namespace
 from .ProcessingInstruction import ProcessingInstruction

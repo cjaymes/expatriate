@@ -17,10 +17,9 @@
 
 import logging
 
+from .exceptions import *
 from .Node import Node
 from .xpath.Literal import Literal
-
-from .exceptions import *
 
 logger = logging.getLogger(__name__)
 

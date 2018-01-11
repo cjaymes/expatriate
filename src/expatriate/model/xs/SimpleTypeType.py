@@ -17,17 +17,16 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
+from .NCNameType import NCNameType
 from .RestrictionType import RestrictionType
 from .UnionElement import UnionElement
 
 logger = logging.getLogger(__name__)
 
 @element(local_name='restriction', list='tags', cls=RestrictionType, min=0)
-@element(local_name='list', list='tags', cls=('scap.model.xs.ListElement', 'ListElement'), min=0)
+@element(local_name='list', list='tags', cls=('expatriate.model.xs.ListElement', 'ListElement'), min=0)
 @element(local_name='union', list='tags', cls=UnionElement, min=0)
 @attribute(local_name='final', enum=['#all', 'list', 'union', 'restriction'])
 @attribute(local_name='name', type=NCNameType)
@@ -37,4 +36,4 @@ class SimpleTypeType(AnnotatedType):
         class_name = ''.join(cap_first(w) for w in self.name.split('_'))
         if not class_name.endswith('Type'):
             class_name = class_name + 'Type'
-        super(SimpleTypeType, self).stub(path, schema, class_name)
+        super().stub(path, schema, class_name)

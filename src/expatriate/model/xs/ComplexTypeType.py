@@ -18,15 +18,15 @@
 import logging
 import os.path
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
 from .AttributeGroupType import AttributeGroupType
 from .AttributeType import AttributeType
+from .BooleanType import BooleanType
 from .ChoiceElement import ChoiceElement
 from .ComplexContentElement import ComplexContentElement
 from .GroupType import GroupType
+from .NCNameType import NCNameType
 from .SimpleContentElement import SimpleContentElement
 from .WildcardType import WildcardType
 
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 @element(local_name='complexContent', list='tags', cls=ComplexContentElement, min=0, max=None)
 @element(local_name='group', list='tags', cls=GroupType, min=0)
 @element(local_name='all', list='tags',
-    cls=('scap.model.xs.AllType', 'AllType'), min=0)
+    cls=('expatriate.model.xs.AllType', 'AllType'), min=0)
 @element(local_name='choice', list='tags', cls=ChoiceElement, min=0)
 @element(local_name='sequence', list='tags', cls=GroupType, min=0)
 @element(local_name='attribute', list='tags', cls=AttributeType, min=0, max=None)
@@ -56,4 +56,4 @@ class ComplexTypeType(AnnotatedType):
         if not class_name.endswith('Type'):
             class_name = class_name + 'Type'
 
-        super(ComplexTypeType, self).stub(path, schema, class_name)
+        super().stub(path, schema, class_name)

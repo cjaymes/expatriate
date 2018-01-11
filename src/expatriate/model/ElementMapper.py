@@ -18,8 +18,8 @@
 import importlib
 import logging
 import re
-import expatriate
 
+import expatriate
 from publishsubscribe import PublishingDict, PublishingList
 
 from .exceptions import *

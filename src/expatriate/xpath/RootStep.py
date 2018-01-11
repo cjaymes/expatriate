@@ -30,7 +30,7 @@ class RootStep(Step):
             logger.debug('Root step with no children: using ' + str(self._document) + ' as the result set')
             return [self._document]
         else:
-            return super(RootStep, self).evaluate(self._document, 1, 1, variables)
+            return super().evaluate(self._document, 1, 1, variables)
 
     def __str__(self):
         return 'RootStep ' + hex(id(self)) + ': [' + ','.join([str(x) for x in self.children]) + ']'

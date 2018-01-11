@@ -17,9 +17,8 @@
 
 import logging
 
-from .Node import Node
-
 from .exceptions import *
+from .Node import Node
 
 logger = logging.getLogger(__name__)
 

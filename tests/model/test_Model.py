@@ -21,10 +21,7 @@ import expatriate
 import types
 import sys
 
-from expatriate.model.decorators import *
-from expatriate.model.exceptions import *
-from expatriate.model.types import *
-from expatriate.model import Model
+from expatriate.model import *
 
 from fixtures.test.RootFixture import RootFixture
 from fixtures.test.EnclosedFixture import EnclosedFixture

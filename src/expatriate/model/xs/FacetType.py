@@ -17,10 +17,10 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
+from .AnySimpleType import AnySimpleType
+from .BooleanType import BooleanType
 
 logger = logging.getLogger(__name__)
 
@@ -32,4 +32,4 @@ class FacetType(AnnotatedType):
         if self.tag_name == 'enumeration':
             top_level.append_value_enumeration(self.value)
 
-        return super(FacetType, self).get_defs(schema, top_level)
+        return super().get_defs(schema, top_level)

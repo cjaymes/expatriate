@@ -17,10 +17,9 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .KeybaseType import KeybaseType
+from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
 

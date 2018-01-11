@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .IntegerType import IntegerType
 
 logger = logging.getLogger(__name__)
 
 class LongType(IntegerType):
     def parse_value(self, value):
-        value = super(LongType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value < -9223372036854775808:
             raise ValueError('xs:negativeInteger cannot be < -9223372036854775808')

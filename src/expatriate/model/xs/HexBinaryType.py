@@ -19,15 +19,14 @@ import binascii
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .AnySimpleType import AnySimpleType
 
 logger = logging.getLogger(__name__)
 
 class HexBinaryType(AnySimpleType):
     def parse_value(self, value):
-        value = super(HexBinaryType, self).parse_value(value)
+        value = super().parse_value(value)
 
         m = re.fullmatch(b'([0-9a-fA-F]{2})*', value)
         if not m:

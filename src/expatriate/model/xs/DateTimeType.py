@@ -19,8 +19,7 @@ import datetime
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .AnySimpleType import AnySimpleType
 from .SevenPropertyModel import SevenPropertyModel
 

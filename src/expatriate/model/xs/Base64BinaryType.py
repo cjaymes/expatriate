@@ -19,15 +19,14 @@ import base64
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .AnySimpleType import AnySimpleType
 
 logger = logging.getLogger(__name__)
 
 class Base64BinaryType(AnySimpleType):
     def parse_value(self, value):
-        value = super(Base64BinaryType, self).parse_value(value)
+        value = super().parse_value(value)
 
         m = re.fullmatch(b'[a-zA-Z0-9+/= ]*', value)
         if not m:

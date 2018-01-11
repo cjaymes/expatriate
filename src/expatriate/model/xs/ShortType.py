@@ -17,15 +17,14 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .IntType import IntType
 
 logger = logging.getLogger(__name__)
 
 class ShortType(IntType):
     def parse_value(self, value):
-        value = super(ShortType, self).parse_value(value)
+        value = super().parse_value(value)
 
         if value < -32768:
             raise ValueError('xs:short cannot be < -32768')

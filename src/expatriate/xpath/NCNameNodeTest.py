@@ -22,7 +22,7 @@ from .NodeTest import NodeTest
 logger = logging.getLogger(__name__)
 class NCNameNodeTest(NodeTest):
     def __init__(self, name):
-        super(NCNameNodeTest, self).__init__()
+        super().__init__()
         self.name = name
 
     def evaluate(self, context_node, context_position, context_size, variables):

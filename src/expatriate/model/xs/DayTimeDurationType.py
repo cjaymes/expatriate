@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .DurationType import DurationType
 
 logger = logging.getLogger(__name__)
@@ -30,11 +29,11 @@ class DayTimeDurationType(DurationType):
         if not m or not re.fullmatch(r'.*[DHMS].*', value) or not re.fullmatch(r'.*[^T]', value):
             raise ValueError('Unable to parse xs:DayTimeDurationType value')
 
-        return super(DayTimeDurationType, self).parse_value(value)
+        return super().parse_value(value)
 
     def produce_value(self, value):
         months, seconds = value
         if months != 0:
             raise ValueError('xs:DayTimeDurationType requires 0 for months value')
 
-        return super(DayTimeDurationType, self).produce_value(value)
+        return super().produce_value(value)

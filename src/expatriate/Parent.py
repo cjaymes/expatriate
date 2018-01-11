@@ -17,9 +17,8 @@
 
 import logging
 
-from .Node import Node
-
 from .exceptions import *
+from .Node import Node
 
 logger = logging.getLogger(__name__)
 
@@ -155,4 +154,4 @@ class Parent(Node):
             if el is not None:
                 return el
 
-        return super(Parent, self).find_by_id(id_)
+        return super().find_by_id(id_)

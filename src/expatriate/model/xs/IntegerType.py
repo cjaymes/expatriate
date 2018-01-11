@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .DecimalType import DecimalType
 
 logger = logging.getLogger(__name__)

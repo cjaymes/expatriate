@@ -18,10 +18,9 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from . import c_, i_
+from ..decorators import *
 from .TokenType import TokenType
-from . import i_, c_
 
 logger = logging.getLogger(__name__)
 
@@ -31,4 +30,4 @@ class NameType(TokenType):
         if not m:
             raise ValueError('xs:Name must match \i\c* ' + value)
 
-        return super(NameType, self).parse_value(value)
+        return super().parse_value(value)

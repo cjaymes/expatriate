@@ -17,10 +17,11 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
+from .AnyUriType import AnyUriType
+from .NCNameType import NCNameType
+from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
 

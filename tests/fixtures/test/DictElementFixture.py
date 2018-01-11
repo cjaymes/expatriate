@@ -15,9 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-from expatriate.model.Model import Model
-from expatriate.model.decorators import *
-from expatriate.model.types import *
+from expatriate.model import *
+
 from .DictValueElementFixture import DictValueElementFixture
 
 @element(local_name='dict_explicit_key', dict='dict_explicit_key', dict_key='key', type=StringType, min=0)

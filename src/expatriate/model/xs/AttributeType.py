@@ -17,12 +17,13 @@
 
 import logging
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
 from . import FORM_CHOICE_ENUMERATION
+from ..decorators import *
 from .AnnotatedType import AnnotatedType
+from .NCNameType import NCNameType
+from .QNameType import QNameType
 from .SimpleTypeType import SimpleTypeType
+from .StringType import StringType
 
 logger = logging.getLogger(__name__)
 

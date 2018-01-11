@@ -18,22 +18,23 @@
 import logging
 import os.path
 
-from expatriate.model.decorators import *
-from expatriate.model.types import *
-
 from . import FORM_CHOICE_ENUMERATION
+from ..decorators import *
 from .AnnotationElement import AnnotationElement
 from .AnyTypeType import AnyTypeType
+from .AnyUriType import AnyUriType
 from .AttributeGroupType import AttributeGroupType
 from .AttributeType import AttributeType
 from .ComplexTypeType import ComplexTypeType
 from .ElementType import ElementType
 from .GroupType import GroupType
+from .IdType import IdType
 from .ImportElement import ImportElement
 from .IncludeElement import IncludeElement
 from .NotationElement import NotationElement
 from .RedefineElement import RedefineElement
 from .SimpleTypeType import SimpleTypeType
+from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
 

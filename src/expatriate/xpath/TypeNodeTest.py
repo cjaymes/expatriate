@@ -29,7 +29,7 @@ class TypeNodeTest(NodeTest):
     ]
 
     def __init__(self, name):
-        super(TypeNodeTest, self).__init__()
+        super().__init__()
         self.name = name
 
     # TODO processing-instruction can have a literal that matches its name

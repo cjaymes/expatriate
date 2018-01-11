@@ -17,15 +17,13 @@
 
 import logging
 
-from .Parent import Parent
-from .Node import Node
+from publishsubscribe import PublishingDict, Subscriber
+
 from .Attribute import Attribute
-from .Namespace import Namespace
-
 from .exceptions import *
-
-from publishsubscribe import PublishingDict
-from publishsubscribe import Subscriber
+from .Namespace import Namespace
+from .Node import Node
+from .Parent import Parent
 
 logger = logging.getLogger(__name__)
 
@@ -262,7 +260,7 @@ class Element(Parent, Subscriber):
                 else:
                     logger.debug(str(self) + ' id ' + str(v) + ' does not match id: ' + str(id_))
 
-        return super(Element, self).find_by_id(id_)
+        return super().find_by_id(id_)
 
     def get_node_count(self):
         do = 1 + len(self.namespace_nodes) + len(self.attribute_nodes)

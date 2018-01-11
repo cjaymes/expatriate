@@ -19,13 +19,12 @@ import datetime
 import importlib
 import logging
 import pkgutil
-import pytest
-import xml.etree.ElementTree as ET
-
-from expatriate.model.Model import Model
 
 # import all the classes in the package
 import expatriate.model.xs as pkg
+import pytest
+from expatriate.model import *
+
 for m_finder, m_name, m_ispkg in pkgutil.iter_modules(path=pkg.__path__):
     try:
         mod = importlib.import_module(pkg.__name__ + '.' + m_name, pkg.__name__)

@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
@@ -30,4 +29,4 @@ class LanguageType(TokenType):
         if not m:
             raise ValueError('xs:language must match [a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*')
 
-        return super(LanguageType, self).parse_value(value)
+        return super().parse_value(value)

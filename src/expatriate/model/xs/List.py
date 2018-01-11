@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .StringType import StringType
 
 logger = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 class List(StringType):
     # abstract
     def parse_value(self, value):
-        value = super(List, self).parse_value(value)
+        value = super().parse_value(value)
 
         if len(value) < 1:
             raise ValueError('xs:List must contain at least 1 character')

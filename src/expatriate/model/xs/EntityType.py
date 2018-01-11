@@ -17,8 +17,7 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .NCNameType import NCNameType
 
 logger = logging.getLogger(__name__)

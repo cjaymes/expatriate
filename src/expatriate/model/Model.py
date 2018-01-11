@@ -15,14 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
-import expatriate
 import importlib
+import itertools
 import logging
 import os.path
 import re
 import sys
-import itertools
 
+import expatriate
 from publishsubscribe import Subscriber
 
 from .decorators import *
@@ -57,8 +57,8 @@ class Model(Subscriber):
     __namespace_to_package = {
         'http://www.w3.org/XML/1998/namespace': 'expatriate.model.xml',
         'http://www.w3.org/2001/XMLSchema': 'expatriate.model.xs',
-        'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty': 'expatriate.model.xs.hfp',
-        'http://www.w3.org/2001/XMLSchema-instance': 'expatriate.model.xs.i',
+        'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty': 'expatriate.model.xshfp',
+        'http://www.w3.org/2001/XMLSchema-instance': 'expatriate.model.xsi',
     }
     __namespace_to_prefix = {
         'http://www.w3.org/XML/1998/namespace': 'xml',
@@ -66,12 +66,7 @@ class Model(Subscriber):
         'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty': 'xshfp',
         'http://www.w3.org/2001/XMLSchema-instance': 'xsi',
     }
-    __package_to_namespace = {
-        'expatriate.model.xml': 'http://www.w3.org/XML/1998/namespace',
-        'expatriate.model.xs': 'http://www.w3.org/2001/XMLSchema',
-        'expatriate.model.xs.hfp': 'http://www.w3.org/2001/XMLSchema-hasFacetAndProperty',
-        'expatriate.model.xs.i': 'http://www.w3.org/2001/XMLSchema-instance',
-    }
+    __package_to_namespace = {v:k for k,v in __namespace_to_package.items()}
     _ns_count = 0
 
     _attribute_mappers = {}

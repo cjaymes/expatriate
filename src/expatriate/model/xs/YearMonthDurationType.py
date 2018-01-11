@@ -18,8 +18,7 @@
 import logging
 import re
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .DurationType import DurationType
 
 logger = logging.getLogger(__name__)
@@ -30,11 +29,11 @@ class YearMonthDurationType(DurationType):
         if not m or not re.fullmatch(r'.*[YM].*', value):
             raise ValueError('Unable to parse xs:YearMonthDuration value')
 
-        return super(YearMonthDurationType, self).parse_value(value)
+        return super().parse_value(value)
 
     def produce_value(self, value):
         months, seconds = value
         if seconds != 0:
             raise ValueError('xs:YearMonthDuration requires 0 for seconds value')
 
-        return super(YearMonthDurationType, self).produce_value(value)
+        return super().produce_value(value)

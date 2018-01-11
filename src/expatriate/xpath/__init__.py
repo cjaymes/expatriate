@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+from ..exceptions import XPathSyntaxException
 from .AnyNodeTest import AnyNodeTest
 from .Axis import Axis
 from .Expression import Expression
@@ -28,8 +29,6 @@ from .QNameNodeTest import QNameNodeTest
 from .RootStep import RootStep
 from .Step import Step
 from .TypeNodeTest import TypeNodeTest
-
-from ..exceptions import XPathSyntaxException
 
 __all__ = [
     'AnyNodeTest',

@@ -17,8 +17,7 @@
 
 import logging
 
-from expatriate.model.decorators import *
-
+from ..decorators import *
 from .AnnotationElement import AnnotationElement
 from .ElementType import ElementType
 from .GroupType import GroupType
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 @attribute(local_name='minOccurs', enum=['0', '1'], default='1')
 @attribute(local_name='maxOccurs', enum=['1'], default='1')
-@attribute(local_name='*', )
+@attribute(local_name='*')
 @element(local_name='annotation', list='tags', cls=AnnotationElement, min=0)
 @element(local_name='element', list='tags', cls=ElementType, min=0, max=None)
 class AllType(GroupType):
