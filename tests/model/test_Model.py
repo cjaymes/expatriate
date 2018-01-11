@@ -722,17 +722,17 @@ def test_produce_dict_value_attr():
     assert '<test:dict_value_attr id="test1" value="test1"/>' in xml
     assert '<test:dict_value_attr id="test2" value="test2"/>' in xml
 
-# def test_produce_dict_value_type():
-#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
-#     model.dict_value_type['test1'] = 'test1'
-#     model.dict_value_type['test2'] = 'test2'
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:DictElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert '<test:dict_value_type id="test1">test1</test:dict_value_type>' in xml
-#     assert '<test:dict_value_type id="test2">test2</test:dict_value_type>' in xml
-#
+def test_produce_dict_value_type():
+    model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.dict_value_type['test1'] = 'test1'
+    model.dict_value_type['test2'] = 'test2'
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:DictElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:dict_value_type id="test1">test1</test:dict_value_type>' in xml
+    assert '<test:dict_value_type id="test2">test2</test:dict_value_type>' in xml
+
 # def test_produce_dict_value_class():
 #     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_value_class['test1'] = DictValueElementFixture(value='text1', local_name='dict_value_class')
