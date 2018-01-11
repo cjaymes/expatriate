@@ -656,17 +656,17 @@ def test_produce_list_nil():
     assert '<test:list_nil xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>' in xml
     assert '<test:list_nil>test</test:list_nil>' in xml
 
-# def test_produce_list_type():
-#     model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
-#     model.list_type.append(1.1)
-#     model.list_type.append(1.2)
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:ListElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert '<test:list_type>1.1</test:list_type>' in xml
-#     assert '<test:list_type>1.2</test:list_type>' in xml
-#
+def test_produce_list_type():
+    model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.list_type.append(1.1)
+    model.list_type.append(1.2)
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:ListElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:list_type>1.1</test:list_type>' in xml
+    assert '<test:list_type>1.2</test:list_type>' in xml
+
 # def test_produce_list_class():
 #     model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.list_class.append(EnclosedFixture(value='test1', local_name='list_class'))

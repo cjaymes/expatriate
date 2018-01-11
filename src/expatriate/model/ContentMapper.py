@@ -20,6 +20,7 @@ import expatriate
 
 from .Mapper import Mapper
 from ..Node import Node
+from .exceptions import *
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +54,4 @@ class ContentMapper(Mapper):
     def produce_in(self, el, model, id_):
         from .Model import Model
         logger.debug(str(self) + ' producing ' + str(id_) + ' in ' + str(el))
-        if isinstance(id_, str):
-            el.children.append(expatriate.CharacterData(id_))
-        else:
-            raise ElementMappingException('Cannot map content ' + str(id_)
-                + ' to xml character data')
+        el.children.append(expatriate.CharacterData(str(id_)))
