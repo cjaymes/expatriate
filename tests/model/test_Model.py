@@ -667,17 +667,17 @@ def test_produce_list_type():
     assert '<test:list_type>1.1</test:list_type>' in xml
     assert '<test:list_type>1.2</test:list_type>' in xml
 
-# def test_produce_list_class():
-#     model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
-#     model.list_class.append(EnclosedFixture(value='test1', local_name='list_class'))
-#     model.list_class.append(EnclosedFixture(value='test2', local_name='list_class'))
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:ListElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert '<test:list_class>test1</test:list_class>' in xml
-#     assert '<test:list_class>test2</test:list_class>' in xml
-#
+def test_produce_list_class():
+    model = ListElementFixture(local_name='ListElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.list_class.append(EnclosedFixture(value='test1', local_name='list_class'))
+    model.list_class.append(EnclosedFixture(value='test2', local_name='list_class'))
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:ListElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:list_class>test1</test:list_class>' in xml
+    assert '<test:list_class>test2</test:list_class>' in xml
+
 # def test_produce_dict_key_explicit():
 #     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_explicit_key['test1'] = 'test1'
