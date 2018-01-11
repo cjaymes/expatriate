@@ -678,17 +678,17 @@ def test_produce_list_class():
     assert '<test:list_class>test1</test:list_class>' in xml
     assert '<test:list_class>test2</test:list_class>' in xml
 
-# def test_produce_dict_key_explicit():
-#     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
-#     model.dict_explicit_key['test1'] = 'test1'
-#     model.dict_explicit_key['test2'] = 'test2'
-#
-#     xml = model.produce().produce()
-#     assert xml.startswith('<test:DictElementFixture')
-#     assert 'xmlns:test="http://jaymes.biz/test"' in xml
-#     assert '<test:dict_explicit_key key="test1">test1</test:dict_explicit_key>' in xml
-#     assert '<test:dict_explicit_key key="test2">test2</test:dict_explicit_key>' in xml
-#
+def test_produce_dict_key_explicit():
+    model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
+    model.dict_explicit_key['test1'] = 'test1'
+    model.dict_explicit_key['test2'] = 'test2'
+
+    xml = model.produce().produce()
+    assert xml.startswith('<test:DictElementFixture')
+    assert 'xmlns:test="http://jaymes.biz/test"' in xml
+    assert '<test:dict_explicit_key key="test1">test1</test:dict_explicit_key>' in xml
+    assert '<test:dict_explicit_key key="test2">test2</test:dict_explicit_key>' in xml
+
 # def test_produce_dict_key_implicit():
 #     model = DictElementFixture(local_name='DictElementFixture', namespace='http://jaymes.biz/test', prefix='test')
 #     model.dict_implicit_key['test1'] = 'test1'
