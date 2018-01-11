@@ -323,7 +323,7 @@ class Model(Subscriber):
                 + ' for element ' + str(el))
 
             for mapper in parent._get_element_mappers():
-                if mapper.matches(el):
+                if mapper.matches(el, parent):
                     logger.debug(str(el) + ' matched ' + str(mapper)
                         + ' in ' + parent.__class__.__name__)
                     class_ = mapper.class_for_element(el, parent)
@@ -532,13 +532,17 @@ class Model(Subscriber):
 
         self._parent = parent
 
+        self._local_name = el.local_name
+        self._namespace = el.namespace
+        self._prefix = el.prefix
+
         logger.debug('Parsing ' + str(el) + ' element into '
             + self.__class__.__module__ + '.' + self.__class__.__name__
             + ' class')
 
         for name, attr in el.attribute_nodes.items():
             for mapper in self._get_attribute_mappers():
-                if mapper.matches(attr):
+                if mapper.matches(attr, self):
                     mapper.parse_in(self, attr)
                     break
             else:
@@ -549,7 +553,7 @@ class Model(Subscriber):
         for child in el.children:
             if isinstance(child, expatriate.Element):
                 for mapper in self._get_element_mappers():
-                    if mapper.matches(child):
+                    if mapper.matches(child, self):
                         mapper.parse_in(self, child)
                         break
                 else:

@@ -163,20 +163,25 @@ class ElementMapper(Mapper):
         raise ReferenceException('Could not find reference ' + ref
                 + ' within ' + str(model) + '.' + name)
 
-    def matches(self, el):
+    def matches(self, el, model):
         from .Model import Model
 
-        matches = (self.get_namespace(), self.get_local_name()) in (
+        namespace = self.get_namespace()
+        # if namespace is None:
+        #     namespace = model.package_to_namespace(model.get_package())
+
+        matches = (namespace, self.get_local_name()) in (
             (el.namespace, el.local_name),
             (None, el.local_name),
+            (None, Model.ANY_LOCAL_NAME),
             (el.namespace, Model.ANY_LOCAL_NAME),
             (Model.ANY_NAMESPACE, Model.ANY_LOCAL_NAME)
         )
 
         if matches:
-            logger.debug(str(self) + ' matches ' + str(el))
+            logger.debug(str(self) + str((namespace, self.get_local_name())) + ' matches ' + str(el))
         else:
-            logger.debug(str(self) + ' does not match ' + str(el))
+            logger.debug(str(self) + str((namespace, self.get_local_name())) + ' does not match ' + str(el))
 
         return matches
 

@@ -98,7 +98,7 @@ class AttributeMapper(Mapper):
     def get_local_name(self):
         return self._kwargs['local_name']
 
-    def matches(self, attr):
+    def matches(self, attr, model):
         from .Model import Model
 
         matches = (self.get_namespace(), self.get_local_name()) in (
@@ -203,7 +203,7 @@ class AttributeMapper(Mapper):
 
         if 'type' in self._kwargs:
             logger.debug(str(model) + ' Producing ' + str(value) + ' as '
-                + self._kwargs['type'] + ' type')
+                + str(self._kwargs['type']) + ' type')
             type_ = self._kwargs['type']()
             v = type_.produce_value(value)
 

@@ -57,7 +57,7 @@ def test_namespace_registration():
         Model.namespace_to_package('http://jaymes.biz/derp')
 
 def test_is_nil():
-    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />'
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -65,7 +65,7 @@ def test_is_nil():
     assert model.is_nil()
 
 def test_is_not_nil():
-    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -88,7 +88,7 @@ def test_namespace_to_package():
 #TODO test_namespace_to_prefix
 
 def test_class_for_element():
-    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     assert Model.class_for_element(doc.root_element) == RootFixture
@@ -101,26 +101,26 @@ def test_get_value():
     assert model.get_value() == 'test'
 
 def test_load_root_model():
-    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test" />'
+    test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
     assert isinstance(model, RootFixture)
 
     with pytest.raises(UnknownNamespaceException):
-        test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/derp" />'
+        test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/derp"/>'
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
     with pytest.raises(ElementMappingException):
-        test_xml = '<test:Derp xmlns:test="http://jaymes.biz/test" />'
+        test_xml = '<test:Derp xmlns:test="http://jaymes.biz/test"/>'
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
 def test_load_attribute_required():
-    test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test" />'
+    test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" required_attribute="test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -129,13 +129,13 @@ def test_load_attribute_required():
     assert model.required_attribute == 'test'
 
     with pytest.raises(RequiredAttributeException):
-        test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test" />'
+        test_xml = '<test:RequiredAttributeFixture xmlns:test="http://jaymes.biz/test"/>'
         doc = expatriate.Document()
         doc.parse(test_xml)
         model = Model.load(None, doc.root_element)
 
 def test_load_attribute_in():
-    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" in_attribute="test" />'
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" in_attribute="test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -144,7 +144,7 @@ def test_load_attribute_in():
     assert model.in_test == 'test'
 
 def test_load_attribute_dash():
-    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" dash-attribute="test" />'
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" dash-attribute="test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -153,7 +153,7 @@ def test_load_attribute_dash():
     assert model.dash_attribute == 'test'
 
 def test_load_attribute_default():
-    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" />'
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -162,7 +162,7 @@ def test_load_attribute_default():
     assert model.default_attribute == 'test'
 
 def test_load_attribute_no_default():
-    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test" />'
+    test_xml = '<test:AttributeFixture xmlns:test="http://jaymes.biz/test"/>'
     doc = expatriate.Document()
     doc.parse(test_xml)
     model = Model.load(None, doc.root_element)
@@ -289,7 +289,7 @@ def test_load_element_wildcard_in():
 def test_load_element_list_nil():
     test_xml = '''
         <test:ListElementFixture xmlns:test="http://jaymes.biz/test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <test:list_nil xsi:nil="true" />
+        <test:list_nil xsi:nil="true"/>
         <test:list_nil>test2</test:list_nil>
         </test:ListElementFixture>
         '''
@@ -746,31 +746,31 @@ def test_produce_dict_value_class():
     assert '<test:dict_value_class id="test1" tag="blue">text1</test:dict_value_class>' in xml
     assert '<test:dict_value_class id="test2" tag="red">text2</test:dict_value_class>' in xml
 
-# def test_in_and_out():
-#     test_xml = '<test:InitFixture xmlns:test="http://jaymes.biz/test" xmlns:test2="http://jaymes.biz/test2">' + \
-#         '<test:list id="test1" />' + \
-#         '<test:list id="test2" />' + \
-#         '<test:list id="test3" />' + \
-#         '<test:dict id="test4" />' + \
-#         '<test:dict id="test5" />' + \
-#         '<test:dict id="test6" />' + \
-#         '<test:dict id="test7" />' + \
-#         '<test:dict id="test8" />' + \
-#         '<test:in_test id="test9" />' + \
-#         '<test:dash-test id="test10" />' + \
-#         '<test2:wildcard_element id="test11" />' + \
-#         '<test:wildcard_element id="test12" />' + \
-#         '<test:dict id="test13" />' + \
-#         '<test:list id="test14" />' + \
-#         '</test:InitFixture>'
-#     doc = expatriate.Document()
-#     doc.parse(test_xml)
-#     model = Model.load(None, doc.root_element)
-#
-#     out_xml = model.produce().produce()
-#     print(test_xml)
-#     print(out_xml)
-#     assert out_xml == test_xml
+def test_in_and_out():
+    test_xml = '<test:InitFixture xmlns:test="http://jaymes.biz/test">' + \
+        '<test:list id="test1"/>' + \
+        '<test:list id="test2"/>' + \
+        '<test:list id="test3"/>' + \
+        '<test:dict id="test4"/>' + \
+        '<test:dict id="test5"/>' + \
+        '<test:dict id="test6"/>' + \
+        '<test:dict id="test7"/>' + \
+        '<test:dict id="test8"/>' + \
+        '<test:in_test id="test9"/>' + \
+        '<test:dash-test id="test10"/>' + \
+        '<test2:wildcard_element xmlns:test2="http://jaymes.biz/test2" id="test11"/>' + \
+        '<test:wildcard_element id="test12"/>' + \
+        '<test:dict id="test13"/>' + \
+        '<test:list id="test14"/>' + \
+        '</test:InitFixture>'
+    doc = expatriate.Document()
+    doc.parse(test_xml)
+    model = Model.load(None, doc.root_element)
+
+    out_xml = model.produce().produce()
+    print(test_xml)
+    print(out_xml)
+    assert out_xml == test_xml
 
 def test_load_attribute_value_in_enum():
     test_xml = '<test:RootFixture xmlns:test="http://jaymes.biz/test"><test:EnumValue>bravo</test:EnumValue></test:RootFixture>'
