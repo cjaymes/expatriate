@@ -1,6 +1,7 @@
 expatriate
 ==========
 .. image:: https://travis-ci.org/cjaymes/expatriate.svg?branch=master
+.. image:: https://readthedocs.org/projects/expatriate/badge/?version=latest
 
 XML parsing and generation library on top of expat with Python object mapping
 (ORM). See tests/fixtures for examples of how to use.
