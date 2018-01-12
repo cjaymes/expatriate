@@ -31,6 +31,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 class Document(Parent):
+    '''
+    Class representing a XML document
+    '''
     @staticmethod
     def ordered_first(nodeset):
         if len(nodeset) == 0:

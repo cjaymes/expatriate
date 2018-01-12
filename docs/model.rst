@@ -1,36 +1,23 @@
-# Copyright 2016 Casey Jaymes
+.. XML Object Relational Modeling
 
-# This file is part of Expatriate.
-#
-# Expatriate is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Expatriate is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
+******************************
+XML Object Relational Modeling
+******************************
 
-import functools
-import importlib
-import logging
-import os
-import sys
-import types
+.. autoclass:: expatriate.model.Model
+    :members:
 
-from .AttributeMapper import AttributeMapper
-from .ContentMapper import ContentMapper
-from .ElementMapper import ElementMapper
+==========
+Decorators
+==========
 
-logger = logging.getLogger(__name__)
+The decorators can be all imported with the following::
 
-def attribute(*args, **kwargs):
-    '''
-    Decorator to map xml elements to model children
+    from expatriate.model.decorators import *
+
+.. py:decorator:: attribute
+
+    Decorator to map xml attributes to model attributes
 
     Used as follows::
 
@@ -51,16 +38,9 @@ def attribute(*args, **kwargs):
     :param min: The minimum value of the attribute. Can be numeric or None (the default).
     :param max: The maximum value of the attribute. Can be numeric or None (the default).
     :param prohibited: The attribute should not appear in the element.
-    '''
-    def wrapper(cls):
-        functools.update_wrapper(wrapper, cls)
-        cls._add_attribute_mapper(AttributeMapper(**kwargs))
 
-        return cls
-    return wrapper
+.. py:decorator:: element
 
-def element(*args, **kwargs):
-    '''
     Decorator to map xml elements to model children.
 
     One of *type* or *cls* must be specified. If the type/class cannot be passed in
@@ -88,16 +68,9 @@ def element(*args, **kwargs):
     :param enum: Enumeration to which the value of the element must belong.
     :param pattern: Pattern which the value of the element must match.
     :param nillable: If True, the element can be nil (from the xsi spec). False specifies that it cannot (the default).
-    '''
-    def wrapper(cls):
-        functools.update_wrapper(wrapper, cls)
-        cls._add_element_mapper(ElementMapper(**kwargs))
 
-        return cls
-    return wrapper
+.. py:decorator:: content
 
-def content(*args, **kwargs):
-    '''
     Decorator to map xml element content to model data.
 
     Used as follows::
@@ -111,10 +84,96 @@ def content(*args, **kwargs):
     :param type: Type against which a value must validate
     :param min: The minimum value of the attribute. Can be numeric or None (the default).
     :param max: The maximum value of the attribute. Can be numeric or None (the default).
-    '''
-    def wrapper(cls):
-        functools.update_wrapper(wrapper, cls)
-        cls._add_content_mapper(ContentMapper(**kwargs))
 
-        return cls
-    return wrapper
+===========
+Basic Types
+===========
+
+Simple types defined by `XML Schema <http://www.w3.org/2001/XMLSchema>`_. All
+are imported by::
+
+    from expatriate.model.types import *
+
+.. py:class:: AllNniType
+.. py:class:: AnySimpleType
+.. py:class:: AnyTypeType
+.. py:class:: AnyUriType
+.. py:class:: Base64BinaryType
+.. py:class:: BooleanType
+.. py:class:: ByteType
+.. py:class:: DateTimeStampType
+.. py:class:: DateTimeType
+.. py:class:: DateType
+.. py:class:: DayTimeDurationType
+.. py:class:: DecimalType
+.. py:class:: DoubleType
+.. py:class:: DurationType
+.. py:class:: EntitiesType
+.. py:class:: EntityType
+.. py:class:: FloatType
+.. py:class:: GDayType
+.. py:class:: GMonthDayType
+.. py:class:: GMonthType
+.. py:class:: GYearMonthType
+.. py:class:: GYearType
+.. py:class:: HexBinaryType
+.. py:class:: IdRefsType
+.. py:class:: IdRefType
+.. py:class:: IdType
+.. py:class:: IntegerType
+.. py:class:: IntType
+.. py:class:: LanguageType
+.. py:class:: LongType
+.. py:class:: NamespaceListType
+.. py:class:: NameType
+.. py:class:: NCNameType
+.. py:class:: NegativeIntegerType
+.. py:class:: NMTokensType
+.. py:class:: NMTokenType
+.. py:class:: NonNegativeIntegerType
+.. py:class:: NonPositiveIntegerType
+.. py:class:: NormalizedStringType
+.. py:class:: PositiveIntegerType
+.. py:class:: QNameType
+.. py:class:: ShortType
+.. py:class:: StringType
+.. py:class:: TimeType
+.. py:class:: TokenType
+.. py:class:: UnsignedByteType
+.. py:class:: UnsignedIntType
+.. py:class:: UnsignedLongType
+.. py:class:: UnsignedShortType
+.. py:class:: YearMonthDurationType
+
+===============
+Support Classes
+===============
+
+These classes are used (via decorators) to map xml data to and from
+:py:class:`Model` objects.
+
+.. py:class:: AttributeMapper
+.. py:class:: ContentMapper
+.. py:class:: ElementMapper
+.. py:class:: Mapper
+
+===========
+Exceptions
+===========
+
+Exceptions are available by::
+
+    from expatriate.model.exceptions import *
+
+.. py:exception:: expatriate.model.exceptions.UnknownNamespaceException
+.. py:exception:: expatriate.model.exceptions.DecoratorException
+.. py:exception:: expatriate.model.exceptions.ElementMappingException
+.. py:exception:: expatriate.model.exceptions.ReferenceException
+.. py:exception:: expatriate.model.exceptions.RequiredAttributeException
+.. py:exception:: expatriate.model.exceptions.ProhibitedAttributeException
+.. py:exception:: expatriate.model.exceptions.UnknownAttributeException
+.. py:exception:: expatriate.model.exceptions.UnknownElementException
+.. py:exception:: expatriate.model.exceptions.MinimumElementException
+.. py:exception:: expatriate.model.exceptions.MaximumElementException
+.. py:exception:: expatriate.model.exceptions.EnumerationException
+.. py:exception:: expatriate.model.exceptions.PatternException

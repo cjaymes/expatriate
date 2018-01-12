@@ -24,6 +24,9 @@ from .xpath.Literal import Literal
 logger = logging.getLogger(__name__)
 
 class Attribute(Node):
+    '''
+    Class representing a XML attribute node
+    '''
     def __init__(self, local_name, value, parent=None, prefix=None, namespace=None):
         super().__init__(parent=parent)
 

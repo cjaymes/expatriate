@@ -23,37 +23,64 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class Parent(Node):
+    '''
+    Super class for nodes containing children
+
+    :param parent: parent Node of this Node
+    :type parent: Parent or None
+
+    '''
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.children = []
 
-    def spawn_character_data(self, data):
+    def spawn_character_data(self, *args, **kwargs):
+        '''
+        Spawn a :py:class:`.CharacterData` object using this node as the parent
+
+        All arguments are passed to the newly created object's constructor
+        '''
         from .CharacterData import CharacterData
-        n = CharacterData(data, parent=self)
+        n = CharacterData(*args, **kwargs, parent=self)
 
         self.children.append(n)
 
         return n
 
-    def spawn_comment(self, data):
+    def spawn_comment(self, *args, **kwargs):
+        '''
+        Spawn a :py:class:`.Comment` object using this node as the parent
+
+        All arguments are passed to the newly created object's constructor
+        '''
         from .Comment import Comment
-        n = Comment(data, parent=self)
+        n = Comment(*args, **kwargs, parent=self)
 
         self.children.append(n)
 
         return n
 
-    def spawn_element(self, name, attributes=None):
+    def spawn_element(self, *args, **kwargs):
+        '''
+        Spawn a :py:class:`.Element` object using this node as the parent
+
+        All arguments are passed to the newly created object's constructor
+        '''
         from .Element import Element
-        n = Element(name, attributes, parent=self)
+        n = Element(*args, **kwargs, parent=self)
 
         self.children.append(n)
 
         return n
 
-    def spawn_processing_instruction(self, target, data):
+    def spawn_processing_instruction(self, *args, **kwargs):
+        '''
+        Spawn a :py:class:`.ProcessingInstruction` object using this node as the parent
+
+        All arguments are passed to the newly created object's constructor
+        '''
         from .ProcessingInstruction import ProcessingInstruction
-        n = ProcessingInstruction(target, data, parent=self)
+        n = ProcessingInstruction(*args, **kwargs, parent=self)
 
         self.children.append(n)
 

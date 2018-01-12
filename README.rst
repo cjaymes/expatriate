@@ -2,7 +2,8 @@ expatriate
 ==========
 .. image:: https://travis-ci.org/cjaymes/expatriate.svg?branch=master
 
-XML parsing and generation library on top of expat.
+XML parsing and generation library on top of expat with Python object mapping
+(ORM). See tests/fixtures for examples of how to use.
 
 Install (system-wide):
 

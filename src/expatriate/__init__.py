@@ -15,6 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Expatriate.  If not, see <http://www.gnu.org/licenses/>.
 
+XML_SPACE_ENUMERATION = (
+    'default',
+    # The value "default" signals that applications' default white-space
+    # processing modes are acceptable for this element
+    'preserve',
+    # the value "preserve" indicates the intent that applications preserve all
+    # the white space
+)
+''' Enumeration of the possible whitespace processing modes '''
+
 from .exceptions import *
 from .Attribute import Attribute
 from .CharacterData import CharacterData

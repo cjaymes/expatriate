@@ -22,6 +22,9 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class CharacterData(Node):
+    '''
+    Class representing XML character data
+    '''
     def __init__(self, data, cdata_block=False, parent=None):
         super().__init__(parent=parent)
 

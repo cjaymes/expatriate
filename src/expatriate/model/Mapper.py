@@ -21,6 +21,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Mapper(object):
+    '''
+    Super class of Mapper types. Defines the methods to be overriden and a few
+    convenience methods.
+    '''
     def __init__(self, **kwargs):
         self._kwargs = kwargs
 
@@ -28,6 +32,10 @@ class Mapper(object):
         return self.__class__.__name__ + ' ' + str(self._kwargs)
 
     def _load_cls(self, cls_):
+        '''
+        Wrapper function to either return cls_ if it is a class or load the
+        class if it is a tuple of the form (package, class_name)
+        '''
         if isinstance(cls_, tuple):
             mod = importlib.import_module(cls_[0])
             return getattr(mod, cls_[1])

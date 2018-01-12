@@ -42,17 +42,25 @@ logger = logging.getLogger(__name__)
 @attribute(namespace='http://www.w3.org/2001/XMLSchema-instance', local_name='noNamespaceSchemaLocation', type=('expatriate.model.xs.AnyUriType', 'AnyUriType'), into='_xsi_noNamespaceSchemaLocation')
 @content()
 class Model(Subscriber):
-    ANY_NAMESPACE = '*'
-    ANY_LOCAL_NAME = '*'
+    '''
+    Base class for a XML object relation model. Allows mapping XML data into Python types.
 
-    XML_SPACE_ENUMERATION = (
-        'default',
-        # The value "default" signals that applications' default white-space
-        # processing modes are acceptable for this element
-        'preserve',
-        # the value "preserve" indicates the intent that applications preserve all
-        # the white space
-    )
+    :param local_name: Override for the xml local name when Model is generated.
+    :type local_name: str or None
+    :param namespace: Override for the xml namespace when Model is generated.
+    :type namespace: str or None
+    :param prefix: Override for the xml prefix when Model is generated.
+    :type prefix: str or None
+    :param value: Value to add to the Model's children (generated as CharacterData). No child is added if left as the default None.
+    :type local_name: str or None
+    :raises UnknownNamespaceException: if unable to determine a namespace model maps to
+    '''
+
+    ANY_NAMESPACE = '*'
+    ''' Identifier representing any namespace '''
+
+    ANY_LOCAL_NAME = '*'
+    ''' Identifier representing any local name '''
 
     __namespace_to_package = {
         'http://www.w3.org/XML/1998/namespace': 'expatriate.model.xml',
@@ -77,10 +85,42 @@ class Model(Subscriber):
     _content_mappers = {}
     _content_mapper_cache = {}
 
+    def __init__(self, local_name=None, namespace=None, prefix=None, value=None):
+        self._parent = None
+        self._children = []
+
+        if value is not None:
+            self._children.append((None, value))
+
+        self._local_name = local_name
+
+        if namespace is not None:
+            self._namespace = namespace
+        else:
+            self._namespace = Model.package_to_namespace(self.get_package())
+            if self._namespace is None:
+                # make sure namespace is never None
+                raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
+
+        if prefix is not None:
+            self._prefix = prefix
+        else:
+            self._prefix = Model.namespace_to_prefix(self._namespace)
+
+        at_mappers = self._get_attribute_mappers()
+        el_mappers = self._get_element_mappers()
+        content_mappers = self._get_content_mappers()
+        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
+            mapper.initialize(self)
+        self._initialized = True
+
     @staticmethod
     def class_for_element(el):
         '''
         load the model class corresponding to an element
+
+        :param expatriate.Element el: The element for which to look up the class.
+        :raises ElementMappingException: if class for element cannot be discovered
         '''
 
         model_package = Model.namespace_to_package(el.namespace)
@@ -225,7 +265,12 @@ class Model(Subscriber):
     @staticmethod
     def register_namespace(model_package, namespace, prefix=None):
         '''
-        register a namespace for use
+        Register a namespace for use
+
+        :param str model_package: The package to use for mapping elements from namespace
+        :param str namespace: The namespace
+        :param prefix: The prefix to use when mapping to namespace
+        :type prefix: str or None
         '''
         Model.__namespace_to_package[namespace] = model_package
         Model.__package_to_namespace[model_package] = namespace
@@ -234,8 +279,10 @@ class Model(Subscriber):
     @staticmethod
     def unregister_namespace(model_package):
         '''
-        unregister a namespace; throws UnknownNamespaceException if
-        namespace isn't registered
+        Unregister a namespace.
+
+        :param str model_package: The package to unregister from mapping
+        :raises UnknownNamespaceException: if the namspace isn't registered
         '''
         try:
             namespace = Model.__package_to_namespace[model_package]
@@ -250,20 +297,26 @@ class Model(Subscriber):
     @staticmethod
     def package_to_namespace(model_package):
         '''
-        find namespace corresponding to package
+        Find namespace corresponding to a model package.
+
+        :param str model_package: The package to lookup
+        :raises UnknownNamespaceException: if the package isn't registered
         '''
         logger.debug('Looking for xml namespace for model package '
             + model_package)
         if model_package not in Model.__package_to_namespace:
-            raise UnknownNamespaceException('Namespace ' + model_package
-                + ' is not in registered namespaces')
+            raise UnknownNamespaceException('Package ' + model_package
+                + ' is not in registered packages')
 
         return Model.__package_to_namespace[model_package]
 
     @staticmethod
     def namespace_to_package(namespace):
         '''
-        find package corresponding to namespace
+        Find model package corresponding to namespace.
+
+        :param str namespace: The namespace to lookup
+        :raises UnknownNamespaceException: if the namspace isn't registered
         '''
         logger.debug('Looking for model package for xml namespace ' + str(namespace))
         if namespace not in Model.__namespace_to_package:
@@ -275,7 +328,10 @@ class Model(Subscriber):
     @staticmethod
     def namespace_to_prefix(namespace):
         '''
-        find package corresponding to namespace
+        Find the model package corresponding to a namespace.
+
+        :param str namespace: The namespace to lookup
+        :raises UnknownNamespaceException: if the namspace isn't registered
         '''
         logger.debug('Looking for xml prefix for xml namespace ' + str(namespace))
 
@@ -297,12 +353,20 @@ class Model(Subscriber):
 
     @classmethod
     def get_package(cls):
+        '''
+        Find package corresponding to class/instance
+
+        :rtype: str
+        '''
         return cls.__module__.rpartition('.')[0]
 
     @staticmethod
     def load(parent, el):
         '''
         load a Model given an expatriate Element
+
+        :param expatriate.model.Model parent: The :py:class:`.Model` to use as the parent of the model we're mapping from el
+        :param expatriate.Element el: The :py:class:`..Element` from which we're mapping
         '''
 
         # try to load the element's module
@@ -339,7 +403,12 @@ class Model(Subscriber):
     @staticmethod
     def find_content(uri):
         '''
-        locates content & loads it, returning the root Model
+        Loads the content from the URI, parses it, returns the root Model.
+        Remote URIs are not yet supported.
+
+        :param str uri: The URI to load
+        :rtype: .Model or subclass
+        :raises ReferenceException: if the content could not be found
         '''
 
         if os.path.isfile(uri):
@@ -350,38 +419,9 @@ class Model(Subscriber):
             except:
                 raise ReferenceException('Could not find content for: ' + uri)
         else:
-            raise NotImplementedError('URI loading is not yet implemented')
+            raise NotImplementedError('Remote URI loading is not yet implemented')
 
         raise ReferenceException('Could not find content for: ' + uri)
-
-    def __init__(self, local_name=None, namespace=None, prefix=None, value=None):
-        self._parent = None
-        self._children = []
-
-        if value is not None:
-            self._children.append((None, value))
-
-        self._local_name = local_name
-
-        if namespace is not None:
-            self._namespace = namespace
-        else:
-            self._namespace = Model.package_to_namespace(self.get_package())
-            if self._namespace is None:
-                # make sure namespace is never None
-                raise UnknownNamespaceException('Unable to determine namespace for xml generation: ' + str(self))
-
-        if prefix is not None:
-            self._prefix = prefix
-        else:
-            self._prefix = Model.namespace_to_prefix(self._namespace)
-
-        at_mappers = self._get_attribute_mappers()
-        el_mappers = self._get_element_mappers()
-        content_mappers = self._get_content_mappers()
-        for mapper in itertools.chain(at_mappers, el_mappers, content_mappers):
-            mapper.initialize(self)
-        self._initialized = True
 
     def __setattr__(self, name, value):
         '''
@@ -407,16 +447,35 @@ class Model(Subscriber):
         raise AttributeError('Attribute matching ' + str(publisher) + ' not found')
 
     def data_added(self, publisher, id_, item):
-        ''' Receive notification from a Publisher when data has been added '''
+        '''
+        Receive notification from a Publisher when data has been added
+
+        :param publishsubscribe.Publisher publisher: The publisher
+        :param id_: The implementation dependent id of the data added; list index or dict key for example
+        :param item: The item added
+        '''
         pub_name = self._attr_name_from_publisher(publisher)
         self._children.append((pub_name, id_))
 
     def data_updated(self, publisher, id_, old_item, new_item):
-        ''' Receive notification from a Publisher when data has been updated '''
+        '''
+        Receive notification from a Publisher when data has been updated
+
+        :param publishsubscribe.Publisher publisher: The publisher
+        :param id_: The implementation dependent id of the data updated; list index or dict key for example
+        :param old_item: The old item
+        :param new_item: The new item
+        '''
         pass
 
     def data_deleted(self, publisher, id_, item):
-        ''' Receive notification from a Publisher when data has been deleted '''
+        '''
+        Receive notification from a Publisher when data has been deleted
+
+        :param publishsubscribe.Publisher publisher: The publisher
+        :param id_: The implementation dependent id of the data deleted; list index or dict key for example
+        :param item: The item deleted
+        '''
         pub_name = self._attr_name_from_publisher(publisher)
         self._children.remove((pub_name, id_))
         if isinstance(publisher, list):
@@ -431,18 +490,23 @@ class Model(Subscriber):
 
     def is_nil(self):
         '''
-        determine if the model's xsi nil is set
+        Determine if the model's xsi nil is set
+
+        :rtype: bool
         '''
         return self._xsi_nil
 
     def set_nil(self):
         '''
-        set model's xsi nil
+        Set model's xsi nil and clear the value.
         '''
         self._xsi_nil = True
         self.set_value(None)
 
     def _get_content_children(self):
+        '''
+        Get the content children of the model
+        '''
         content = []
         for attr_name, id_ in self._children:
             if attr_name is None:
@@ -450,6 +514,11 @@ class Model(Subscriber):
         return content
 
     def get_value(self):
+        '''
+        Get the joined str value of the model's children
+
+        :rtype: str
+        '''
         content = self._get_content_children()
         if len(content) == 0:
             return None
@@ -457,6 +526,12 @@ class Model(Subscriber):
             return ''.join(content)
 
     def set_value(self, value):
+        '''
+        Set content to *value*. Effectively clears all content children and
+        appends the *value*.
+
+        :param str value: The str value
+        '''
         new_children = []
         for attr_name, id_ in self._children:
             if attr_name is not None:
@@ -467,24 +542,31 @@ class Model(Subscriber):
 
     def parse_value(self, value):
         '''
-        parse the given *value* and return; overriden for value-limiting
-        subclasses
+        Parse the given *value* and return; overriden for value-limiting
+        subclasses (most of the :py:mod:`expatriate.model.xs` \*Type classes)
+
+        For example :py:class:`expatriate.model.xs.FloatType` parses a
+        :py:class:`str` value and returns a :py:class:`float` type
+
+        :param value: The value to be parsed
         '''
         return value
 
     def produce_value(self, value):
         '''
         produce the given *value* and return; overriden for value-limiting
-        subclasses
+        subclasses (most of the :py:mod:`expatriate.model.xs` \*Type classes)
+
+        For example :py:class:`expatriate.model.xs.FloatType` produces a
+        :py:class:`str` type from a :py:class:`float` value
+
+        :param value: The value produced
         '''
         if value is None:
             return value
         return str(value)
 
     def __str__(self):
-        '''
-        string representation of the model
-        '''
         s = self.__class__.__name__
         if hasattr(self, 'id') and self.id is not None:
             s += ' id: ' + self.id
@@ -499,7 +581,11 @@ class Model(Subscriber):
 
     def find_reference(self, ref):
         '''
-        find child that matches reference *ref*
+        Find child that matches reference *ref*. A child matches if it has an
+        attribute *id* that is equal to the ref argument.
+
+        :param str ref: The reference to a child for which to search this model recursively
+        :rtype: .Model
         '''
 
         logger.debug('Matching reference ' + ref + ' against ' + str(self))
@@ -522,7 +608,10 @@ class Model(Subscriber):
 
     def parse(self, parent, el):
         '''
-        create model instance from xml element *el*
+        Load model data from xml element *el*
+
+        :param .Model parent: The parent of the model being parsed
+        :param expatriate.Element el: The element being parsed into the model
         '''
 
         self._parent = parent
@@ -565,7 +654,10 @@ class Model(Subscriber):
 
     def produce(self, parent_el=None):
         '''
-        generate xml representation of the model
+        Generate xml from the model
+
+        :param expatriate.Element parent_el: The expatriate.Element to use as the parent of the element generated from this model
+        :rtype: expatriate.Element
         '''
 
         logger.debug(str(self) + ' to xml')

@@ -22,6 +22,9 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class Comment(Node):
+    '''
+    Class representing a XML comment
+    '''
     def __init__(self, data, parent=None):
         super().__init__(parent=parent)
 

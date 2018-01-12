@@ -25,6 +25,13 @@ from .xpath import *
 logger = logging.getLogger(__name__)
 
 class Node(object):
+    '''
+    Class representing a XML node
+
+    :keyword parent: parent Node of this Node
+    :type parent: Parent or None
+
+    '''
     def __init__(self, parent=None):
         self._parent = parent
 

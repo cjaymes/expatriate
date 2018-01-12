@@ -23,6 +23,9 @@ from .Node import Node
 logger = logging.getLogger(__name__)
 
 class Namespace(Node):
+    '''
+    Class representing a XML namespace
+    '''
     def __init__(self, prefix, uri, parent=None):
         super().__init__(parent=parent)
 
