@@ -18,7 +18,7 @@
 import logging
 
 from .Function import Function
-from ..exceptions import XPathSyntaxException
+from .exceptions import *
 
 logger = logging.getLogger(__name__)
 class Predicate(object):

@@ -19,7 +19,7 @@ import logging
 import math
 import re
 
-from ..exceptions import XPathSyntaxException
+from .exceptions import *
 
 logger = logging.getLogger(__name__)
 class Function(object):
