@@ -4,6 +4,14 @@
 XPath Parsing and Resolution
 **********************************
 
+The following are used to parse and evaluate an XPath against a Node in an
+expatriate Node tree. The xpath method can be called upon any Node. Only XPath
+1.0 has been implemented.
+
+================================================================================
+Classes
+================================================================================
+
 .. autoclass:: expatriate.xpath.AnyNodeTest
     :members:
 .. autoclass:: expatriate.xpath.Axis

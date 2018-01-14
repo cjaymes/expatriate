@@ -4,6 +4,10 @@
 XML Object Relational Modeling
 ******************************
 
+=======
+Classes
+=======
+
 .. autoclass:: expatriate.model.Model
     :members:
 
@@ -165,7 +169,6 @@ Exceptions are available by::
 
     from expatriate.model.exceptions import *
 
-.. py:exception:: expatriate.model.exceptions.UnknownNamespaceException
 .. py:exception:: expatriate.model.exceptions.DecoratorException
 .. py:exception:: expatriate.model.exceptions.ElementMappingException
 .. py:exception:: expatriate.model.exceptions.ReferenceException

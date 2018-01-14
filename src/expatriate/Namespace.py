@@ -54,6 +54,12 @@ class Namespace(Node):
         return (None, self.prefix)
 
     def get_document_order(self):
+        '''
+        Get the index of this Node's order in the enclosing Document.
+
+        :rtype: int
+        :raises UnattachedElementException: if the Node is not attached to a Document
+        '''
         if self._parent is None:
             raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
 

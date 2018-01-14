@@ -37,6 +37,13 @@ class Node(object):
 
     @property
     def parent(self):
+        """
+        The Parent of this Node.
+
+        :getter: Returns the parent Node
+        :setter: Sets the parent Node
+        :type: expatriate.Parent or None
+        """
         return self._parent
 
     @parent.setter
@@ -44,6 +51,11 @@ class Node(object):
         self._parent = parent
 
     def prefix_to_namespace(self, prefix):
+        '''
+        Resolve the given prefix into the namespace URI it represents.
+
+        :param str prefix: The prefix to resolve.
+        '''
         if prefix == 'xmlns':
             return 'http://www.w3.org/2000/xmlns/'
         elif prefix == 'xml':
@@ -54,6 +66,11 @@ class Node(object):
             raise UnknownPrefixException('Unknown prefix: ' + str(prefix))
 
     def namespace_to_prefix(self, namespace_uri):
+        '''
+        Resolve the given namespace URI into the prefix it is represented by.
+
+        :param str namespace: The namespace to resolve.
+        '''
         if namespace_uri == 'http://www.w3.org/2000/xmlns/':
             return 'xmlns'
         elif namespace_uri == 'http://www.w3.org/XML/1998/namespace':
@@ -156,6 +173,7 @@ class Node(object):
         return tokens
 
     def xpath(self, expr, version=1.0, variables={}, add_functions={}):
+        ''' TODO '''
         if version != 1.0:
             raise NotImplementedError('Only XPath 1.0 has been implemented')
 
@@ -406,6 +424,11 @@ class Node(object):
         return self.__str__()
 
     def get_document(self):
+        '''
+        Get this Node's enclosing Document.
+
+        :rtype: expatriate.Document or None
+        '''
         from .Document import Document
 
         n = self
@@ -415,17 +438,21 @@ class Node(object):
 
     def get_type(self):
         '''
-        Return the type of the node
+        Return the type of the node. Overriden by subclasses.
+
+        :rtype: str
         '''
         raise NotImplementedError('get_type has not been implemented in class ' + self.__class__.__name__)
 
     def escape(self, text):
+        ''' TODO '''
         text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
         return text
 
     def unescape(self, text):
+        ''' TODO '''
         text = text.replace('&amp;', '&')
         text = text.replace('&lt;', '<')
         text = text.replace('&gt;', '>')
@@ -433,19 +460,21 @@ class Node(object):
         text = text.replace("'", '&apos;')
         return text
 
-    def attached(self):
-        pass
-
-    def detached(self):
-        pass
-
     def find_by_id(self, id_):
+        ''' TODO '''
         return None
 
     def get_node_count(self):
+        ''' TODO '''
         return 1
 
     def get_document_order(self):
+        '''
+        Get the index of this Node's order in the enclosing Document.
+
+        :rtype: int
+        :raises UnattachedElementException: if the Node is not attached to a Document
+        '''
         if self._parent is None:
             raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
 

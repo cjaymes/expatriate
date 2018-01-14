@@ -448,35 +448,29 @@ class Model(Subscriber):
         raise AttributeError('Attribute matching ' + str(publisher) + ' not found')
 
     def data_added(self, publisher, id_, item):
-        '''
-        Receive notification from a Publisher when data has been added
-
-        :param publishsubscribe.Publisher publisher: The publisher
-        :param id_: The implementation dependent id of the data added; list index or dict key for example
-        :param item: The item added
-        '''
+        # Receive notification from a Publisher when data has been added
+        #
+        # :param publishsubscribe.Publisher publisher: The publisher
+        # :param id_: The implementation dependent id of the data added; list index or dict key for example
+        # :param item: The item added
         pub_name = self._attr_name_from_publisher(publisher)
         self._children.append((pub_name, id_))
 
     def data_updated(self, publisher, id_, old_item, new_item):
-        '''
-        Receive notification from a Publisher when data has been updated
-
-        :param publishsubscribe.Publisher publisher: The publisher
-        :param id_: The implementation dependent id of the data updated; list index or dict key for example
-        :param old_item: The old item
-        :param new_item: The new item
-        '''
+        # Receive notification from a Publisher when data has been updated
+        #
+        # :param publishsubscribe.Publisher publisher: The publisher
+        # :param id_: The implementation dependent id of the data updated; list index or dict key for example
+        # :param old_item: The old item
+        # :param new_item: The new item
         pass
 
     def data_deleted(self, publisher, id_, item):
-        '''
-        Receive notification from a Publisher when data has been deleted
-
-        :param publishsubscribe.Publisher publisher: The publisher
-        :param id_: The implementation dependent id of the data deleted; list index or dict key for example
-        :param item: The item deleted
-        '''
+        # Receive notification from a Publisher when data has been deleted
+        #
+        # :param publishsubscribe.Publisher publisher: The publisher
+        # :param id_: The implementation dependent id of the data deleted; list index or dict key for example
+        # :param item: The item deleted
         pub_name = self._attr_name_from_publisher(publisher)
         self._children.remove((pub_name, id_))
         if isinstance(publisher, list):

@@ -39,6 +39,8 @@ class Parent(Node):
         Spawn a :py:class:`.CharacterData` object using this node as the parent
 
         All arguments are passed to the newly created object's constructor
+
+        :rtype: expatriate.CharacterData
         '''
         from .CharacterData import CharacterData
         n = CharacterData(*args, **kwargs, parent=self)
@@ -52,6 +54,8 @@ class Parent(Node):
         Spawn a :py:class:`.Comment` object using this node as the parent
 
         All arguments are passed to the newly created object's constructor
+
+        :rtype: expatriate.Comment
         '''
         from .Comment import Comment
         n = Comment(*args, **kwargs, parent=self)
@@ -65,6 +69,8 @@ class Parent(Node):
         Spawn a :py:class:`.Element` object using this node as the parent
 
         All arguments are passed to the newly created object's constructor
+
+        :rtype: expatriate.Element
         '''
         from .Element import Element
         n = Element(*args, **kwargs, parent=self)
@@ -78,6 +84,8 @@ class Parent(Node):
         Spawn a :py:class:`.ProcessingInstruction` object using this node as the parent
 
         All arguments are passed to the newly created object's constructor
+
+        :rtype: expatriate.ProcessingInstruction
         '''
         from .ProcessingInstruction import ProcessingInstruction
         n = ProcessingInstruction(*args, **kwargs, parent=self)
@@ -113,6 +121,7 @@ class Parent(Node):
         return iter(self.children)
 
     def append(self, x):
+        ''' TODO '''
         from .CharacterData import CharacterData
 
         if isinstance(x, str):
@@ -132,16 +141,20 @@ class Parent(Node):
         self.children.append(n)
 
     def count(self):
+        ''' TODO '''
         return self.children.count()
 
     def index(self, x):
+        ''' TODO '''
         return self.children.index(x)
 
     def extend(self, iterable):
+        ''' TODO '''
         for c in iterable:
             self.append(c)
 
     def insert(self, i, x):
+        ''' TODO '''
         from .CharacterData import CharacterData
 
         if isinstance(x, str):
@@ -158,23 +171,28 @@ class Parent(Node):
         self.children.insert(i, n)
 
     def pop(self, i=-1):
+        ''' TODO '''
         n = self.children.pop(i)
         self.detach(n)
         return n
 
     def remove(self, x):
+        ''' TODO '''
         n = self.children[self.children.index(x)]
         self.children.remove(x)
 
     def reverse(self):
+        ''' TODO '''
         return self.children.reverse()
 
     def sort(self, key=None, reverse=False):
+        ''' TODO '''
         return self.children.sort(key=key, reverse=reverse)
 
     # TODO copy()
 
     def find_by_id(self, id_):
+        ''' TODO '''
         logger.debug(str(self) + ' checking children for id: ' + str(id_))
         for c in self.children:
             el = c.find_by_id(id_)

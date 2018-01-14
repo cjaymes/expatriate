@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 class CharacterData(Node):
     '''
     Class representing XML character data
+
+    :param str data: The contents of this CharacterData
+    :param bool cdata_block: True if this CharacterData should be generated with CDATA block wrapping
+    :param parent: The node to use as the parent to this node
+    :type parent: expatriate.Parent or None
     '''
     def __init__(self, data, cdata_block=False, parent=None):
         super().__init__(parent=parent)
@@ -32,6 +37,7 @@ class CharacterData(Node):
         self.cdata_block = cdata_block
 
     def produce(self):
+        ''' TODO '''
         s = ''
         if self.cdata_block:
             s += '<![CDATA[' + self.data.replace(']]>', ']]&gt;') + ']]>'

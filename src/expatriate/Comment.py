@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 class Comment(Node):
     '''
     Class representing a XML comment
+
+    :param str data: The contents of this Comment
+    :param parent: The node to use as the parent to this node
+    :type parent: expatriate.Parent or None
     '''
     def __init__(self, data, parent=None):
         super().__init__(parent=parent)
@@ -31,6 +35,7 @@ class Comment(Node):
         self.data = data
 
     def produce(self):
+        ''' TODO '''
         return '<!--' + self.data + '-->'
 
     def get_string_value(self):

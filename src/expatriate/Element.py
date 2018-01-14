@@ -30,7 +30,18 @@ logger = logging.getLogger(__name__)
 class Element(Parent, Subscriber):
     '''
     Class representing a XML element
+
+    :param str local_name: Local name of the attribute (the part after the :)
+    :param attributes: The attributes to be used by this Element
+    :type attributes: dict[str, Attribute] or None
+    :param prefix: The prefix used in this attribute's name (the part before the :)
+    :type prefix: str or None
+    :param namespace: The namespace of this Attribute. Must be defined if the prefix is not defined by the parent Nodes
+    :type namespace: str or None
+    :param parent: The node to use as the parent to this node
+    :type parent: expatriate.Parent or None
     '''
+
     def __init__(self, local_name, attributes=None, prefix=None, namespace=None, parent=None):
         super().__init__(parent=parent)
 
@@ -58,6 +69,13 @@ class Element(Parent, Subscriber):
     # redefine parent property
     @property
     def parent(self):
+        """
+        The parent node of this Element.
+
+        :getter: Returns the parent Node
+        :setter: Sets the parent Node
+        :type: expatriate.Parent or None
+        """
         return self._parent
 
     @parent.setter
@@ -67,10 +85,23 @@ class Element(Parent, Subscriber):
 
     @property
     def attributes(self):
+        """
+        The attributes of this Element. Read-only.
+
+        :getter: Returns the attribute dict.
+        :type: dict
+        """
         return self._attributes
 
     @property
     def name(self):
+        """
+        The name of this Element.
+
+        :getter: Returns the name.
+        :setter: Sets the name. Updates the prefix and namespace and local_name if they change.
+        :type: str
+        """
         if self._prefix is None:
             return self._local_name
         else:
@@ -89,6 +120,13 @@ class Element(Parent, Subscriber):
 
     @property
     def local_name(self):
+        """
+        The local name (part after the :) of this Element.
+
+        :getter: Returns the local name.
+        :setter: Sets the local name.
+        :type: str
+        """
         return self._local_name
 
     @local_name.setter
@@ -97,6 +135,13 @@ class Element(Parent, Subscriber):
 
     @property
     def prefix(self):
+        """
+        The prefix (part before the :) of this Element.
+
+        :getter: Returns the prefix.
+        :setter: Sets the prefix.
+        :type: str
+        """
         return self._prefix
 
     @prefix.setter
@@ -107,6 +152,13 @@ class Element(Parent, Subscriber):
 
     @property
     def namespace(self):
+        """
+        The namespace (URI the prefix maps to) of this Element.
+
+        :getter: Returns the namespace URI.
+        :setter: Sets the namespace URI.
+        :type: str
+        """
         return self._namespace
 
     @namespace.setter
@@ -188,6 +240,11 @@ class Element(Parent, Subscriber):
             self.namespace_nodes[prefix] = n
 
     def prefix_to_namespace(self, prefix):
+        '''
+        Resolve the given prefix into the namespace URI it represents.
+
+        :param str prefix: The prefix to resolve.
+        '''
         logger.debug(str(self) + ' resolving prefix: ' + str(prefix)
             + ' using ' + str(self._prefix_to_namespace))
 
@@ -197,6 +254,11 @@ class Element(Parent, Subscriber):
             return super().prefix_to_namespace(prefix)
 
     def namespace_to_prefix(self, namespace):
+        '''
+        Resolve the given namespace URI into the prefix it is represented by.
+
+        :param str namespace: The namespace to resolve.
+        '''
         logger.debug(str(self) + ' resolving namespace: ' + str(namespace)
             + ' using ' + str(self._namespace_to_prefixes))
 
@@ -206,9 +268,11 @@ class Element(Parent, Subscriber):
             return super().namespace_to_prefix(namespace)
 
     def escape_attribute(self, text):
+        ''' TODO '''
         return self.escape(text).replace('"', '&quot;')
 
     def produce(self):
+        ''' TODO '''
         logger.debug(str(self) + ' producing xml: ' + self.name + ' attributes '
             + str(self.attributes) + '; ' + str(len(self.children))
             + ' children')
@@ -261,6 +325,7 @@ class Element(Parent, Subscriber):
         return s
 
     def find_by_id(self, id_):
+        ''' TODO '''
         logger.debug(str(self) + ' checking attributes for id: ' + str(id_))
         for k, v in self.attributes.items():
             k = k.lower()
@@ -275,12 +340,14 @@ class Element(Parent, Subscriber):
         return super().find_by_id(id_)
 
     def get_node_count(self):
+        ''' TODO '''
         do = 1 + len(self.namespace_nodes) + len(self.attribute_nodes)
         for c in self.children:
             do += c.get_node_count()
         return do
 
     def is_nil(self):
+        ''' TODO '''
         try:
             prefix = self.namespace_to_prefix('http://www.w3.org/2001/XMLSchema-instance')
         except UnknownNamespaceException:

@@ -34,23 +34,31 @@ class ProcessingInstruction(Node):
     def produce(self):
         '''
         Produce XML from this ProcessingInstruction
+
+        :rtype: str
         '''
         return '<?' + self.target + ' ' + self.data + '?>'
 
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'processing instruction'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.data
 
     def get_expanded_name(self):
         '''
         Return the expanded name of the node
+
+        :rtype: tuple(None, target)
         '''
         return (None, self.target)

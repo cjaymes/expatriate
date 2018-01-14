@@ -33,33 +33,11 @@ logger.setLevel(logging.INFO)
 class Document(Parent):
     '''
     Class representing a XML document
+
+    :param encoding: The encoding to use for this Document
+    :type encoding: str or None
+    :param bool skip_whitespace: True if the parser should skip unnecessary whitespace
     '''
-    @staticmethod
-    def ordered_first(nodeset):
-        if len(nodeset) == 0:
-            raise ValueError('Cannot determine the first node of an empty nodeset')
-        first = nodeset[0]
-        for n in nodeset[1:]:
-            if n.get_document_order() < first.get_document_order():
-                first = n
-        return first
-
-    @staticmethod
-    def is_nodeset(nodeset):
-        if not isinstance(nodeset, list):
-            return False
-        for n in nodeset:
-            if not isinstance(n, Node):
-                return False
-        return True
-
-    @staticmethod
-    def order_sort(nodeset, reverse=False):
-        if not Document.is_nodeset(nodeset):
-            raise TypeError('Cannot sort by document order without a nodeset')
-        for n in nodeset:
-            logger.info(str(n) + ' document order: ' + str(n.get_document_order()))
-        return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
 
     def __init__(self, encoding=None, skip_whitespace=True):
         super().__init__()
@@ -86,19 +64,52 @@ class Document(Parent):
         self._parser.DefaultHandlerExpand = self._default_handler_expand
         self._parser.NotStandaloneHandler = self._not_standalone_handler
 
+    @staticmethod
+    def ordered_first(nodeset):
+        ''' TODO '''
+        if len(nodeset) == 0:
+            raise ValueError('Cannot determine the first node of an empty nodeset')
+        first = nodeset[0]
+        for n in nodeset[1:]:
+            if n.get_document_order() < first.get_document_order():
+                first = n
+        return first
+
+    @staticmethod
+    def is_nodeset(nodeset):
+        ''' TODO '''
+        if not isinstance(nodeset, list):
+            return False
+        for n in nodeset:
+            if not isinstance(n, Node):
+                return False
+        return True
+
+    @staticmethod
+    def order_sort(nodeset, reverse=False):
+        ''' TODO '''
+        if not Document.is_nodeset(nodeset):
+            raise TypeError('Cannot sort by document order without a nodeset')
+        for n in nodeset:
+            logger.info(str(n) + ' document order: ' + str(n.get_document_order()))
+        return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
+
     def parse(self, data, isfinal=True):
+        ''' TODO '''
         logger.debug('Parsing data: ' + str(data))
         self._parser.Parse(data, isfinal)
 
         # TODO check that we're the only thing left on the stack when isfinal
 
     def parse_file(self, file_):
+        ''' TODO '''
         logger.debug('Parsing file: ' + str(file_))
         self._parser.ParseFile(file_)
 
         # TODO check that we're the only thing left on the stack when isfinal
 
     def produce(self, xml_decl=True):
+        ''' TODO '''
         if self.encoding is None:
             self.encoding = 'UTF-8'
 
@@ -231,4 +242,11 @@ class Document(Parent):
         return self.root_element.get_string_value()
 
     def get_document_order(self):
+        '''
+        Get the index of this Node's order in the enclosing Document. The
+        Document itself has an index of 0.
+
+        :rtype: int
+        :raises UnattachedElementException: if the Node is not attached to a Document
+        '''
         return 0

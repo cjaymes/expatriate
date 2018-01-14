@@ -26,6 +26,15 @@ logger = logging.getLogger(__name__)
 class Attribute(Node):
     '''
     Class representing a XML attribute node
+
+    :param str local_name: Local name of the attribute (the part after the :)
+    :param str value: The value of the attribute
+    :param parent: The node to use as the parent to this node
+    :type parent: expatriate.Parent or None
+    :param prefix: The prefix used in this attribute's name (the part before the :)
+    :type prefix: str or None
+    :param namespace: The namespace of this Attribute. Must be defined if the prefix is not defined by the parent Nodes
+    :type namespace: str or None
     '''
     def __init__(self, local_name, value, parent=None, prefix=None, namespace=None):
         super().__init__(parent=parent)
@@ -38,6 +47,13 @@ class Attribute(Node):
 
     @property
     def name(self):
+        """
+        The name of this Attribute.
+
+        :getter: Returns the name.
+        :setter: Sets the name. Updates the prefix and namespace and local_name if they change.
+        :type: str
+        """
         if self._prefix is None:
             return self._local_name
         else:
@@ -55,6 +71,13 @@ class Attribute(Node):
 
     @property
     def local_name(self):
+        """
+        The local name (part after the :) of this Attribute.
+
+        :getter: Returns the local name.
+        :setter: Sets the local name.
+        :type: str
+        """
         return self._local_name
 
     @local_name.setter
@@ -63,6 +86,13 @@ class Attribute(Node):
 
     @property
     def prefix(self):
+        """
+        The prefix (part before the :) of this Attribute.
+
+        :getter: Returns the prefix.
+        :setter: Sets the prefix.
+        :type: str
+        """
         return self._prefix
 
     @prefix.setter
@@ -72,6 +102,13 @@ class Attribute(Node):
 
     @property
     def namespace(self):
+        """
+        The namespace (URI the prefix maps to) of this Attribute.
+
+        :getter: Returns the namespace URI.
+        :setter: Sets the namespace URI.
+        :type: str
+        """
         return self._namespace
 
     @namespace.setter
@@ -114,8 +151,14 @@ class Attribute(Node):
         return s
 
     def get_document_order(self):
+        '''
+        Get the index of this Node's order in the enclosing Document.
+
+        :rtype: int
+        :raises UnattachedElementException: if the Node is not attached to a Document
+        '''
         if self._parent is None:
-            raise UnattachedElementException('Element ' + str(self) + ' is not attached to a document')
+            raise UnattachedElementException('Attribute ' + str(self) + ' is not attached to a document')
 
         do = self._parent.get_document_order()
         do += len(self._parent.namespace_nodes)
