@@ -25,6 +25,7 @@ import sys
 import expatriate
 from publishsubscribe import Subscriber
 
+from ..exceptions import *
 from .decorators import *
 from .exceptions import *
 

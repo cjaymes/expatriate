@@ -21,6 +21,7 @@ import types
 
 import expatriate
 import pytest
+from expatriate.exceptions import *
 from expatriate.model import *
 from fixtures.test2.EnclosedFixture import EnclosedFixture as EnclosedFixture2
 from fixtures.test.AttributeFixture import AttributeFixture
