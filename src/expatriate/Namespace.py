@@ -60,7 +60,7 @@ class Namespace(Node):
         '''
         Return the expanded name of the node
 
-        :rtype: tuple(None, prefix)
+        :rtype: tuple(None, prefix str)
         '''
         return (None, self.prefix)
 

@@ -136,7 +136,7 @@ class Attribute(Node):
         '''
         Return the expanded name of the node
 
-        :rtype: tuple(namespace, local_name)
+        :rtype: tuple(namespace str, local_name str)
         '''
         return (self.namespace, self.local_name)
 

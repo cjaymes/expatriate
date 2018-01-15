@@ -191,17 +191,17 @@ class Parent(Node):
 
     # TODO copy()
 
-    def find_by_id(self, id_):
+    def find_by_id(self, ref):
         '''
-        Find the node referenced by id_ within this node's children.
+        Find the node referenced by *ref* within this node's children.
 
-        :param str id_: The id attribute of the Node to match
+        :param str ref: The id attribute of the node to match
         :rtype: Node or None
         '''
-        logger.debug(str(self) + ' checking children for id: ' + str(id_))
+        logger.debug(str(self) + ' checking children for id: ' + str(ref))
         for c in self.children:
-            el = c.find_by_id(id_)
+            el = c.find_by_id(ref)
             if el is not None:
                 return el
 
-        return super().find_by_id(id_)
+        return super().find_by_id(ref)

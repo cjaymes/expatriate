@@ -479,11 +479,11 @@ class Node(object):
         text = text.replace("'", '&apos;')
         return text
 
-    def find_by_id(self, id_):
+    def find_by_id(self, ref):
         '''
-        Find the node referenced by id_ within this node's children.
+        Find the node referenced by *ref* within this node's children.
 
-        :param str id_: The id attribute of the Node to match
+        :param str ref: The id attribute of the Node to match
         :rtype: Node or None
         '''
         return None

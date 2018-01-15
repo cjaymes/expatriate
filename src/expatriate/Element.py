@@ -329,7 +329,7 @@ class Element(Parent, Subscriber):
         '''
         Return the expanded name of the node
 
-        :rtype: tuple(namespace, local_name)
+        :rtype: tuple(namespace str, local_name str)
         '''
         return (self.namespace, self.local_name)
 
@@ -341,25 +341,25 @@ class Element(Parent, Subscriber):
             s += ' name=' + self.attributes['name']
         return s
 
-    def find_by_id(self, id_):
+    def find_by_id(self, ref):
         '''
-        Find the node referenced by id_ within this node's children.
+        Find the node referenced by *ref* within this node's children.
 
-        :param str id_: The id attribute of the Node to match
+        :param str ref: The id attribute of the Node to match
         :rtype: Node or None
         '''
-        logger.debug(str(self) + ' checking attributes for id: ' + str(id_))
+        logger.debug(str(self) + ' checking attributes for id: ' + str(ref))
         for k, v in self.attributes.items():
             k = k.lower()
             if k.endswith(':id') or k == 'id':
                 logger.debug(str(self) + ' found id: ' + str(v))
-                if v == id_:
-                    logger.debug(str(self) + ' matches id: ' + str(id_))
+                if v == ref:
+                    logger.debug(str(self) + ' matches id: ' + str(ref))
                     return self
                 else:
-                    logger.debug(str(self) + ' id ' + str(v) + ' does not match id: ' + str(id_))
+                    logger.debug(str(self) + ' id ' + str(v) + ' does not match id: ' + str(ref))
 
-        return super().find_by_id(id_)
+        return super().find_by_id(ref)
 
     def get_node_count(self):
         '''
