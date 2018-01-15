@@ -268,11 +268,22 @@ class Element(Parent, Subscriber):
             return super().namespace_to_prefix(namespace)
 
     def escape_attribute(self, text):
-        ''' TODO '''
+        '''
+        Escape characters disallowed in an element's attribute within *text*
+        with their SGML entities.
+
+        :param str text: The text to escape
+        :rtype: str
+        '''
         return self.escape(text).replace('"', '&quot;')
 
     def produce(self):
-        ''' TODO '''
+        '''
+        Produce an XML str (not encoded) from the contents of this
+        node
+
+        :rtype: str
+        '''
         logger.debug(str(self) + ' producing xml: ' + self.name + ' attributes '
             + str(self.attributes) + '; ' + str(len(self.children))
             + ' children')
@@ -294,12 +305,16 @@ class Element(Parent, Subscriber):
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'element'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         from .CharacterData import CharacterData
         s = ''
@@ -313,6 +328,8 @@ class Element(Parent, Subscriber):
     def get_expanded_name(self):
         '''
         Return the expanded name of the node
+
+        :rtype: tuple(namespace, local_name)
         '''
         return (self.namespace, self.local_name)
 
@@ -325,7 +342,12 @@ class Element(Parent, Subscriber):
         return s
 
     def find_by_id(self, id_):
-        ''' TODO '''
+        '''
+        Find the node referenced by id_ within this node's children.
+
+        :param str id_: The id attribute of the Node to match
+        :rtype: Node or None
+        '''
         logger.debug(str(self) + ' checking attributes for id: ' + str(id_))
         for k, v in self.attributes.items():
             k = k.lower()
@@ -340,14 +362,23 @@ class Element(Parent, Subscriber):
         return super().find_by_id(id_)
 
     def get_node_count(self):
-        ''' TODO '''
+        '''
+        Get the count of this node and any children nodes within.
+
+        :rtype: int
+        '''
         do = 1 + len(self.namespace_nodes) + len(self.attribute_nodes)
         for c in self.children:
             do += c.get_node_count()
         return do
 
     def is_nil(self):
-        ''' TODO '''
+        '''
+        Returns if the element has the XMLSchema-instance attribute set for a
+        nil value'd element
+
+        :rtype: bool
+        '''
         try:
             prefix = self.namespace_to_prefix('http://www.w3.org/2001/XMLSchema-instance')
         except UnknownNamespaceException:

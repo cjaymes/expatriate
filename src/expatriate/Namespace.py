@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 class Namespace(Node):
     '''
     Class representing a XML namespace
+
+    :param str prefix: Prefix to use for the namespace
+    :param str uri: URI of the namespace
+    :param parent: Parent node of this node.
+    :type parent: expatriate.Parent or None
     '''
     def __init__(self, prefix, uri, parent=None):
         super().__init__(parent=parent)
@@ -38,18 +43,24 @@ class Namespace(Node):
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'namespace'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.uri
 
     def get_expanded_name(self):
         '''
         Return the expanded name of the node
+
+        :rtype: tuple(None, prefix)
         '''
         return (None, self.prefix)
 

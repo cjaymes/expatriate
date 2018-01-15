@@ -37,7 +37,12 @@ class CharacterData(Node):
         self.cdata_block = cdata_block
 
     def produce(self):
-        ''' TODO '''
+        '''
+        Produce an XML str (not encoded) from the contents of this
+        node
+
+        :rtype: str
+        '''
         s = ''
         if self.cdata_block:
             s += '<![CDATA[' + self.data.replace(']]>', ']]&gt;') + ']]>'
@@ -48,19 +53,27 @@ class CharacterData(Node):
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.data
 
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'text'
 
     def __eq__(self, other):
         if isinstance(other, str):
             return self.data == other
-        elif isinstance(other, int) or isinstance(other, float):
+        elif (
+            isinstance(other, int)
+            or isinstance(other, float)
+            or isinstance(other, bool)
+        ):
             return self.data == str(other)
         else:
             return object.__eq__(self, other)

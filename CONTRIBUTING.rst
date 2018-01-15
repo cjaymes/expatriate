@@ -60,17 +60,19 @@ working on):
 3. Get the test suite running
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Make sure you're using a recent python (3.5+) and have the requirements
-from requirements.txt installed.
+Make sure you're using a recent python (3.6+) and have the requirements
+from requirements.txt installed in your venv.
 
 .. code:: sh
 
     pip install -r requirements.txt
 
-Now you should be able to run the test suite using:
+Now you should be able to install the source in your venv and run the test
+suite using:
 
 .. code:: sh
 
+    python setup.py install
     pytest -vv
 
 If the tests are failing, you might want to clean your environment:

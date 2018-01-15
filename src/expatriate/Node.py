@@ -28,8 +28,8 @@ class Node(object):
     '''
     Class representing a XML node
 
-    :keyword parent: parent Node of this Node
-    :type parent: Parent or None
+    :param parent: Parent node of this node
+    :type parent: expatriate.Parent or None
 
     '''
     def __init__(self, parent=None):
@@ -173,7 +173,16 @@ class Node(object):
         return tokens
 
     def xpath(self, expr, version=1.0, variables={}, add_functions={}):
-        ''' TODO '''
+        '''
+        Return the nodes matching the given XPath expression (expr).
+
+        :param str expr: XPath expression
+        :param version: Version of XPath the expression conforms to
+        :type version: float or defaults to 1.0
+        :param dict variables: Variables to substitute in the XPath expression
+        :param dict add_functions: Functions to use within the XPath expression
+        :rtype: list[Node]
+        '''
         if version != 1.0:
             raise NotImplementedError('Only XPath 1.0 has been implemented')
 
@@ -425,7 +434,7 @@ class Node(object):
 
     def get_document(self):
         '''
-        Get this Node's enclosing Document.
+        Get this node's enclosing document.
 
         :rtype: expatriate.Document or None
         '''
@@ -442,17 +451,27 @@ class Node(object):
 
         :rtype: str
         '''
-        raise NotImplementedError('get_type has not been implemented in class ' + self.__class__.__name__)
+        raise NotImplementedError
 
     def escape(self, text):
-        ''' TODO '''
+        '''
+        Escape disallowed characters within *text* with their SGML entities.
+
+        :param str text: The text to escape
+        :rtype: str
+        '''
         text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
         return text
 
     def unescape(self, text):
-        ''' TODO '''
+        '''
+        Unescape SGML entities in *text* with their character equivalents.
+
+        :param str text: The text to unescape
+        :rtype: str
+        '''
         text = text.replace('&amp;', '&')
         text = text.replace('&lt;', '<')
         text = text.replace('&gt;', '>')
@@ -461,11 +480,20 @@ class Node(object):
         return text
 
     def find_by_id(self, id_):
-        ''' TODO '''
+        '''
+        Find the node referenced by id_ within this node's children.
+
+        :param str id_: The id attribute of the Node to match
+        :rtype: Node or None
+        '''
         return None
 
     def get_node_count(self):
-        ''' TODO '''
+        '''
+        Get the count of this node and any children nodes within.
+
+        :rtype: int
+        '''
         return 1
 
     def get_document_order(self):

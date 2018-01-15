@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 class ProcessingInstruction(Node):
     '''
     Class representing a XML processing instruction
+
+    :param str target: Target of the PI
+    :param str data: Data section of the PI
+    :param parent: Parent node of the PI
+    :type parent: expatriate.Parent or None
     '''
     def __init__(self, target, data, parent=None):
         super().__init__(parent=parent)
@@ -33,7 +38,8 @@ class ProcessingInstruction(Node):
 
     def produce(self):
         '''
-        Produce XML from this ProcessingInstruction
+        Produce an XML str (not encoded) from the contents of this
+        node
 
         :rtype: str
         '''

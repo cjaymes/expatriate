@@ -38,7 +38,6 @@ class Document(Parent):
     :type encoding: str or None
     :param bool skip_whitespace: True if the parser should skip unnecessary whitespace
     '''
-
     def __init__(self, encoding=None, skip_whitespace=True):
         super().__init__()
         self.version = None
@@ -66,7 +65,12 @@ class Document(Parent):
 
     @staticmethod
     def ordered_first(nodeset):
-        ''' TODO '''
+        '''
+        Returns the node ordered earliest in the document from a given nodeset
+
+        :param list[expatriate.Node] nodeset: The nodeset
+        :rtype: expatriate.Node
+        '''
         if len(nodeset) == 0:
             raise ValueError('Cannot determine the first node of an empty nodeset')
         first = nodeset[0]
@@ -77,7 +81,12 @@ class Document(Parent):
 
     @staticmethod
     def is_nodeset(nodeset):
-        ''' TODO '''
+        '''
+        Returns true if the object given is a nodeset (list[expatriate.Node])
+
+        :param list[expatriate.Node] nodeset: The nodeset
+        :rtype: bool
+        '''
         if not isinstance(nodeset, list):
             return False
         for n in nodeset:
@@ -87,7 +96,13 @@ class Document(Parent):
 
     @staticmethod
     def order_sort(nodeset, reverse=False):
-        ''' TODO '''
+        '''
+        Sort a nodeset (list[expatriate.Node]) by each node's document order.
+
+        :param list[expatriate.Node] nodeset: The nodeset
+        :param bool reverse: True to sort the nodeset in reverse document order. Defaults to False
+        :rtype: list[expatriate.Node]
+        '''
         if not Document.is_nodeset(nodeset):
             raise TypeError('Cannot sort by document order without a nodeset')
         for n in nodeset:
@@ -95,21 +110,35 @@ class Document(Parent):
         return sorted(nodeset, key=lambda n: n.get_document_order(), reverse=reverse)
 
     def parse(self, data, isfinal=True):
-        ''' TODO '''
+        '''
+        Parse (from a str) into expatriate objects.
+
+        :param str data: The str passed to the parsing library
+        :param bool isfinal: The flag to the parsing library that no more data will be incoming
+        '''
         logger.debug('Parsing data: ' + str(data))
         self._parser.Parse(data, isfinal)
 
         # TODO check that we're the only thing left on the stack when isfinal
 
     def parse_file(self, file_):
-        ''' TODO '''
+        '''
+        Parse (from a file object) into expatriate objects.
+
+        :param file file_: The file object (or file-like) passed to the parsing library
+        '''
         logger.debug('Parsing file: ' + str(file_))
         self._parser.ParseFile(file_)
 
         # TODO check that we're the only thing left on the stack when isfinal
 
     def produce(self, xml_decl=True):
-        ''' TODO '''
+        '''
+        Produce an XML str (encoded as per the encoding attribute) from the
+        contents of this node
+
+        :rtype: str
+        '''
         if self.encoding is None:
             self.encoding = 'UTF-8'
 
@@ -232,19 +261,23 @@ class Document(Parent):
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'root'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.root_element.get_string_value()
 
     def get_document_order(self):
         '''
-        Get the index of this Node's order in the enclosing Document. The
-        Document itself has an index of 0.
+        Get the index of this node's order in the enclosing document. The
+        document itself has an index of 0.
 
         :rtype: int
         :raises UnattachedElementException: if the Node is not attached to a Document

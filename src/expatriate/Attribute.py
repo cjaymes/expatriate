@@ -119,18 +119,24 @@ class Attribute(Node):
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'attribute'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.value
 
     def get_expanded_name(self):
         '''
         Return the expanded name of the node
+
+        :rtype: tuple(namespace, local_name)
         '''
         return (self.namespace, self.local_name)
 

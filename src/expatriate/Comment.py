@@ -35,17 +35,26 @@ class Comment(Node):
         self.data = data
 
     def produce(self):
-        ''' TODO '''
+        '''
+        Produce an XML str (not encoded) from the contents of this
+        node
+
+        :rtype: str
+        '''
         return '<!--' + self.data + '-->'
 
     def get_string_value(self):
         '''
         Return the string value of the node
+
+        :rtype: str
         '''
         return self.data
 
     def get_type(self):
         '''
         Return the type of the node
+
+        :rtype: str
         '''
         return 'comment'
