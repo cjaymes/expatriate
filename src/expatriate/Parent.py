@@ -95,15 +95,24 @@ class Parent(Node):
         return n
 
     def __len__(self):
+        '''
+        Returns the length of this node's children.
+        '''
         return len(self.children)
 
     def __getitem__(self, key):
+        '''
+        Returns the indexed child from the node's children
+        '''
         if not isinstance(key, int) and not isinstance(key, slice):
             raise TypeError('Key values must be of int type or slice; got: ' + key.__class__.__name__)
 
         return self.children[key]
 
     def __setitem__(self, key, value):
+        '''
+        Sets the indexed child in the node's children
+        '''
         if not isinstance(key, int):
             raise TypeError('Key values must be of int type; got: ' + key.__class__.__name__)
         if not isinstance(value, Node):
@@ -112,22 +121,37 @@ class Parent(Node):
         self.children[key] = value
 
     def __delitem__(self, key):
+        '''
+        Deletes the indexed child in the node's children
+        '''
         if not isinstance(key, int):
             raise TypeError('Key values must be of int type; got: ' + key.__class__.__name__)
 
         del self.children[key]
 
     def __iter__(self):
+        '''
+        Returns an iter on the node's children
+        '''
         return iter(self.children)
 
     def append(self, x):
-        ''' TODO '''
+        '''
+        Add an item to the end of the node's children
+
+        :param x: The item to add
+        :type x: str or int or float or bool or expatriate.Node
+        '''
         from .CharacterData import CharacterData
 
         if isinstance(x, str):
             # wrap in CharaterData
             n = CharacterData(x, parent=self)
-        elif isinstance(x, int) or isinstance(x, float):
+        elif (
+            isinstance(x, int)
+            or isinstance(x, float)
+            or isinstance(x, bool)
+        ):
             # convert to str & wrap in CharaterData
             n = CharacterData(str(x), parent=self)
         elif isinstance(x, Node):
@@ -140,21 +164,44 @@ class Parent(Node):
 
         self.children.append(n)
 
-    def count(self):
-        ''' TODO '''
-        return self.children.count()
+    def count(self, x):
+        '''
+        Returns the number of times node x appears in the node's children
 
-    def index(self, x):
-        ''' TODO '''
-        return self.children.index(x)
+        :param expatriate.Node x: The node
+        '''
+        return self.children.count(x)
+
+    def index(self, x, *args):
+        '''
+        Returns zero-based index in the node's children of the first item
+        which is x.
+
+        :param expatriate.Node x: The node
+        :param int start: Interpreted as the start in slice notation. Optional
+        :param int end: Interpreted as the end in slice notation. Optional
+        :rtype: int
+        :raises ValueError: if there is no such item
+        '''
+        return self.children.index(x, *args)
 
     def extend(self, iterable):
-        ''' TODO '''
+        '''
+        Extend the node's children by appending all the items from the
+        iterable.
+
+        :param list[expatriate.Node] iterable: The iterable which returns items appropriate for appending to the node's children
+        '''
         for c in iterable:
             self.append(c)
 
     def insert(self, i, x):
-        ''' TODO '''
+        '''
+        Insert an item at a given position in the node's children.
+
+        :param int i: The index of the item before which to insert.
+        :param expatriate.Node x: The node to insert.
+        '''
         from .CharacterData import CharacterData
 
         if isinstance(x, str):
@@ -170,24 +217,44 @@ class Parent(Node):
 
         self.children.insert(i, n)
 
-    def pop(self, i=-1):
-        ''' TODO '''
-        n = self.children.pop(i)
+    def pop(self, *args):
+        '''
+        Remove the item at the given position in the node's children, and
+        return it. If no index is specified, pop() removes and returns the last
+        item in the children.
+
+        :param int i: The position to remove. Optional.
+        :rtype: expatriate.Node
+        '''
+        n = self.children.pop(*args)
         self.detach(n)
         return n
 
     def remove(self, x):
-        ''' TODO '''
+        '''
+        Remove the first item from the node's children whose value is x. It is
+        an error if there is no such item.
+
+        :param expatriate.Node x: The node to remove.
+        '''
         n = self.children[self.children.index(x)]
         self.children.remove(x)
 
     def reverse(self):
-        ''' TODO '''
-        return self.children.reverse()
+        '''
+        Reverse the items of the node's children in place.
+        '''
+        self.children.reverse()
 
     def sort(self, key=None, reverse=False):
-        ''' TODO '''
-        return self.children.sort(key=key, reverse=reverse)
+        '''
+        Sort the items of the list in place.
+
+        :param key: Specifies a function of one argument that is used to extract a comparison key from each list element: key=str.lower. Defaults to None (compare the elements directly).
+        :type key: function or None
+        :param bool reverse: A boolean value. If set to True, then the list elements are sorted as if each comparison were reversed. Defaults to False.
+        '''
+        self.children.sort(key=key, reverse=reverse)
 
     # TODO copy()
 
