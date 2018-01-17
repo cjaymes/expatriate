@@ -10,6 +10,7 @@ Documentation for Expatriate
 
    parsing
    xpath
+   publishsubscribe
    model
 
 

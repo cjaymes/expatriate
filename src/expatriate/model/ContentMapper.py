@@ -17,8 +17,7 @@
 
 import logging
 
-import expatriate
-
+from .. import CharacterData
 from ..Node import Node
 from .exceptions import *
 from .Mapper import Mapper
@@ -55,4 +54,4 @@ class ContentMapper(Mapper):
     def produce_in(self, el, model, id_):
         from .Model import Model
         logger.debug(str(self) + ' producing ' + str(id_) + ' in ' + str(el))
-        el.children.append(expatriate.CharacterData(str(id_)))
+        el.children.append(CharacterData(str(id_)))

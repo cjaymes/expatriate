@@ -17,13 +17,12 @@
 
 import logging
 
-from publishsubscribe import PublishingDict, Subscriber
-
 from .Attribute import Attribute
 from .exceptions import *
 from .Namespace import Namespace
 from .Node import Node
 from .Parent import Parent
+from .publishsubscribe import PublishingDict, Subscriber
 
 logger = logging.getLogger(__name__)
 
@@ -167,19 +166,19 @@ class Element(Parent, Subscriber):
         if self._parent is not None:
             self._prefix = self.namespace_to_prefix(namespace)
 
-    def data_added(self, publisher, id_, item):
+    def _data_added(self, publisher, id_, item):
         logger.debug(str(self) + ' added attributes: ' + str(id_))
         self._init_attributes()
         if id_.startswith('xmlns'):
             self._init_namespaces()
 
-    def data_updated(self, publisher, id_, old_item, new_item):
+    def _data_updated(self, publisher, id_, old_item, new_item):
         logger.debug(str(self) + ' updated attributes: ' + str(id_))
         self._init_attributes()
         if id_.startswith('xmlns'):
             self._init_namespaces()
 
-    def data_deleted(self, publisher, id_, item):
+    def _data_deleted(self, publisher, id_, item):
         logger.debug(str(self) + ' deleted attributes: ' + str(id_))
         self._init_attributes()
         if id_.startswith('xmlns'):

@@ -19,9 +19,8 @@ import importlib
 import logging
 import re
 
-import expatriate
-from publishsubscribe import PublishingDict, PublishingList
-
+from .. import CharacterData, Element
+from ..publishsubscribe import PublishingDict, PublishingList
 from .exceptions import *
 from .Mapper import Mapper
 
@@ -437,11 +436,11 @@ class ElementMapper(Mapper):
             if old_value is None and value is None:
                 pass
             elif old_value is None and value is not None:
-                model.data_added(value, None, value)
+                model._data_added(value, None, value)
             elif old_value is not None and value is None:
-                model.data_deleted(value, None, value)
+                model._data_deleted(value, None, value)
             else: # old_value is not None and value is not None
-                model.data_updated(value, None, old_value, value)
+                model._data_updated(value, None, old_value, value)
 
     def produce_in(self, el, model, id_):
         from .Model import Model
@@ -490,7 +489,7 @@ class ElementMapper(Mapper):
         elif 'list' in self._kwargs:
             if 'type' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                    sub_el = Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                     sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'
                     el.append(sub_el)
@@ -502,7 +501,7 @@ class ElementMapper(Mapper):
                     el.append(child.produce(parent_el=el))
             elif 'cls' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                    sub_el = Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                     sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'
                     el.append(sub_el)
@@ -525,7 +524,7 @@ class ElementMapper(Mapper):
                 key_name = 'id'
 
             if 'type' in self._kwargs:
-                sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                sub_el = Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                 sub_el.attributes[key_name] = id_
                 if 'dict_value' in self._kwargs:
                     if value is None:
@@ -541,12 +540,12 @@ class ElementMapper(Mapper):
                         sub_el.attributes['xsi:nil'] = 'true'
                     else:
                         type_ = self._kwargs['type']()
-                        sub_el.children.append(expatriate.CharacterData(type_.produce_value(value)))
+                        sub_el.children.append(CharacterData(type_.produce_value(value)))
                 el.append(sub_el)
 
             elif 'cls' in self._kwargs:
                 if value is None:
-                    sub_el = expatriate.Element(local_name, namespace=namespace, prefix=prefix, parent=el)
+                    sub_el = Element(local_name, namespace=namespace, prefix=prefix, parent=el)
                     sub_el.attributes[key_name] = id_
                     sub_el.attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
                     sub_el.attributes['xsi:nil'] = 'true'

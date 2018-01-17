@@ -22,10 +22,9 @@ import os.path
 import re
 import sys
 
-import expatriate
-from publishsubscribe import Subscriber
-
+from .. import Document, Element
 from ..exceptions import *
+from ..publishsubscribe import Subscriber
 from .decorators import *
 from .exceptions import *
 
@@ -414,7 +413,7 @@ class Model(Subscriber):
 
         if os.path.isfile(uri):
             try:
-                doc = expatriate.Document()
+                doc = Document()
                 doc.parse_file(uri)
                 return Model.load(None, doc.root_element)
             except:
@@ -447,7 +446,7 @@ class Model(Subscriber):
                 return k
         raise AttributeError('Attribute matching ' + str(publisher) + ' not found')
 
-    def data_added(self, publisher, id_, item):
+    def _data_added(self, publisher, id_, item):
         # Receive notification from a Publisher when data has been added
         #
         # :param publishsubscribe.Publisher publisher: The publisher
@@ -456,7 +455,7 @@ class Model(Subscriber):
         pub_name = self._attr_name_from_publisher(publisher)
         self._children.append((pub_name, id_))
 
-    def data_updated(self, publisher, id_, old_item, new_item):
+    def _data_updated(self, publisher, id_, old_item, new_item):
         # Receive notification from a Publisher when data has been updated
         #
         # :param publishsubscribe.Publisher publisher: The publisher
@@ -465,7 +464,7 @@ class Model(Subscriber):
         # :param new_item: The new item
         pass
 
-    def data_deleted(self, publisher, id_, item):
+    def _data_deleted(self, publisher, id_, item):
         # Receive notification from a Publisher when data has been deleted
         #
         # :param publishsubscribe.Publisher publisher: The publisher
@@ -630,7 +629,7 @@ class Model(Subscriber):
                 + ' attribute ' + str(attr))
 
         for child in el.children:
-            if isinstance(child, expatriate.Element):
+            if isinstance(child, Element):
                 for mapper in self._get_element_mappers():
                     if mapper.matches(child, self):
                         mapper.parse_in(self, child)
@@ -666,7 +665,7 @@ class Model(Subscriber):
         if self._local_name is None:
             raise ElementMappingException('local_name must be defined by constructor or @element')
 
-        el = expatriate.Element(self._local_name, namespace=self._namespace, prefix=self._prefix, parent=parent_el)
+        el = Element(self._local_name, namespace=self._namespace, prefix=self._prefix, parent=parent_el)
 
         for mapper in at_mappers:
             mapper.produce_in(el, self)
