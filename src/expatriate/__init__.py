@@ -26,8 +26,8 @@ XML_SPACE_ENUMERATION = (
 ''' Enumeration of the possible whitespace processing modes '''
 
 from .exceptions import *
-from .xpath import *
-from .publishsubscribe import *
+from .xpath.exceptions import *
+from .publishsubscribe import Publisher, Subscriber
 from .Attribute import Attribute
 from .CharacterData import CharacterData
 from .Comment import Comment
