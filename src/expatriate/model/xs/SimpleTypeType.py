@@ -24,6 +24,7 @@ from .RestrictionType import RestrictionType
 from .UnionElement import UnionElement
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @element(local_name='restriction', list='tags', cls=RestrictionType, min=0)
 @element(local_name='list', list='tags', cls=('expatriate.model.xs.ListElement', 'ListElement'), min=0)

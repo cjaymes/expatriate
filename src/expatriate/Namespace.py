@@ -21,6 +21,8 @@ from .exceptions import *
 from .Node import Node
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class Namespace(Node):
     '''

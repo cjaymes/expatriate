@@ -23,6 +23,7 @@ from .AnnotationElement import AnnotationElement
 from .NamespaceListType import NamespaceListType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='namespace', type=NamespaceListType, default='##any')
 @attribute(local_name='processContents', enum=['skip', 'lax', 'strict'], default='strict')

@@ -20,6 +20,7 @@ import logging
 from .NodeTest import NodeTest
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class AnyNodeTest(NodeTest):
     def __init__(self, principal_node_type):

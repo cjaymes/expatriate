@@ -18,6 +18,8 @@
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class NodeTest(object):
     def __init__(self):
         self.children = []

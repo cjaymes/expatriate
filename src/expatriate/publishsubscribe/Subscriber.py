@@ -18,6 +18,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Subscriber(object):
     def _data_added(self, publisher, id_, item):

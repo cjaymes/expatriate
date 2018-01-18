@@ -21,6 +21,8 @@ from .NodeTest import NodeTest
 from .Predicate import Predicate
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Axis(object):
     def a_ancestor(node):
         ns = []

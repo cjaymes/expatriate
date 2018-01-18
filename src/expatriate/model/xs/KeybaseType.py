@@ -24,6 +24,7 @@ from .NCNameType import NCNameType
 from .SelectorElement import SelectorElement
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', type=NCNameType, required=True)
 @element(local_name='selector', list='tags', cls=SelectorElement)

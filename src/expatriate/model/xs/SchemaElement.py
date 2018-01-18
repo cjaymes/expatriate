@@ -37,6 +37,7 @@ from .SimpleTypeType import SimpleTypeType
 from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='targetNamespace', type=AnyUriType)
 @attribute(local_name='version', type=TokenType)

@@ -21,6 +21,7 @@ from .exceptions import *
 from .Publisher import Publisher
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class PublishingList(list, Publisher):
     def __init__(self, *args, **kwargs):

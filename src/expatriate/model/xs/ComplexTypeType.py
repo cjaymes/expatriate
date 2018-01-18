@@ -31,6 +31,7 @@ from .SimpleContentElement import SimpleContentElement
 from .WildcardType import WildcardType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', type=NCNameType)
 @attribute(local_name='mixed', type=BooleanType, default=False)

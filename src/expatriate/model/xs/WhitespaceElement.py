@@ -22,6 +22,7 @@ from .AnnotationElement import AnnotationElement
 from .FacetType import FacetType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='value', required=True, enum=['preserve', 'replace', 'collapse'])
 @attribute(local_name='*', )

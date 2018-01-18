@@ -29,7 +29,7 @@ from .decorators import *
 from .exceptions import *
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 
 @attribute(namespace='http://www.w3.org/XML/1998/namespace', local_name='lang', type=('expatriate.model.xs.StringType', 'StringType'), into='_xml_lang')
 @attribute(namespace='http://www.w3.org/XML/1998/namespace', local_name='space', enum=('default', 'preserve'), into='_xml_space')

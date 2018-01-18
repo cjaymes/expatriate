@@ -23,6 +23,7 @@ from .List import List
 from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NamespaceListType(TokenType):
     def parse_item(self, item_value):

@@ -22,6 +22,7 @@ from .AnnotatedType import AnnotatedType
 from .SelectorXPath import SelectorXPath
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='xpath', type=SelectorXPath, required=True)
 class SelectorElement(AnnotatedType):

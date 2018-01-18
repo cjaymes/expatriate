@@ -28,6 +28,7 @@ from .IdType import IdType
 from .SimpleTypeType import SimpleTypeType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='schemaLocation', type=AnyUriType, required=True)
 @attribute(local_name='id', type=IdType)

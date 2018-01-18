@@ -20,6 +20,7 @@ import logging
 from .exceptions import *
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Publisher(object):
     ''' Class for a generic data structure that publishes data content changes to a list of subscribers '''

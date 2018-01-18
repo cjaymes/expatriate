@@ -21,6 +21,7 @@ from ..decorators import *
 from .ShortType import ShortType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class ByteType(ShortType):
     def parse_value(self, value):

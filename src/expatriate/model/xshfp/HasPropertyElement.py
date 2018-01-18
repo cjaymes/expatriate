@@ -23,6 +23,7 @@ from ..Model import Model
 from ..xs.NormalizedStringType import NormalizedStringType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', required=True, enum=PROPERTY_NAME_ENUMERATION)
 @attribute(local_name='value', required=True, type=NormalizedStringType)

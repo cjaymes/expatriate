@@ -23,6 +23,7 @@ from .FacetType import FacetType
 from .PositiveIntegerType import PositiveIntegerType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='value', type=PositiveIntegerType, required=True)
 @attribute(local_name='*', )

@@ -22,6 +22,7 @@ from ..decorators import *
 from ..Model import Model
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', required=True, enum=FACET_NAME_ENUMERATION)
 class HasFacetElement(Model):

@@ -21,6 +21,7 @@ from ..decorators import *
 from ..Model import Model
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class AnySimpleType(Model):
     pass

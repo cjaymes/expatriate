@@ -23,6 +23,7 @@ from .ExtensionType import ExtensionType
 from .RestrictionType import RestrictionType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @element(local_name='restriction', list='tags', cls=RestrictionType, min=0)
 @element(local_name='extension', list='tags', cls=ExtensionType, min=0)

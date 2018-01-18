@@ -24,6 +24,7 @@ from .AnyTypeType import AnyTypeType
 from .IdType import IdType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='id', type=IdType)
 @element(local_name='annotation', list='tags', cls=AnnotationElement, min=0)

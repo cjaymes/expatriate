@@ -33,6 +33,7 @@ from .SimpleTypeType import SimpleTypeType
 from .StringType import StringType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @element(local_name='simpleType', list='tags', cls=SimpleTypeType, min=0)
 @element(local_name='complexType', list='tags', cls=ComplexTypeType, min=0)

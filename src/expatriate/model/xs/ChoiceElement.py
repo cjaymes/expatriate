@@ -21,6 +21,7 @@ from ..decorators import *
 from .GroupType import GroupType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class ChoiceElement(GroupType):
     pass

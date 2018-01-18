@@ -23,6 +23,7 @@ from ..decorators import *
 from .AnySimpleType import AnySimpleType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Base64BinaryType(AnySimpleType):
     def parse_value(self, value):

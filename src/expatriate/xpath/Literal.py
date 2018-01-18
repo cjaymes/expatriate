@@ -18,6 +18,8 @@
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Literal(object):
     def __init__(self, value):
         self.value = value

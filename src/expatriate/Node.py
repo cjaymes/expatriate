@@ -23,6 +23,8 @@ from .exceptions import *
 from .xpath import *
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class Node(object):
     '''

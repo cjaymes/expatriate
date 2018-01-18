@@ -23,6 +23,7 @@ from .ElementType import ElementType
 from .GroupType import GroupType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='minOccurs', enum=['0', '1'], default='1')
 @attribute(local_name='maxOccurs', enum=['1'], default='1')

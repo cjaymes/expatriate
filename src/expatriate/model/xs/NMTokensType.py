@@ -23,6 +23,7 @@ from .List import List
 from .NMTokenType import NMTokenType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NMTokensType(List):
     def parse_item(self, item_value):

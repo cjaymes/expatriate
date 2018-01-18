@@ -21,6 +21,7 @@ from ..decorators import *
 from .UnsignedLongType import UnsignedLongType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class UnsignedIntType(UnsignedLongType):
     def parse_value(self, value):

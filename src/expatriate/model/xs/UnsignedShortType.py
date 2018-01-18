@@ -21,6 +21,7 @@ from ..decorators import *
 from .UnsignedIntType import UnsignedIntType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class UnsignedShortType(UnsignedIntType):
     def parse_value(self, value):

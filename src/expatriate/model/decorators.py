@@ -27,6 +27,7 @@ from .ContentMapper import ContentMapper
 from .ElementMapper import ElementMapper
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def attribute(*args, **kwargs):
     '''

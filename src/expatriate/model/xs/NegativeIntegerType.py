@@ -21,6 +21,7 @@ from ..decorators import *
 from .NonPositiveIntegerType import NonPositiveIntegerType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NegativeIntegerType(NonPositiveIntegerType):
     def parse_value(self, value):

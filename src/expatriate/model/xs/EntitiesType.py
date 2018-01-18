@@ -23,6 +23,7 @@ from .EntityType import EntityType
 from .List import List
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class EntitiesType(List):
     def parse_item(self, item_value):

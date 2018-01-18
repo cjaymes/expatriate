@@ -22,6 +22,7 @@ from ..Model import Model
 from .AnyUriType import AnyUriType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='source', type=AnyUriType)
 @attribute(local_name='*', )

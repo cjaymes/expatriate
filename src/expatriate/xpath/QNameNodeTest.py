@@ -20,6 +20,8 @@ import logging
 from .NodeTest import NodeTest
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class QNameNodeTest(NodeTest):
     def __init__(self, name):
         super().__init__()

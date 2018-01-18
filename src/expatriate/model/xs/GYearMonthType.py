@@ -23,6 +23,7 @@ from .AnySimpleType import AnySimpleType
 from .SevenPropertyModel import SevenPropertyModel
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class GYearMonthType(AnySimpleType):
     def parse_value(self, value):

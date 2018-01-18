@@ -21,6 +21,7 @@ from ..decorators import *
 from .StringType import StringType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NormalizedStringType(StringType):
     pass

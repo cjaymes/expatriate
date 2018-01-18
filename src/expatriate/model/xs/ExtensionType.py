@@ -27,6 +27,7 @@ from .QNameType import QNameType
 from .WildcardType import WildcardType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='base', type=QNameType, required=True)
 @element(local_name='group', list='tags', cls=GroupType, min=0)

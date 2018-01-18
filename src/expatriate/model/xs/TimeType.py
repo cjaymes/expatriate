@@ -24,6 +24,7 @@ from .AnySimpleType import AnySimpleType
 from .SevenPropertyModel import SevenPropertyModel
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class TimeType(AnySimpleType):
     def parse_value(self, value):

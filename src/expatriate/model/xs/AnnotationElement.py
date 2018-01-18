@@ -24,6 +24,7 @@ from .DocumentationElement import DocumentationElement
 from .IdType import IdType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='id', type=IdType)
 @element(local_name='appinfo', list='tags', cls=AppinfoElement, min=0, max=None)

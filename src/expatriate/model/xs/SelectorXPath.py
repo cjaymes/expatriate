@@ -22,6 +22,7 @@ from ..decorators import *
 from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class SelectorXPath(TokenType):
     def get_value_pattern(self):

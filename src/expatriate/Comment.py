@@ -20,6 +20,7 @@ import logging
 from .Node import Node
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Comment(Node):
     '''

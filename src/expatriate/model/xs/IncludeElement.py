@@ -22,6 +22,7 @@ from .AnnotatedType import AnnotatedType
 from .AnyUriType import AnyUriType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='schemaLocation', type=AnyUriType, required=True)
 class IncludeElement(AnnotatedType):

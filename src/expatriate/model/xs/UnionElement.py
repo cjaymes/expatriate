@@ -22,6 +22,7 @@ from .AnnotatedType import AnnotatedType
 from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='memberTypes', type=QNameType)
 @element(local_name='simpleType', list='tags',

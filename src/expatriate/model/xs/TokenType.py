@@ -21,6 +21,7 @@ from ..decorators import *
 from .NormalizedStringType import NormalizedStringType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class TokenType(NormalizedStringType):
     pass

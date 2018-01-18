@@ -21,6 +21,8 @@ from .Axis import Axis
 from .exceptions import *
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Step(object):
     def __init__(self):
         self.children = []

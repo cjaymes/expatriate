@@ -22,6 +22,7 @@ from .AnnotatedType import AnnotatedType
 from .FieldXPath import FieldXPath
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='xpath', type=FieldXPath, required=True)
 class FieldElement(AnnotatedType):

@@ -23,6 +23,7 @@ from .IdRefType import IdRefType
 from .List import List
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class IdRefsType(List):
     def parse_item(self, item_value):

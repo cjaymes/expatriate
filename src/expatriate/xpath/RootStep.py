@@ -20,6 +20,8 @@ import logging
 from .Step import Step
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class RootStep(Step):
     def __init__(self, document):
         self.children = []

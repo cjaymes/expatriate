@@ -22,6 +22,8 @@ import re
 from .exceptions import *
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Function(object):
     # Node Set Functions
     def f_last(args, context_node, context_position, context_size, variables):

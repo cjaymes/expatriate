@@ -21,6 +21,7 @@ from ..decorators import *
 from .IntegerType import IntegerType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class LongType(IntegerType):
     def parse_value(self, value):

@@ -24,6 +24,7 @@ from .ExtensionType import ExtensionType
 from .RestrictionType import RestrictionType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='mixed', type=BooleanType)
 @element(local_name='restriction', list='tags', cls=RestrictionType, min=0)

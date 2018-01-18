@@ -22,6 +22,7 @@ from ..decorators import *
 from .DecimalType import DecimalType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class IntegerType(DecimalType):
     def parse_value(self, value):

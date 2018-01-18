@@ -18,10 +18,12 @@
 import logging
 import re
 
-from .Operator import Operator
 from .exceptions import *
+from .Operator import Operator
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Expression(object):
     def __init__(self):
         self.children = []

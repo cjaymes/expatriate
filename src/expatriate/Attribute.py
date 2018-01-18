@@ -22,6 +22,7 @@ from .Node import Node
 from .xpath.Literal import Literal
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Attribute(Node):
     '''

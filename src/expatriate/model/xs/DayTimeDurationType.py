@@ -22,6 +22,7 @@ from ..decorators import *
 from .DurationType import DurationType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class DayTimeDurationType(DurationType):
     def parse_value(self, value):

@@ -20,6 +20,8 @@ import logging
 from .NodeTest import NodeTest
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class TypeNodeTest(NodeTest):
     NODE_TYPES = [
         'comment',

@@ -22,6 +22,7 @@ from .KeybaseType import KeybaseType
 from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='refer', type=QNameType, required=True)
 class KeyRefElement(KeybaseType):

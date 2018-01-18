@@ -17,10 +17,12 @@
 
 import logging
 
-from .Function import Function
 from .exceptions import *
+from .Function import Function
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Predicate(object):
     def __init__(self):
         self.children = []

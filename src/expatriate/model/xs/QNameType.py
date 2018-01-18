@@ -21,6 +21,7 @@ from ..decorators import *
 from .AnySimpleType import AnySimpleType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class QNameType(AnySimpleType):
     pass

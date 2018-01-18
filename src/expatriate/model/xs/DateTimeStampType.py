@@ -24,6 +24,7 @@ from .DateTimeType import DateTimeType
 from .SevenPropertyModel import SevenPropertyModel
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class DateTimeStampType(DateTimeType):
     def parse_value(self, value):

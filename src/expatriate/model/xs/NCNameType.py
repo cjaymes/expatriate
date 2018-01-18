@@ -23,6 +23,7 @@ from ..decorators import *
 from .NameType import NameType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NCNameType(NameType):
     def parse_value(self, value):

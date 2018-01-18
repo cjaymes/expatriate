@@ -23,6 +23,7 @@ from .AnySimpleType import AnySimpleType
 from .BooleanType import BooleanType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='value', required=True, type=AnySimpleType)
 @attribute(local_name='fixed', type=BooleanType, default=False)

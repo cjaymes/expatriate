@@ -23,6 +23,7 @@ from .NonNegativeIntegerType import NonNegativeIntegerType
 from .WildcardType import WildcardType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='minOccurs', type=NonNegativeIntegerType, default=1)
 @attribute(local_name='maxOccurs', type=AllNniType, default=1)

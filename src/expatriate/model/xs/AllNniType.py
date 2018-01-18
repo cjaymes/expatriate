@@ -22,6 +22,7 @@ from .NMTokenType import NMTokenType
 from .NonNegativeIntegerType import NonNegativeIntegerType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class AllNniType(NMTokenType):
     '''

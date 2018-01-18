@@ -24,6 +24,7 @@ from .NCNameType import NCNameType
 from .TokenType import TokenType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', type=NCNameType, required=True)
 @attribute(local_name='public', type=TokenType)

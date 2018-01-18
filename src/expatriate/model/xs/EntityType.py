@@ -21,6 +21,7 @@ from ..decorators import *
 from .NCNameType import NCNameType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class EntityType(NCNameType):
     pass

@@ -26,6 +26,7 @@ from .GroupType import GroupType
 from .SimpleTypeType import SimpleTypeType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='namespace', type=AnyUriType)
 @attribute(local_name='schemaLocation', type=AnyUriType)

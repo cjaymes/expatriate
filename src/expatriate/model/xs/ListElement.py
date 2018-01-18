@@ -23,6 +23,7 @@ from .QNameType import QNameType
 from .SimpleTypeType import SimpleTypeType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='itemType', type=QNameType)
 @element(local_name='simpleType', list='tags', cls=SimpleTypeType, min=0)

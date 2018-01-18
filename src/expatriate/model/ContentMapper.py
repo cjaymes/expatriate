@@ -23,6 +23,7 @@ from .exceptions import *
 from .Mapper import Mapper
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class ContentMapper(Mapper):
     '''

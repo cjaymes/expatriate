@@ -22,6 +22,7 @@ import re
 from ..decorators import *
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class SevenPropertyModel(object):
     def __init__(

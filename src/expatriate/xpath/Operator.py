@@ -18,10 +18,12 @@
 import logging
 import math
 
-from .Function import Function
 from .exceptions import *
+from .Function import Function
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class Operator(object):
     def op_div(left, right):
         if right == 0:

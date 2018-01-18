@@ -26,6 +26,7 @@ from .NonNegativeIntegerType import NonNegativeIntegerType
 from .QNameType import QNameType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 @attribute(local_name='name', type=NCNameType)
 @attribute(local_name='ref', type=QNameType)
