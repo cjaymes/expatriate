@@ -824,3 +824,16 @@ def test_children_attr():
     model = RootFixture()
     model.EnclosedFixture = EnclosedFixture()
     assert model._children == [('EnclosedFixture', None)]
+
+def test_get_attr_attr_names():
+    model = AttributeFixture()
+    assert model._get_attribute_mapper_attr_names() == [
+        # from Model
+        '_xml_lang', '_xml_space', '_xml_base', '_xml_id', '_xmlns', '_xsi_type', '_xsi_nil', '_xsi_schemaLocation', '_xsi_noNamespaceSchemaLocation',
+        # from AttributeFixture
+        'in_test', 'dash_attribute', 'default_attribute'
+        ]
+
+def test_get_el_attr_names():
+    model = RootFixture()
+    assert model._get_element_mapper_attr_names() == ['EnclosedFixture', 'EnumValue', 'PatternValue']

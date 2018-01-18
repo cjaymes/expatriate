@@ -184,6 +184,16 @@ class Model(Subscriber):
         cls._attribute_mappers[cls.__name__].insert(0, mapper)
 
     @classmethod
+    def _get_attribute_mapper_attr_names(cls):
+        '''
+        get the attr names defined by the attribute mappers
+        '''
+        names = []
+        for mapper in cls._get_attribute_mappers():
+            names.append(mapper.get_attr_name())
+        return names
+
+    @classmethod
     def _get_element_mappers(cls):
         '''
         get all the element definitions for a model class
@@ -227,6 +237,16 @@ class Model(Subscriber):
             0,
             (mapper.get_namespace(), mapper.get_local_name())
         )
+
+    @classmethod
+    def _get_element_mapper_attr_names(cls):
+        '''
+        get the attr names defined by the element mappers
+        '''
+        names = []
+        for mapper in cls._get_element_mappers():
+            names.append(mapper.get_attr_name())
+        return names
 
     @classmethod
     def _add_content_mapper(cls, mapper):
